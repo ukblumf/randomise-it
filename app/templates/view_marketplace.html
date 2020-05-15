@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Randomise iT- View Marketplace{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-4">
+			<h3>
+				Categories
+			</h3>
+            <div style="height: 500px; overflow-y: scroll;">
+                <ul class="list-group" id="categoryList">
+                    {% for category in used_categories %}
+                    <li class="list-group-item">
+                        <button onclick="selectCategory('{{ category[0] }}');">{{ category[1] }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+		</div>
+		<div class="col-md-8">
+			<div class="row">
+				<div class="col-md-6">
+					<h3>
+						Latest
+					</h3>
+					<div style="height: 500px; overflow-y: scroll;">
+						<ul class="list-group" id="latestProducts">
+							{% for mp in latest_marketproducts %}
+							<li class="list-group-item">
+								<button onclick="alert('{{ mp.id }}');">{{ mp.name }}</button>
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<h3>
+						Most Popular
+					</h3>
+					<div style="height: 500px; overflow-y: scroll;">
+						<ul class="list-group" id="popularProducts">
+							{% for mp in popular_marketproducts %}
+							<li class="list-group-item">
+								<button onclick="alert('{{ mp.id }}');">{{ mp.name }}</button>
+							</li>
+							{% endfor %}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function selectCategory(catId) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (xhttp.readyState === 4) {
+            var response = JSON.parse(xhttp.responseText);
+            var latestList = document.getElementById('latestProducts');
+            var popularList = document.getElementById('popularProducts');
+            var latestLI = "";
+            for (var i=0; i<response.latest_products.length; i++) {
+                latestLI += "<li class='list-group-item'><button onclick=\"alert('FROM API: " + response.latest_products[i].id + "');\">" + response.latest_products[i].name + "</button></li>";
+            }
+            var popularLI = ""
+            for (var i=0; i<response.popular_products.length; i++) {
+                popularLI += "<li class='list-group-item'><button onclick=\"alert('FROM API: " + response.popular_products[i].id + "');\">" + response.popular_products[i].name + "</button></li>";
+            }
+            latestList.innerHTML = latestLI;
+            popularList.innerHTML = popularLI;
+        }
+    }
+    xhttp.open("GET", "http://127.0.0.1:5000/api/v1.0/market-products/" + catId, true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send();
+}
+</script>
+{% endblock %}

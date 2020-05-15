@@ -1,0 +1,32 @@
+<ul class="tables">
+    {% for table in tables %}
+    <li class="table">
+        <div class="table-thumbnail">
+            <a href="{{ url_for('.user', username=table.author.username) }}">
+                <img class="img-rounded profile-thumbnail" src="{{ table.author.gravatar(size=40) }}">
+            </a>
+        </div>
+        <div class="table-content">
+            <div class="table-date">{{ moment(table.timestamp).fromNow() }}</div>
+            <!-- <div class="table-author"><a href="{{ url_for('.user', username=table.author.username) }}">{{ table.author.username }}</a></div> -->
+            <div class="table-body">
+                {{ table.name }}
+            </div>
+            <div class="table-footer">
+                {% if current_user == table.author %}
+                <a href="{{ url_for('.edit_table', id=table.id) }}">
+                    <span class="label label-primary">Edit</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a href="{{ url_for('.edit_table', id=table.id) }}">
+                    <span class="label label-danger">Edit [Admin]</span>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('.edit_table', id=table.id) }}">
+                    <span class="label label-default">Permalink</span>
+                </a>
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>

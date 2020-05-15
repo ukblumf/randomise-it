@@ -1,0 +1,1236 @@
+{
+  "id": "dnd5-monster-tables-and-encounters-prodtest",
+  "name": "D&D5 Monster Tables and Encounters ",
+  "description": "blurb",
+  "tables": [
+    {
+      "id": "dmg5-arctic-encounters-1-prodtest",
+      "name": "Arctic Encounters 0-1",
+      "description": "",
+      "definition": [
+        "Owl, CR 0",
+        "Blood Hawk, CR 1/8",
+        "Kobold, CR 1/8",
+        "Giant Owl, CR 1/4",
+        "Winged Kobold, CR 1/4",
+        "Ice Mephit, CR 1/2",
+        "Orc, CR 1/2",
+        "Brown Bear, CR 1",
+        "Half-ogre, CR 1"
+      ]
+    },
+    {
+      "id": "dmg5-arctic-encounters-2-3-prodtest",
+      "name": "Arctic Encounters 2-3",
+      "description": "",
+      "definition": [
+        "Griffon, CR 2",
+        "Ogre, CR 2",
+        "Orc Eye of Gruumsh, CR 2",
+        "Orog, CR 2",
+        "Polar Bear, CR 2",
+        "Saber-toothed Tiger, CR 2",
+        "Manticore, CR 3",
+        "Winter Wolf, CR 3",
+        "Yeti, CR 3"
+      ]
+    },
+    {
+      "id": "dmg5-arctic-encounters-4-5-prodtest",
+      "name": "Arctic Encounters 4-5",
+      "description": "",
+      "definition": [
+        "Revenant, CR 5",
+        "Troll, CR 5",
+        "Werebear, CR 5",
+        "Young Remorhaz, CR 5"
+      ]
+    },
+    {
+      "id": "dmg5-arctic-encounters-6-7-prodtest",
+      "name": "Arctic Encounters 6-7",
+      "description": "",
+      "definition": [
+        "Mammoth, CR 6",
+        "Young White Dragon, CR 6"
+      ]
+    },
+    {
+      "id": "dmg5-arctic-encounters-8-11-prodtest",
+      "name": "Arctic Encounters 8-11",
+      "description": "",
+      "definition": [
+        "Frost Giant, CR 8",
+        "Abominable Yeti, CR 9",
+        "Remorhaz, CR 11",
+        "Roc, CR 11"
+      ]
+    },
+    {
+      "id": "dmg5-arctic-encounters-12+-prodtest",
+      "name": "Arctic Encounters 12+",
+      "description": "",
+      "definition": [
+        "Adult White Dragon, CR 13",
+        "Ancient White Dragon, CR 20"
+      ]
+    },
+    {
+      "id": "dmg5-coastal-encounters-1-prodtest",
+      "name": "Coastal Encounters 0-1",
+      "description": "",
+      "definition": [
+        "Crab, CR 0",
+        "Eagle, CR 0",
+        "Blood Hawk, CR 1/8",
+        "Giant Crab, CR 1/8",
+        "Kobold, CR 1/8",
+        "Merfolk, CR 1/8",
+        "Poisonous Snake, CR 1/8",
+        "Stirge, CR 1/8",
+        "Giant Lizard, CR 1/4",
+        "Giant Wolf Spider, CR 1/4",
+        "Pseudodragon, CR 1/4",
+        "Pteranodon, CR 1/4",
+        "Winged Kobold, CR 1/4",
+        "Sahuagin, CR 1/2",
+        "Giant Eagle, CR 1",
+        "Giant Toad, CR 1",
+        "Harpy, CR 1"
+      ]
+    },
+    {
+      "id": "dmg5-coastal-encounters-2-3-prodtest",
+      "name": "Coastal Encounters 2-3",
+      "description": "",
+      "definition": [
+        "Griffon, CR 2",
+        "Merrow, CR 2",
+        "Ogre, CR 2",
+        "Plesiosaurus, CR 2",
+        "Sahuagin Priestess, CR 2",
+        "Sea Hag, CR 2",
+        "Manticore, CR 3"
+      ]
+    },
+    {
+      "id": "dmg5-coastal-encounters-4-5-prodtest",
+      "name": "Coastal Encounters 4-5",
+      "description": "",
+      "definition": [
+        "Banshee, CR 4",
+        "Sahuagin Baron, CR 5",
+        "Water Elemental, CR 5"
+      ]
+    },
+    {
+      "id": "dmg5-coastal-encounters-6-7-prodtest",
+      "name": "Coastal Encounters 6-7",
+      "description": "",
+      "definition": [
+        "Cyclops, CR 6"
+      ]
+    },
+    {
+      "id": "dmg5-coastal-encounters-8-11-prodtest",
+      "name": "Coastal Encounters 8-11",
+      "description": "",
+      "definition": [
+        "Young Bronze Dragon, CR 8",
+        "Young Blue Dragon, CR 9",
+        "Djinni, CR 11",
+        "Marid, CR 11",
+        "Roc, CR 11"
+      ]
+    },
+    {
+      "id": "dmg5-coastal-encounters-12+-prodtest",
+      "name": "Coastal Encounters 0-12+",
+      "description": "",
+      "definition": [
+        "Storm Giant, CR 13",
+        "Adult Bronze Dragon, CR 15",
+        "Adult Blue Dragon, CR 16",
+        "Dragon Turtle, CR 17",
+        "Ancient Bronze Dragon, CR 22",
+        "Ancient Blue Dragon, CR 23"
+      ]
+    },
+    {
+      "id": "dmg5-desert-encounters-1-prodtest",
+      "name": "Desert Encounters 0-1",
+      "description": "",
+      "definition": [
+        "Cat, CR 0",
+        "Hyena, CR 0",
+        "Jackal, CR 0",
+        "Scorpion, CR 0",
+        "Vulture, CR 0",
+        "Camel, CR 1/8",
+        "Flying Snake, CR 1/8",
+        "Kobold, CR 1/8",
+        "Mule, CR 1/8",
+        "Poisonous Snake, CR 1/8",
+        "Stirge, CR 1/8",
+        "Constrictor Snake, CR 1/4",
+        "Giant Lizard, CR 1/4",
+        "Giant Poisonous Snake, CR 1/4",
+        "Giant Wolf Spider, CR 1/4",
+        "Pseudodragon, CR 1/4",
+        "Winged Kobold, CR 1/4",
+        "Dust Mephit, CR 1/2",
+        "Gnoll, CR 1/2",
+        "Hobgoblin, CR 1/2",
+        "Jackalwere, CR 1/2",
+        "Swarm of Insects, CR 1/2",
+        "Death Dog, CR 1",
+        "Giant Hyena, CR 1",
+        "Giant Spider, CR 1",
+        "Giant Toad, CR 1",
+        "Giant Vulture, CR 1",
+        "Half-ogre, CR 1",
+        "Lion, CR 1",
+        "Thri-kreen, CR 1",
+        "Yuan-ti Pureblood, CR 1"
+      ]
+    },
+    {
+      "id": "dmg5-desert-encounters-2-3-prodtest",
+      "name": "Desert Encounters 2-3",
+      "description": "",
+      "definition": [
+        "Giant Constrictor Snake, CR 2",
+        "Gnoll Pack Lord, CR 2",
+        "Ogre, CR 2",
+        "Giant Scorpion, CR 3",
+        "Hobgoblin Captain, CR 3",
+        "Mummy, CR 3",
+        "Phase Spider, CR 3",
+        "Wight, CR 3",
+        "Yuan-ti Malison, CR 3"
+      ]
+    },
+    {
+      "id": "dmg5-desert-encounters-4-5-prodtest",
+      "name": "Desert Encounters 4-5",
+      "description": "",
+      "definition": [
+        "Couatl, CR 4",
+        "Gnoll Fang of Yeenoghu, CR 4",
+        "Lamia, CR 4",
+        "Weretiger, CR N",
+        "Air Elemental, CR 5",
+        "Fire Elemental, CR 5",
+        "Revenant, CR 5"
+      ]
+    },
+    {
+      "id": "dmg5-desert-encounters-6-7-prodtest",
+      "name": "Desert Encounters 6-7",
+      "description": "",
+      "definition": [
+        "Cyclops, CR 6",
+        "Hobgoblin Warlord, CR 6",
+        "Medusa, CR 6",
+        "Young Brass Dragon, CR 6",
+        "Yuan-ti Abomination, CR 7"
+      ]
+    },
+    {
+      "id": "dmg5-desert-encounters-8-11-prodtest",
+      "name": "Desert Encounters 8-11",
+      "description": "",
+      "definition": [
+        "Young Blue Dragon, CR 9",
+        "Guardian Naga, CR 10",
+        "Efreeti, CR 11",
+        "Gynosphinx, CR 11",
+        "Roc, CR 11"
+      ]
+    },
+    {
+      "id": "dmg5-desert-encounters-12+-prodtest",
+      "name": "Desert Encounters 12+",
+      "description": "",
+      "definition": [
+        "Adult Brass Dragon, CR 13",
+        "Mummy Lord, CR 15",
+        "Purple Worm, CR 15",
+        "Adult Blue Dragon, CR 16",
+        "Adult Blue Dracolich, CR 17",
+        "Androsphinx, CR 17",
+        "Ancient Brass Dragon, CR 20",
+        "Ancient Blue Dragon, CR 23"
+      ]
+    },
+    {
+      "id": "dmg5-forest-encounters-1-prodtest",
+      "name": "Forest Encounters 0-1",
+      "description": "",
+      "definition": [
+        "Awakened Shrub, CR 0",
+        "Baboon, CR 0",
+        "Badger, CR 0",
+        "Cat, CR 0",
+        "Deer, CR 0",
+        "Hyena, CR 0",
+        "Owl, CR 0",
+        "Blood Hawk, CR 1/8",
+        "Flying Snake, CR 1/8",
+        "Giant Rat, CR 1/8",
+        "Giant Weasel, CR 1/8",
+        "Kobold, CR 1/8",
+        "Mastiff, CR 1/8",
+        "Poisonous Snake, CR 1/8",
+        "Stirge, CR 1/8",
+        "Twig Blight, CR 1/8",
+        "Blink Dog, CR 1/4",
+        "Boar, CR 1/4",
+        "Constrictor Snake, CR 1/4",
+        "Elk, CR 1/4",
+        "Giant Badger, CR 1/4",
+        "Giant Bat, CR 1/4",
+        "Giant Frog, CR 1/4",
+        "Giant Lizard, CR 1/4",
+        "Giant Owl, CR 1/4",
+        "Giant Poisonous Snake, CR 1/4",
+        "Giant Wolf Spider, CR 1/4",
+        "Goblin, CR 1/4",
+        "Kenku, CR 1/4",
+        "Needle Blight, CR 1/4",
+        "Panther, CR 1/4",
+        "Pixie, CR 1/4",
+        "Pseudodragon, CR 1/4",
+        "Sprite, CR 1/4",
+        "Swarm of Ravens, CR 1/4",
+        "Winged Kobold, CR 1/4",
+        "Wolf, CR 1/4",
+        "Ape, CR 1/2",
+        "Black Bear, CR 1/2",
+        "Giant Wasp, CR 1/2",
+        "Gnoll, CR 1/2",
+        "Hobgoblin, CR 1/2",
+        "Lizardfolk, CR 1/2",
+        "Orc, CR 1/2",
+        "Satyr, CR 1/2",
+        "Swarm of Insects, CR 1/2",
+        "Vine Blight, CR 1/2",
+        "Worg, CR 1/2",
+        "Brown Bear, CR 1",
+        "Bugbear, CR 1",
+        "Dire Wolf, CR 1",
+        "Dryad, CR 1",
+        "Giant Hyena, CR 1",
+        "Giant Spider, CR 1",
+        "Giant Toad, CR 1",
+        "Goblin Boss, CR 1",
+        "Half-ogre, CR 1",
+        "Harpy, CR 1",
+        "Tiger, CR 1",
+        "Young Faerie Dragon, CR 1",
+        "Yuan-ti Pureblood, CR 1"
+      ]
+    },
+    {
+      "id": "dmg5-forest-encounters-2-3-prodtest",
+      "name": "Forest Encounters 2-3",
+      "description": "",
+      "definition": [
+        "Adult Faerie Dragon, CR 2",
+        "Ankheg, CR 2",
+        "Awakened Tree, CR 2",
+        "Centaur, CR 2",
+        "Ettercap, CR 2",
+        "Giant Boar, CR 2",
+        "Giant Constrictor Snake, CR 2",
+        "Giant Elk, CR 2",
+        "Gnoll Pack Lord, CR 2",
+        "Grick, CR 2",
+        "Lizardfolk Shaman, CR 2",
+        "Ogre, CR 2",
+        "Orc Eye of Gruumsh, CR 2",
+        "Orog, CR 2",
+        "Pegasus, CR 2",
+        "Swarm of Poisonous Snakes, CR 2",
+        "Wererat, CR LE",
+        "Will-o-wisp, CR 2",
+        "Displacer Beast, CR 3",
+        "Green Hag, CR 3",
+        "Hobgoblin Captain, CR 3",
+        "Owlbear, CR 3",
+        "Phase Spider, CR 3",
+        "Werewolf, CR CE",
+        "Yuan-ti Malison, CR 3"
+      ]
+    },
+    {
+      "id": "dmg5-forest-encounters-4-5-prodtest",
+      "name": "Forest Encounters 4-5",
+      "description": "",
+      "definition": [
+        "Banshee, CR 4",
+        "Couatl, CR 4",
+        "Gnoll Fang of Yeenoghu, CR 4",
+        "Wereboar, CR NE",
+        "Weretiger, CR N",
+        "Gorgon, CR 5",
+        "Revenant, CR 5",
+        "Shambling Mound, CR 5",
+        "Troll, CR 5",
+        "Unicorn, CR 5",
+        "Werebear, CR 5"
+      ]
+    },
+    {
+      "id": "dmg5-forest-encounters-6-7-prodtest",
+      "name": "Forest Encounters 6-7",
+      "description": "",
+      "definition": [
+        "Hobgoblin Warlord, CR 6",
+        "Giant Ape, CR 7",
+        "Grick Alpha, CR 7",
+        "Oni, CR 7",
+        "Yuan-ti Abomination, CR 7"
+      ]
+    },
+    {
+      "id": "dmg5-forest-encounters-8-11-prodtest",
+      "name": "Forest Encounters 8-11",
+      "description": "",
+      "definition": [
+        "Young Green Dragon, CR 8",
+        "Treant, CR 9",
+        "Guardian Naga, CR 10",
+        "Young Gold Dragon, CR 10"
+      ]
+    },
+    {
+      "id": "dmg5-forest-encounters-12+-prodtest",
+      "name": "Forest Encounters 12+",
+      "description": "",
+      "definition": [
+        "Adult Green Dragon, CR 15",
+        "Adult Gold Dragon, CR 17",
+        "Ancient Green Dragon, CR 22",
+        "Ancient Gold Dragon, CR 24"
+      ]
+    },
+    {
+      "id": "dmg5-grassland-encounters-1-prodtest",
+      "name": "Grassland Encounters 0-1",
+      "description": "",
+      "definition": [
+        "Cat, CR 0",
+        "Deer, CR 0",
+        "Eagle, CR 0",
+        "Goat, CR 0",
+        "Hyena, CR 0",
+        "Jackal, CR 0",
+        "Vulture, CR 0",
+        "Blood Hawk, CR 1/8",
+        "Flying Snake, CR 1/8",
+        "Giant Weasel, CR 1/8",
+        "Poisonous Snake, CR 1/8",
+        "Stirge, CR 1/8",
+        "Axe Beak, CR 1/4",
+        "Boar, CR 1/4",
+        "Elk, CR 1/4",
+        "Giant Poisonous Snake, CR 1/4",
+        "Giant Wolf Spider, CR 1/4",
+        "Goblin, CR 1/4",
+        "Panther, CR 1/4",
+        "Pteranodon, CR 1/4",
+        "Riding Horse, CR 1/4",
+        "Wolf, CR 1/4",
+        "Cockatrice, CR 1/2",
+        "Giant Goat, CR 1/2",
+        "Giant Wasp, CR 1/2",
+        "Gnoll, CR 1/2",
+        "Hobgoblin, CR 1/2",
+        "Jackalwere, CR 1/2",
+        "Orc, CR 1/2",
+        "Swarm of Insects, CR 1/2",
+        "Worg, CR 1/2",
+        "Bugbear, CR 1",
+        "Giant Eagle, CR 1",
+        "Giant Hyena, CR 1",
+        "Giant Vulture, CR 1",
+        "Goblin Boss, CR 1",
+        "Hippogriff, CR 1",
+        "Lion, CR 1",
+        "Scarecrow, CR 1",
+        "Thri-kreen, CR 1",
+        "Tiger, CR 1"
+      ]
+    },
+    {
+      "id": "dmg5-grassland-encounters-2-3-prodtest",
+      "name": "Grassland Encounters 2-3",
+      "description": "",
+      "definition": [
+        "Allosaurus, CR 2",
+        "Ankheg, CR 2",
+        "Centaur, CR 2",
+        "Giant Boar, CR 2",
+        "Giant Elk, CR 2",
+        "Gnoll Pack Lord, CR 2",
+        "Griffon, CR 2",
+        "Ogre, CR 2",
+        "Orc Eye of Gruumsh, CR 2",
+        "Orog, CR 2",
+        "Pegasus, CR 2",
+        "Rhinoceros, CR 2",
+        "Ankylosaurus, CR 3",
+        "Hobgoblin Captain, CR 3",
+        "Manticore, CR 3",
+        "Phase Spider, CR 3"
+      ]
+    },
+    {
+      "id": "dmg5-grassland-encounters-4-5-prodtest",
+      "name": "Grassland Encounters 4-5",
+      "description": "",
+      "definition": [
+        "Couatl, CR 4",
+        "Elephant, CR 4",
+        "Gnoll Fang of Yeenoghu, CR 4",
+        "Wereboar, CR 4",
+        "Weretiger, CR 4",
+        "Bulette, CR 5",
+        "Gorgon, CR 5",
+        "Triceratops, CR 5"
+      ]
+    },
+    {
+      "id": "dmg5-grassland-encounters-6-7-prodtest",
+      "name": "Grassland Encounters 6-7",
+      "description": "",
+      "definition": [
+        "Chimera, CR 6",
+        "Cyclops, CR 6",
+        "Hobgoblin Warlord, CR 6"
+      ]
+    },
+    {
+      "id": "dmg5-grassland-encounters-8-11-prodtest",
+      "name": "Grassland Encounters 8-11",
+      "description": "",
+      "definition": [
+        "Tyrannosaurus Rex, CR 8",
+        "Young Gold Dragon, CR 10"
+      ]
+    },
+    {
+      "id": "dmg5-grassland-encounters-12+-prodtest",
+      "name": "Grassland Encounters 12+",
+      "description": "",
+      "definition": [
+        "Adult Gold Dragon, CR 17",
+        "Ancient Gold Dragon, CR 24"
+      ]
+    },
+    {
+      "id": "dmg5-hill-encounters-1-prodtest",
+      "name": "Hill Encounters 0-1",
+      "description": "",
+      "definition": [
+        "Baboon, CR 0",
+        "Eagle, CR 0",
+        "Goat, CR 0",
+        "Hyena, CR 0",
+        "Raven, CR 0",
+        "Vulture, CR 0",
+        "Blood Hawk, CR 1/8",
+        "Giant Weasel, CR 1/8",
+        "Kobold, CR 1/8",
+        "Mastiff, CR 1/8",
+        "Mule, CR 1/8",
+        "Poisonous Snake, CR 1/8",
+        "Stirge, CR 1/8",
+        "Axe Beak, CR 1/4",
+        "Boar, CR 1/4",
+        "Elk, CR 1/4",
+        "Giant Owl, CR 1/4",
+        "Giant Wolf Spider, CR 1/4",
+        "Goblin, CR 1/4",
+        "Panther, CR 1/4",
+        "Pseudodragon, CR 1/4",
+        "Swarm of Bats, CR 1/4",
+        "Swarm of Ravens, CR 1/4",
+        "Winged Kobold, CR 1/4",
+        "Wolf, CR 1/4",
+        "Giant Goat, CR 1/2",
+        "Gnoll, CR 1/2",
+        "Hobgoblin, CR 1/2",
+        "Orc, CR 1/2",
+        "Swarm of Insects, CR 1/2",
+        "Worg, CR 1/2",
+        "Brown Bear, CR 1",
+        "Dire Wolf, CR 1",
+        "Giant Eagle, CR 1",
+        "Giant Hyena, CR 1",
+        "Goblin Boss, CR 1",
+        "Half-ogre, CR 1",
+        "Harpy, CR 1",
+        "Hippogriff, CR 1",
+        "Lion, CR 1"
+      ]
+    },
+    {
+      "id": "dmg5-hill-encounters-2-3-prodtest",
+      "name": "Hill Encounters 2-3",
+      "description": "",
+      "definition": [
+        "Giant Boar, CR 2",
+        "Giant Elk, CR 2",
+        "Gnoll Pack Lord, CR 2",
+        "Griffon, CR 2",
+        "Ogre, CR 2",
+        "Orc Eye of Gruumsh, CR 2",
+        "Orog, CR 2",
+        "Pegasus, CR 2",
+        "Peryton, CR 2",
+        "Green Hag, CR 3",
+        "Hobgoblin Captain, CR 3",
+        "Manticore, CR 3",
+        "Phase Spider, CR 3",
+        "Werewolf, CR 3"
+      ]
+    },
+    {
+      "id": "dmg5-hill-encounters-4-5-prodtest",
+      "name": "Hill Encounters 4-5",
+      "description": "",
+      "definition": [
+        "Ettin, CR 4",
+        "Gnoll Fang of Yeenoghu, CR 4",
+        "Wereboar, CR 4",
+        "Bulette, CR 5",
+        "Gorgon, CR 5",
+        "Hill Giant, CR 5",
+        "Revenant, CR 5",
+        "Troll, CR 5",
+        "Werebear, CR 5"
+      ]
+    },
+    {
+      "id": "dmg5-hill-encounters-6-7-prodtest",
+      "name": "Hill Encounters 6-7",
+      "description": "",
+      "definition": [
+        "Chimera, CR 6",
+        "Cyclops, CR 6",
+        "Galeb Duhr, CR 6",
+        "Hobgoblin Warlord, CR 6",
+        "Wyvern, CR 6",
+        "Stone Giant, CR 7",
+        "Young Copper Dragon, CR 7"
+      ]
+    },
+    {
+      "id": "dmg5-hill-encounters-8-11-prodtest",
+      "name": "Hill Encounters 8-11",
+      "description": "",
+      "definition": [
+        "Young Red Dragon, CR 10",
+        "Roc, CR 11"
+      ]
+    },
+    {
+      "id": "dmg5-hill-encounters-12+-prodtest",
+      "name": "Hill Encounters 12+",
+      "description": "",
+      "definition": [
+        "Adult Copper Dragon, CR 14",
+        "Adult Red Dragon, CR 17",
+        "Ancient Copper Dragon, CR 21",
+        "Ancient Red Dragon, CR 24"
+      ]
+    },
+    {
+      "id": "dmg5-mountain-encounters-1-prodtest",
+      "name": "Mountain Encounters 0-1",
+      "description": "",
+      "definition": [
+        "Eagle, CR 0",
+        "Goat, CR 0",
+        "Blood Hawk, CR 1/8",
+        "Kobold, CR 1/8",
+        "Stirge, CR 1/8",
+        "Aarakocra, CR 1/4",
+        "Pseudodragon, CR 1/4",
+        "Pteranodon, CR 1/4",
+        "Swarm of Bats, CR 1/4",
+        "Winged Kobold, CR 1/4",
+        "Giant Goat, CR 1/2",
+        "Orc, CR 1/2",
+        "Giant Eagle, CR 1",
+        "Half-ogre, CR 1",
+        "Harpy, CR 1",
+        "Hippogriff, CR 1",
+        "Lion, CR 1"
+      ]
+    },
+    {
+      "id": "dmg5-mountain-encounters-2-3-prodtest",
+      "name": "Mountain Encounters 2-3",
+      "description": "",
+      "definition": [
+        "Giant Elk, CR 2",
+        "Griffon, CR 2",
+        "Ogre, CR 2",
+        "Orc Eye of Gruumsh, CR 2",
+        "Orog, CR 2",
+        "Peryton, CR 2",
+        "Saber-toothed Tiger, CR 2",
+        "Basilisk, CR 3",
+        "Hell Hound, CR 3",
+        "Manticore, CR 3"
+      ]
+    },
+    {
+      "id": "dmg5-mountain-encounters-4-5-prodtest",
+      "name": "Mountain Encounters 4-5",
+      "description": "",
+      "definition": [
+        "Ettin, CR 4",
+        "Air Elemental, CR 5",
+        "Bulette, CR 5",
+        "Troll, CR 5"
+      ]
+    },
+    {
+      "id": "dmg5-mountain-encounters-6-7-prodtest",
+      "name": "Mountain Encounters 6-7",
+      "description": "",
+      "definition": [
+        "Chimera, CR 6",
+        "Cyclops, CR 6",
+        "Galeb Duhr, CR 6",
+        "Wyvern, CR 6",
+        "Stone Giant, CR 7"
+      ]
+    },
+    {
+      "id": "dmg5-mountain-encounters-8-11-prodtest",
+      "name": "Mountain Encounters 8-11",
+      "description": "",
+      "definition": [
+        "Frost Giant, CR 8",
+        "Cloud Giant, CR 9",
+        "Fire Giant, CR 9",
+        "Young Silver Dragon, CR 9",
+        "Young Red Dragon, CR 10",
+        "Roc, CR 11"
+      ]
+    },
+    {
+      "id": "dmg5-mountain-encounters-12+-prodtest",
+      "name": "Mountain Encounters 12+",
+      "description": "",
+      "definition": [
+        "Adult Silver Dragon, CR 16",
+        "Adult Red Dragon, CR 17",
+        "Ancient Silver Dragon, CR 23",
+        "Ancient Red Dragon, CR 24"
+      ]
+    },
+    {
+      "id": "dmg5-swamp-encounters-1-prodtest",
+      "name": "Swamp Encounters 0-1",
+      "description": "",
+      "definition": [
+        "Kobold, CR 1/8",
+        "Poisonous Snake, CR 1/8",
+        "Stirge, CR 1/8",
+        "Bullywug, CR 1/4",
+        "Constrictor Snake, CR 1/4",
+        "Giant Frog, CR 1/4",
+        "Giant Lizard, CR 1/4",
+        "Giant Poisonous Snake, CR 1/4",
+        "Mud Mephit, CR 1/4",
+        "Swarm of Rats, CR 1/4",
+        "Swarm of Ravens, CR 1/4",
+        "Winged Kobold, CR 1/4",
+        "Crocodile, CR 1/2",
+        "Lizardfolk, CR 1/2",
+        "Orc, CR 1/2",
+        "Swarm of Insects, CR 1/2",
+        "Ghoul, CR 1",
+        "Giant Spider, CR 1",
+        "Giant Toad, CR 1",
+        "Yuan-ti Pureblood, CR 1"
+      ]
+    },
+    {
+      "id": "dmg5-swamp-encounters-2-3-prodtest",
+      "name": "Swamp Encounters 2-3",
+      "description": "",
+      "definition": [
+        "Ghast, CR 2",
+        "Giant Constrictor Snake, CR 2",
+        "Lizardfolk Shaman, CR 2",
+        "Ogre, CR 2",
+        "Orc Eye of Gruumsh, CR 2",
+        "Swarm of Poisonous Snakes, CR 2",
+        "Will-o-wisp, CR 2",
+        "Green Hag, CR 3",
+        "Wight, CR 3",
+        "Yuan-ti Malison, CR 3"
+      ]
+    },
+    {
+      "id": "dmg5-swamp-encounters-4-5-prodtest",
+      "name": "Swamp Encounters 4-5",
+      "description": "",
+      "definition": [
+        "Giant Crocodile, CR 5",
+        "Revenant, CR 5",
+        "Shambling Mound, CR 5",
+        "Troll, CR 5",
+        "Water Elemental, CR 5"
+      ]
+    },
+    {
+      "id": "dmg5-swamp-encounters-6-7-prodtest",
+      "name": "Swamp Encounters 6-7",
+      "description": "",
+      "definition": [
+        "Young Black Dragon, CR 7",
+        "Yuan-ti Abomination, CR 7"
+      ]
+    },
+    {
+      "id": "dmg5-swamp-encounters-8-11-prodtest",
+      "name": "Swamp Encounters 8-11",
+      "description": "",
+      "definition": [
+        "Hydra, CR 8"
+      ]
+    },
+    {
+      "id": "dmg5-swamp-encounters-12+-prodtest",
+      "name": "Swamp Encounters 12+",
+      "description": "",
+      "definition": [
+        "Adult Black Dragon, CR 14",
+        "Ancient Black Dragon, CR 21"
+      ]
+    },
+    {
+      "id": "dmg5-underdark-encounters-1-prodtest",
+      "name": "Underdark Encounters 0-1",
+      "description": "",
+      "definition": [
+        "Giant Fire Beetle, CR 0",
+        "Myconid Sprout, CR 0",
+        "Shrieker, CR 0",
+        "Flumph, CR 1/8",
+        "Giant Rat, CR 1/8",
+        "Kobold, CR 1/8",
+        "Stirge, CR 1/8",
+        "Drow, CR 1/4",
+        "Giant Bat, CR 1/4",
+        "Giant Centipede, CR 1/4",
+        "Giant Lizard, CR 1/4",
+        "Giant Poisonous Snake, CR 1/4",
+        "Goblin, CR 1/4",
+        "Grimlock, CR 1/4",
+        "Kuo-toa, CR 1/4",
+        "Swarm of Bats, CR 1/4",
+        "Troglodyte, CR 1/4",
+        "Violet Fungus, CR 1/4",
+        "Winged Kobold, CR 1/4",
+        "Darkmantle, CR 1/2",
+        "Gas Spore, CR 1/2",
+        "Gray Ooze, CR 1/2",
+        "Hobgoblin, CR 1/2",
+        "Magma Mephit, CR 1/2",
+        "Myconid Adult, CR 1/2",
+        "Orc, CR 1/2",
+        "Piercer, CR 1/2",
+        "Rust Monster, CR 1/2",
+        "Shadow, CR 1/2",
+        "Svirfneblin, CR 1/2",
+        "Swarm of Insects, CR 1/2",
+        "Bugbear, CR 1",
+        "Duergar, CR 1",
+        "Fire Snake, CR 1",
+        "Ghoul, CR 1",
+        "Giant Spider, CR 1",
+        "Giant Toad, CR 1",
+        "Goblin Boss, CR 1",
+        "Half-ogre, CR 1",
+        "Kuo-toa Whip, CR 1",
+        "Quaggoth Spore Servant, CR 1",
+        "Specter, CR 1"
+      ]
+    },
+    {
+      "id": "dmg5-underdark-encounters-2-3-prodtest",
+      "name": "Underdark Encounters 2-3",
+      "description": "",
+      "definition": [
+        "Carrion Crawler, CR 2",
+        "Gargoyle, CR 2",
+        "Gelatinous Cube, CR 2",
+        "Ghast, CR 2",
+        "Giant Constrictor Snake, CR 2",
+        "Gibbering Mouther, CR 2",
+        "Grick, CR 2",
+        "Intellect Devourer, CR 2",
+        "Mimic, CR 2",
+        "Minotaur Skeleton, CR 2",
+        "Nothic, CR 2",
+        "Ochre Jelly, CR 2",
+        "Ogre, CR 2",
+        "Orc Eye of Gruumsh, CR 2",
+        "Orog, CR 2",
+        "Polar Bear, CR 2",
+        "Quaggoth, CR 2",
+        "Doppelganger, CR 3",
+        "Grell, CR 3",
+        "Hell Hound, CR 3",
+        "Hobgoblin Captain, CR 3",
+        "Hook Horror, CR 3",
+        "Minotaur, CR 3",
+        "Phase Spider, CR 3",
+        "Quaggoth Thonot, CR 3",
+        "Spectator, CR 3",
+        "Water Weird, CR 3",
+        "Wight, CR 3"
+      ]
+    },
+    {
+      "id": "dmg5-underdark-encounters-4-5-prodtest",
+      "name": "Underdark Encounters 4-5",
+      "description": "",
+      "definition": [
+        "Black Pudding, CR 4",
+        "Bone Naga, CR 4",
+        "Chuul, CR 4",
+        "Ettin, CR 4",
+        "Flameskull, CR 4",
+        "Ghost, CR 4",
+        "Beholder Zombie, CR 5",
+        "Drow Elite Warrior, CR 5",
+        "Earth Elemental, CR 5",
+        "Otyugh, CR 5",
+        "Roper, CR 5",
+        "Salamander, CR 5",
+        "Troll, CR 5",
+        "Umber Hulk, CR 5",
+        "Vampire Spawn, CR 5",
+        "Wraith, CR 5",
+        "Xorn, CR 5"
+      ]
+    },
+    {
+      "id": "dmg5-underdark-encounters-6-7-prodtest",
+      "name": "Underdark Encounters-6-7",
+      "description": "",
+      "definition": [
+        "Chimera, CR 6",
+        "Cyclops, CR 6",
+        "Drider, CR 6",
+        "Hobgoblin Warlord, CR 6",
+        "Kuo-toa Archpriest, CR 6",
+        "Drow Mage, CR 7",
+        "Grick Alpha, CR 7",
+        "Mind Flayer, CR 7",
+        "Stone Giant, CR 7"
+      ]
+    },
+    {
+      "id": "dmg5-underdark-encounters-8-11-prodtest",
+      "name": "Underdark Encounters 8-11",
+      "description": "",
+      "definition": [
+        "Cloaker, CR 8",
+        "Fomorian, CR 8",
+        "Mind Flayer Arcanist, CR 8",
+        "Spirit Naga, CR 8",
+        "Fire Giant, CR 9",
+        "Aboleth, CR 10",
+        "Behir, CR 11",
+        "Dao, CR 11"
+      ]
+    },
+    {
+      "id": "dmg5-underdark-encounters-12+-prodtest",
+      "name": "Underdark Encounters 12+",
+      "description": "",
+      "definition": [
+        "Beholder, CR 13",
+        "Young Red Shadow Dragon, CR 13",
+        "Death Tyrant, CR 14",
+        "Purple Worm, CR 15"
+      ]
+    },
+    {
+      "id": "dmg5-urban-encounters-1-prodtest",
+      "name": "Urban Encounters 0-1",
+      "description": "",
+      "definition": [
+        "Cat, CR 0",
+        "Goat, CR 0",
+        "Rat, CR 0",
+        "Raven, CR 0",
+        "Flying Snake, CR 1/8",
+        "Giant Rat, CR 1/8",
+        "Kobold, CR 1/8",
+        "Mastiff, CR 1/8",
+        "Mule, CR 1/8",
+        "Pony, CR 1/8",
+        "Stirge, CR 1/8",
+        "Draft Horse, CR 1/8",
+        "Giant Centipede, CR 1/8",
+        "Giant Poisonous Snake, CR 1/8",
+        "Kenku, CR 1/8",
+        "Pseudodragon, CR 1/8",
+        "Riding Horse, CR 1/8",
+        "Skeleton, CR 1/8",
+        "Smoke Mephit, CR 1/8",
+        "Swarm of Bats, CR 1/8",
+        "Swarm of Rats, CR 1/8",
+        "Swarm of Ravens, CR 1/8",
+        "Winged Kobold, CR 1/8",
+        "Zombie, CR 1/8",
+        "Crocodile, CR 1/8",
+        "Giant Wasp, CR 1/8",
+        "Shadow, CR 1/8",
+        "Swarm of Insects, CR 1/8",
+        "Warhorse, CR 1/8",
+        "Ghoul, CR 1",
+        "Giant Spider, CR 1",
+        "Half-ogre, CR 1",
+        "Specter, CR 1"
+      ]
+    },
+    {
+      "id": "dmg5-urban-encounters-2-3-prodtest",
+      "name": "Urban Encounters 2-3",
+      "description": "",
+      "definition": [
+        "Yuan-ti Pureblood, CR 1",
+        "Gargoyle, CR 2",
+        "Ghast, CR 2",
+        "Mimic, CR 2",
+        "Wererat, CR 2",
+        "Will-o-wisp, CR 2",
+        "Doppelganger, CR 3",
+        "Phase Spider, CR 3",
+        "Water Weird, CR 3",
+        "Wight, CR 3"
+      ]
+    },
+    {
+      "id": "dmg5-urban-encounters-4-5-prodtest",
+      "name": "Urban Encounters 4-5",
+      "description": "",
+      "definition": [
+        "Couatl, CR 4",
+        "Ghost, CR 4",
+        "Incubus, CR 4",
+        "Succubus, CR 4",
+        "Cambion, CR 5",
+        "Revenant, CR 5",
+        "Vampire Spawn, CR 5"
+      ]
+    },
+    {
+      "id": "dmg5-urban-encounters-6-7-prodtest",
+      "name": "Urban Encounters 6-7",
+      "description": "",
+      "definition": [
+        "Invisible Stalker, CR 6",
+        "Oni, CR 7",
+        "Shield Guardian, CR 7"
+      ]
+    },
+    {
+      "id": "dmg5-urban-encounters-8-11-prodtest",
+      "name": "Urban Encounters 8-11",
+      "description": "",
+      "definition": [
+        "Gray Slaad, CR 9",
+        "Young Silver Dragon, CR 9"
+      ]
+    },
+    {
+      "id": "dmg5-urban-encounters-12+-prodtest",
+      "name": "Urban Encounters 12+",
+      "description": "",
+      "definition": [
+        "Rakshasa, CR 13",
+        "Vampire, CR 13",
+        "Vampire (spellcaster), CR 15",
+        "Vampire (warrior), CR 15",
+        "Adult Silver Dragon, CR 16",
+        "Ancient Silver Dragon, CR 23",
+        "Tarrasque, CR 30"
+      ]
+    }
+  ],
+  "sets": [
+    {
+      "id": "dnd5-encounters-prodtest",
+      "name": "D&D 5 - Random Encounters (PRODUCT)",
+      "description": "",
+      "parent": true,
+      "definition": [
+        "set.dnd5-encounters-arctic-prodtest",
+        "set.dnd5-encounters-coastal-prodtest",
+        "set.dnd5-encounters-desert-prodtest",
+        "set.dnd5-encounters-forest-prodtest",
+        "set.dnd5-encounters-grassland-prodtest",
+        "set.dnd5-encounters-hill-prodtest",
+        "set.dnd5-encounters-mountain-prodtest",
+        "set.dnd5-encounters-swamp-prodtest",
+        "set.dnd5-encounters-underdark-prodtest",
+        "set.dnd5-encounters-urban-prodtest"
+      ]
+    },
+    {
+      "id": "dnd5-encounters-arctic-prodtest",
+      "name": "D&D 5 - Random Arctic Encounters (PRODUCT)",
+      "description": "",
+      "parent": false,
+      "definition": [
+        "table.dmg5-arctic-encounters-1-prodtest",
+        "table.dmg5-arctic-encounters-2-3-prodtest",
+        "table.dmg5-arctic-encounters-4-5-prodtest",
+        "table.dmg5-arctic-encounters-6-7-prodtest",
+        "table.dmg5-arctic-encounters-8-11-prodtest",
+        "table.dmg5-arctic-encounters-12+"
+      ]
+    },
+    {
+      "id": "dnd5-encounters-coastal-prodtest",
+      "name": "D&D 5 - Random Coastal Encounters (PRODUCT)",
+      "description": "",
+      "parent": false,
+      "definition": [
+        "table.dmg5-coastal-encounters-1-prodtest",
+        "table.dmg5-coastal-encounters-2-3-prodtest",
+        "table.dmg5-coastal-encounters-4-5-prodtest",
+        "table.dmg5-coastal-encounters-6-7-prodtest",
+        "table.dmg5-coastal-encounters-8-11-prodtest",
+        "table.dmg5-coastal-encounters-12+"
+      ]
+    },
+    {
+      "id": "dnd5-encounters-desert-prodtest",
+      "name": "D&D 5 - Random Desert Encounters (PRODUCT)",
+      "description": "",
+      "parent": false,
+      "definition": [
+        "table.dmg5-desert-encounters-1-prodtest",
+        "table.dmg5-desert-encounters-2-3-prodtest",
+        "table.dmg5-desert-encounters-4-5-prodtest",
+        "table.dmg5-desert-encounters-6-7-prodtest",
+        "table.dmg5-desert-encounters-8-11-prodtest",
+        "table.dmg5-desert-encounters-12+"
+      ]
+    },
+    {
+      "id": "dnd5-encounters-forest-prodtest",
+      "name": "D&D 5 - Random Forest Encounters (PRODUCT)",
+      "description": "",
+      "parent": false,
+      "definition": [
+        "table.dmg5-forest-encounters-1-prodtest",
+        "table.dmg5-forest-encounters-2-3-prodtest",
+        "table.dmg5-forest-encounters-4-5-prodtest",
+        "table.dmg5-forest-encounters-6-7-prodtest",
+        "table.dmg5-forest-encounters-8-11-prodtest",
+        "table.dmg5-forest-encounters-12+"
+      ]
+    },
+    {
+      "id": "dnd5-encounters-grassland-prodtest",
+      "name": "D&D 5 - Random Grassland Encounters (PRODUCT)",
+      "description": "",
+      "parent": false,
+      "definition": [
+        "table.dmg5-grassland-encounters-1-prodtest",
+        "table.dmg5-grassland-encounters-2-3-prodtest",
+        "table.dmg5-grassland-encounters-4-5-prodtest",
+        "table.dmg5-grassland-encounters-6-7-prodtest",
+        "table.dmg5-grassland-encounters-8-11-prodtest",
+        "table.dmg5-grassland-encounters-12+"
+      ]
+    },
+    {
+      "id": "dnd5-encounters-hill-prodtest",
+      "name": "D&D 5 - Random Hill Encounters (PRODUCT)",
+      "description": "",
+      "parent": false,
+      "definition": [
+        "table.dmg5-hill-encounters-1-prodtest",
+        "table.dmg5-hill-encounters-2-3-prodtest",
+        "table.dmg5-hill-encounters-4-5-prodtest",
+        "table.dmg5-hill-encounters-6-7-prodtest",
+        "table.dmg5-hill-encounters-8-11-prodtest",
+        "table.dmg5-hill-encounters-12+"
+      ]
+    },
+    {
+      "id": "dnd5-encounters-mountain-prodtest",
+      "name": "D&D 5 - Random Mountain Encounters (PRODUCT)",
+      "description": "",
+      "parent": false,
+      "definition": [
+        "table.dmg5-mountain-encounters-1-prodtest",
+        "table.dmg5-mountain-encounters-2-3-prodtest",
+        "table.dmg5-mountain-encounters-4-5-prodtest",
+        "table.dmg5-mountain-encounters-6-7-prodtest",
+        "table.dmg5-mountain-encounters-8-11-prodtest",
+        "table.dmg5-mountain-encounters-12+"
+      ]
+    },
+    {
+      "id": "dnd5-encounters-swamp-prodtest",
+      "name": "D&D 5 - Random Swamp Encounters (PRODUCT)",
+      "description": "",
+      "parent": false,
+      "definition": [
+        "table.dmg5-swamp-encounters-1-prodtest",
+        "table.dmg5-swamp-encounters-2-3-prodtest",
+        "table.dmg5-swamp-encounters-4-5-prodtest",
+        "table.dmg5-swamp-encounters-6-7-prodtest",
+        "table.dmg5-swamp-encounters-8-11-prodtest",
+        "table.dmg5-swamp-encounters-12+"
+      ]
+    },
+    {
+      "id": "dnd5-encounters-underdark-prodtest",
+      "name": "D&D 5 - Random Underdark Encounters (PRODUCT)",
+      "description": "",
+      "parent": false,
+      "definition": [
+        "table.dmg5-underdark-encounters-1-prodtest",
+        "table.dmg5-underdark-encounters-2-3-prodtest",
+        "table.dmg5-underdark-encounters-4-5-prodtest",
+        "table.dmg5-underdark-encounters-6-7-prodtest",
+        "table.dmg5-underdark-encounters-8-11-prodtest",
+        "table.dmg5-underdark-encounters-12+"
+      ]
+    },
+    {
+      "id": "dnd5-encounters-urban-prodtest",
+      "name": "D&D 5 - Random Urban Encounters (PRODUCT)",
+      "description": "",
+      "parent": false,
+      "definition": [
+        "table.dmg5-urban-encounters-1-prodtest",
+        "table.dmg5-urban-encounters-2-3-prodtest",
+        "table.dmg5-urban-encounters-4-5-prodtest",
+        "table.dmg5-urban-encounters-6-7-prodtest",
+        "table.dmg5-urban-encounters-8-11-prodtest",
+        "table.dmg5-urban-encounters-12+"
+      ]
+    }
+  ],
+  "macros": []
+}

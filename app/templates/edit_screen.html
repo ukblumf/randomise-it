@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Randomise iT- Editing Screen{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+		<div class="col-md-4">
+            <h2>Sets</h2>
+        </div>
+		<div class="col-md-4">
+            <h2>Macros</h2>
+        </div>
+		<div class="col-md-4">
+            <h2>Tables</h2>
+        </div>
+    </div>
+    <div class="row">
+		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+            <ul class="list-group row">
+                {% for set in sets %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('.edit_set', id=set.id) }}">{{ set.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+            <ul class="list-group row">
+                {% for macro in macro_list %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('.edit_macro', id=macro.id) }}">{{ macro.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+            <ul class="list-group row">
+                {% for table in tables %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('.edit_table', id=table.id) }}">{{ table.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+		<div class="col-md-4">
+            <h2>Products</h2>
+        </div>
+		<div class="col-md-4">
+            <h2>Market Products</h2>
+        </div>
+        <div class="col-md-4">
+            <h2>Stories</h2>
+        </div>
+    </div>
+    <div class="row">
+		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+            <ul class="list-group row">
+                {% for product in products %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('.edit_product', id=product.id) }}">{{ product.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+            <ul class="list-group row">
+                {% for market_product in market_products %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('.edit_market_product', id = market_product.id) }}">{{ market_product.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+            <ul class="list-group row">
+                {% for story in stories %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('.edit_story', id = story.id) }}">{{ story.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

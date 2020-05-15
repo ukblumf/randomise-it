@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Randomise iT - {{ title }}{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>{{ title }}</h1>
+</div>
+
+ <div class="random-value">
+	<strong>{{ text | safe }}
+ </div>
+{% endblock %}

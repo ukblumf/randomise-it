@@ -1,0 +1,23 @@
+<ul class="posts">
+    {% for story in stories %}
+    <li class="post">
+        <div class="post-content">
+            <div class="post-date">{{ moment(story.timestamp).fromNow() }}</div>
+            <div class="post-body">
+                {{ story.body | truncate(150) }}
+            </div>
+            <div class="post-footer">
+                {% if current_user == story.author %}
+                <a href="{{ url_for('.edit_story', id=story.id) }}">
+                    <span class="label label-primary">Edit</span>
+                </a>
+                {% elif current_user.is_administrator() %}
+                <a href="{{ url_for('.edit_story', id=story.id) }}">
+                    <span class="label label-danger">Edit [Admin]</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </li>
+    {% endfor %}
+</ul>

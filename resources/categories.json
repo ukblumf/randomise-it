@@ -1,0 +1,238 @@
+[
+  {
+    "id": "fantasy",
+    "name": "Fantasy",
+    "subcategory": [
+      {
+        "id": "scenarios",
+        "name": "Scenarios"
+      },
+      {
+        "id": "campaigns",
+        "name": "Campaigns"
+      },
+      {
+        "id": "settings",
+        "name": "Settings"
+      },
+      {
+        "id": "locations",
+        "name": "Locations"
+      },
+      {
+        "id": "bestiary",
+        "name": "Bestiary"
+      },
+      {
+        "id": "npcs",
+        "name": "NPCs"
+      },
+      {
+        "id": "equipment",
+        "name": "Equipment"
+      },
+      {
+        "id": "magic",
+        "name": "Magic"
+      },
+      {
+        "id": "treasure",
+        "name": "Treasure"
+      },
+      {
+        "id": "traps-tricks",
+        "name": "Traps & Tricks"
+      }
+    ]
+  },
+  {
+    "id": "horror",
+    "name": "Horror",
+    "subcategory": [
+      {
+        "id": "scenarios",
+        "name": "Scenarios"
+      },
+      {
+        "id": "campaigns",
+        "name": "Campaigns"
+      },
+      {
+        "id": "settings",
+        "name": "Settings"
+      },
+      {
+        "id": "locations",
+        "name": "Locations"
+      },
+      {
+        "id": "monsters",
+        "name": "Monsters"
+      },
+      {
+        "id": "npcs",
+        "name": "NPCs"
+      },
+      {
+        "id": "equipment",
+        "name": "Equipment"
+      },
+      {
+        "id": "magic",
+        "name": "Magic"
+      }
+    ]
+  },
+  {
+    "id": "sci-fi",
+    "name": "Sci-Fi",
+    "subcategory": [
+      {
+        "id": "scenarios",
+        "name": "Scenarios"
+      },
+      {
+        "id": "campaigns",
+        "name": "Campaigns"
+      },
+      {
+        "id": "settings",
+        "name": "Settings"
+      },
+      {
+        "id": "locations",
+        "name": "Locations"
+      },
+      {
+        "id": "monsters",
+        "name": "Bestiary"
+      },
+      {
+        "id": "npcs",
+        "name": "NPCs"
+      },
+      {
+        "id": "equipment",
+        "name": "Equipment"
+      },
+      {
+        "id": "technology",
+        "name": "Technology"
+      }
+    ]
+  },
+{
+    "id": "modern",
+    "name": "Modern",
+    "subcategory": [
+      {
+        "id": "scenarios",
+        "name": "Scenarios"
+      },
+      {
+        "id": "campaigns",
+        "name": "Campaigns"
+      },
+      {
+        "id": "settings",
+        "name": "Settings"
+      },
+      {
+        "id": "locations",
+        "name": "Locations"
+      },
+      {
+        "id": "creatures",
+        "name": "Creatures"
+      },
+      {
+        "id": "npcs",
+        "name": "NPCs"
+      },
+      {
+        "id": "equipment",
+        "name": "Equipment"
+      },
+      {
+        "id": "technology",
+        "name": "Technology"
+      }
+    ]
+  },
+  {
+    "id": "historical",
+    "name": "Historical",
+    "subcategory": [
+      {
+        "id": "scenarios",
+        "name": "Scenarios"
+      },
+      {
+        "id": "campaigns",
+        "name": "Campaigns"
+      },
+      {
+        "id": "settings",
+        "name": "Settings"
+      },
+      {
+        "id": "locations",
+        "name": "Locations"
+      },
+      {
+        "id": "creatures",
+        "name": "Creatures"
+      },
+      {
+        "id": "npcs",
+        "name": "NPCs"
+      },
+      {
+        "id": "equipment",
+        "name": "Equipment"
+      }
+    ]
+  },
+  {
+    "id": "generic",
+    "name": "generic",
+    "subcategory": [
+      {
+        "id": "scenarios",
+        "name": "Scenarios"
+      },
+      {
+        "id": "campaigns",
+        "name": "Campaigns"
+      },
+      {
+        "id": "settings",
+        "name": "Settings"
+      },
+      {
+        "id": "locations",
+        "name": "Locations"
+      },
+      {
+        "id": "creatures",
+        "name": "Creatures"
+      },
+      {
+        "id": "npcs",
+        "name": "NPCs"
+      },
+      {
+        "id": "equipment",
+        "name": "Equipment"
+      },
+      {
+        "id": "technologu",
+        "name": "Technology"
+      },
+      {
+        "id": "magic",
+        "name": "Magic"
+      }
+    ]
+  }
+]

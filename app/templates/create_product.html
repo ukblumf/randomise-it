@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Randomise iT - Create Product{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-8">
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            {{ wtf.quick_form(form) }}
+            {% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$(document).ready(function(){
+
+  var name_form_field = $("#{{ form_type }}_name");
+  var id_form_field = $("#{{ form_type }}_id");
+
+  name_form_field.blur(function() {
+    if ( !( id_form_field.val() ) ) {
+        var slug_text = name_form_field.val();
+        id_form_field.val(slugify( slug_text ));
+    }
+  });
+
+  id_form_field.blur(function() {
+    if ( id_form_field.val() ) {
+        var id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
+
+        $.ajax({url: id_exists_url, success: function(result){
+            if (result == '1') {
+                $("label[for='{{ form_type }}_id']").text("Identifier -- ERROR Identifier already exists");
+            } else {
+                $("label[for='{{ form_type }}_id']").text("Identifier");
+            }
+        }});
+    }
+  });
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,9 @@
+<ul class="list-group row">
+    {% for macro in macro_list %}
+    <li class="list-group-item col-xs-6 col-md-4">
+        <a href="{{ url_for('.edit_macro', id=macro.id) }}">
+            <span class="label label-primary">{{ macro.name }}</span>
+        </a>
+    </li>
+    {% endfor %}
+</ul>

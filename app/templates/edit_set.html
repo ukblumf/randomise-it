@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Randomise iT - Edit Set{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-8">
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            {{ wtf.quick_form(form) }}
+            {% endif %}
+		</div>
+		<div class="col-md-4">
+            <h2>Random Tables</h2>
+            <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="tableList">
+                    {% for table in tables %}
+                    <li class="list-group-item">
+                        <button onclick="addId('table.{{ table.id }}')">{{ table.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+           <h2>Macros</h2>
+            <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="macroList">
+                    {% for macro in macro_list %}
+                    <li class="list-group-item">
+                        <button onclick="addId('macro.{{ macro.id }}')">{{ macro.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <h2>Sets</h2>
+            <input class="form-control" id="setFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="setList">
+                    {% for set in sets %}
+                    <li class="list-group-item">
+                        <button onclick="addId('set.{{ set.id }}')">{{ set.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+ 		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+function addId(id) {
+    document.getElementById("{{ form_type }}_definition").value += id + '\n';
+    document.getElementById("{{ form_type }}_definition").focus();
+}
+$(document).ready(function(){
+  $("#tableFilter").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#tableList li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  $("#macroFilter").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#macroList li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+
+  $("#setFilter").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#setList li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+{% endblock %}

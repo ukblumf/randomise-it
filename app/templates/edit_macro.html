@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Randomise iT - Edit Macro{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-8">
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            {{ wtf.quick_form(form) }}
+            {% endif %}
+		</div>
+		<div class="col-md-4">
+            <h2>Macros</h2>
+            <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="macroList">
+                    {% for macro in macro_list %}
+                    <li class="list-group-item">
+                        <button onclick="addId('macro.{{ macro.id }}')">{{ macro.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <h2>Random Tables</h2>
+            <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="tableList">
+                    {% for table in tables %}
+                    <li class="list-group-item">
+                        <button onclick="addId('table.{{ table.id }}')">{{ table.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function addId(id) {
+    document.getElementById("{{ form_type }}_body").value += '<<' + id + '>> ';
+    document.getElementById("{{ form_type }}_body").focus();
+}
+$(document).ready(function(){
+  $("#tableFilter").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#tableList li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+$(document).ready(function(){
+  $("#macroFilter").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#macroList li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+{% endblock %}

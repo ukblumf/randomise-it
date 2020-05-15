@@ -1,0 +1,12 @@
+{
+  "id": "test-table",
+  "name": "Test Table",
+  "description": "",
+  "definition": [
+    "1::Something keeps happening ((1-10)) times during night",
+    "2::You find ((3d6)) things",
+    "3::The next day ((1d20)) things occur.",
+    "4::((1-100)) kobolds carrying ((1d8))) copper pieces each, appear!",
+    "5::You find ((3d6x100)) gold pieces, you lucky thing."
+    ]
+}

@@ -1,0 +1,160 @@
+[
+  {
+    "id": "dnd5-encounters",
+    "name": "D&D 5 - Random Encounters",
+    "description": "",
+    "parent": true,
+    "definition": [
+      "set.dnd5-encounters-arctic",
+      "set.dnd5-encounters-coastal",
+      "set.dnd5-encounters-desert",
+      "set.dnd5-encounters-forest",
+      "set.dnd5-encounters-grassland",
+      "set.dnd5-encounters-hill",
+      "set.dnd5-encounters-mountain",
+      "set.dnd5-encounters-swamp",
+      "set.dnd5-encounters-underdark",
+      "set.dnd5-encounters-urban"
+    ]
+  },
+  {
+    "id": "dnd5-encounters-arctic",
+    "name": "D&D 5 - Random Arctic Encounters",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dmg5-arctic-encounters-1",
+      "table.dmg5-arctic-encounters-2-3",
+      "table.dmg5-arctic-encounters-4-5",
+      "table.dmg5-arctic-encounters-6-7",
+      "table.dmg5-arctic-encounters-8-11",
+      "table.dmg5-arctic-encounters-12+"
+    ]
+  },
+  {
+    "id": "dnd5-encounters-coastal",
+    "name": "D&D 5 - Random Coastal Encounters",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dmg5-coastal-encounters-1",
+      "table.dmg5-coastal-encounters-2-3",
+      "table.dmg5-coastal-encounters-4-5",
+      "table.dmg5-coastal-encounters-6-7",
+      "table.dmg5-coastal-encounters-8-11",
+      "table.dmg5-coastal-encounters-12+"
+    ]
+  },
+  {
+    "id": "dnd5-encounters-desert",
+    "name": "D&D 5 - Random Desert Encounters",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dmg5-desert-encounters-1",
+      "table.dmg5-desert-encounters-2-3",
+      "table.dmg5-desert-encounters-4-5",
+      "table.dmg5-desert-encounters-6-7",
+      "table.dmg5-desert-encounters-8-11",
+      "table.dmg5-desert-encounters-12+"
+    ]
+  },
+  {
+    "id": "dnd5-encounters-forest",
+    "name": "D&D 5 - Random Forest Encounters",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dmg5-forest-encounters-1",
+      "table.dmg5-forest-encounters-2-3",
+      "table.dmg5-forest-encounters-4-5",
+      "table.dmg5-forest-encounters-6-7",
+      "table.dmg5-forest-encounters-8-11",
+      "table.dmg5-forest-encounters-12+"
+    ]
+  },
+  {
+    "id": "dnd5-encounters-grassland",
+    "name": "D&D 5 - Random Grassland Encounters",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dmg5-grassland-encounters-1",
+      "table.dmg5-grassland-encounters-2-3",
+      "table.dmg5-grassland-encounters-4-5",
+      "table.dmg5-grassland-encounters-6-7",
+      "table.dmg5-grassland-encounters-8-11",
+      "table.dmg5-grassland-encounters-12+"
+    ]
+  },
+  {
+    "id": "dnd5-encounters-hill",
+    "name": "D&D 5 - Random Hill Encounters",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dmg5-hill-encounters-1",
+      "table.dmg5-hill-encounters-2-3",
+      "table.dmg5-hill-encounters-4-5",
+      "table.dmg5-hill-encounters-6-7",
+      "table.dmg5-hill-encounters-8-11",
+      "table.dmg5-hill-encounters-12+"
+    ]
+  },
+  {
+    "id": "dnd5-encounters-mountain",
+    "name": "D&D 5 - Random Mountain Encounters",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dmg5-mountain-encounters-1",
+      "table.dmg5-mountain-encounters-2-3",
+      "table.dmg5-mountain-encounters-4-5",
+      "table.dmg5-mountain-encounters-6-7",
+      "table.dmg5-mountain-encounters-8-11",
+      "table.dmg5-mountain-encounters-12+"
+    ]
+  },
+  {
+    "id": "dnd5-encounters-swamp",
+    "name": "D&D 5 - Random Swamp Encounters",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dmg5-swamp-encounters-1",
+      "table.dmg5-swamp-encounters-2-3",
+      "table.dmg5-swamp-encounters-4-5",
+      "table.dmg5-swamp-encounters-6-7",
+      "table.dmg5-swamp-encounters-8-11",
+      "table.dmg5-swamp-encounters-12+"
+    ]
+  },
+  {
+    "id": "dnd5-encounters-underdark",
+    "name": "D&D 5 - Random Underdark Encounters",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dmg5-underdark-encounters-1",
+      "table.dmg5-underdark-encounters-2-3",
+      "table.dmg5-underdark-encounters-4-5",
+      "table.dmg5-underdark-encounters-6-7",
+      "table.dmg5-underdark-encounters-8-11",
+      "table.dmg5-underdark-encounters-12+"
+    ]
+  },
+  {
+    "id": "dnd5-encounters-urban",
+    "name": "D&D 5 - Random Urban Encounters",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dmg5-urban-encounters-1",
+      "table.dmg5-urban-encounters-2-3",
+      "table.dmg5-urban-encounters-4-5",
+      "table.dmg5-urban-encounters-6-7",
+      "table.dmg5-urban-encounters-8-11",
+      "table.dmg5-urban-encounters-12+"
+    ]
+  }
+]

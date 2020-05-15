@@ -1,0 +1,65 @@
+[
+  {
+    "id": "dmg5-creating-adventures",
+    "name": "Creating Adventures",
+    "description": "",
+    "parent": true,
+    "definition": [
+      "set.dmg5-location-based-adventures",
+      "set.dmg5-event-based-adventures",
+      "set.dmg5-important-npcs",
+      "table.introduction",
+      "table.climax",
+      "table.framing-events",
+      "set.dmg5-complications"
+    ]
+  },
+  {
+    "id": "dmg5-location-based-adventures",
+    "name": "Location Based Adventures",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.dungeon-goals",
+      "table.wilderness-goals",
+      "table-other-goals"
+    ]
+  },
+  {
+    "id": "dmg5-event-based-adventures",
+    "name": "Event Based Adventures",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.event-based-villain-actions",
+      "table.event-based-goals"
+    ]
+  },
+  {
+    "id": "dmg5-important-npcs",
+    "name": "Important NPCS",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.villains",
+      "table.allies",
+      "table.patrons"
+    ]
+  },
+  {
+    "id": "dmg5-complications",
+    "name": "Complications",
+    "description": "",
+    "parent": false,
+    "definition": [
+      "table.complications-moral-quandaries",
+      "table.complications-twist",
+      "table.complications-side-quests"
+    ]
+  }
+]
+
+
+
+
+

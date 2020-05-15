@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Randomise iT - Create Story{% endblock %}
+
+{% block page_content %}
+<h4 id="comments">Create your Story - Powered by Randomness and Imagination</h4>
+{% if current_user.can(Permission.WRITE_ARTICLES) %}
+<div class="container-fluid">
+    <div class="row">
+        {% for name, set_id in menus.items() %}
+		<div class="col-md-4">
+            <div class="dropdown">
+                <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary">
+                    {{ name }} <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+                    {% for item_name, id in set_id.items() recursive %}
+                    {% if id is mapping %}
+                    <li class="dropdown-submenu">
+                        <a tabindex="-1">{{ item_name }}</a>
+                        <ul class="dropdown-menu">
+                        {{ loop(id.items()) }}
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li><a onclick="addTableOrMacro('{{ id }}')">{{ item_name}}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+       {% endfor %}
+    </div>
+	<div class="row">
+		<div class="col-md-8">
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            {{ wtf.quick_form(form) }}
+            {% endif %}
+		</div>
+        <div class="col-md-4">
+            <h2>Macros</h2>
+            <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="macroList">
+                    {% for macro in macro_list %}
+                    <li class="list-group-item">
+                        <button onclick="addTableOrMacro('macro.{{ macro.id }}')">{{ macro.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <h2>Random Tables</h2>
+            <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="tableList">
+                    {% for table in tables %}
+                    <li class="list-group-item">
+                        <button onclick="addTableOrMacro('table.{{ table.id }}')">{{ table.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+	</div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+    function addTableOrMacro(id) {
+        if (id.startsWith("table.")) {
+            addTable(id.substring(6));
+        } else {
+            addMacro(id.substring(6));
+        }
+    }
+    function addTable(tableId) {
+        var get_random_table_url = "{{ url_for('.get_random_value', id='') }}" + tableId;
+        $.ajax({url: get_random_table_url, success: function(result){
+            var story_text = $("#story")
+            story_text.val(story_text.val() + result);
+        }});
+    }
+    function addMacro(macroId) {
+        var get_macro_url = "{{ url_for('.get_macro', id='') }}" + macroId;
+        $.ajax({url: get_macro_url, success: function(result){
+            var story_text = $("#story")
+            story_text.val(story_text.val() + result);
+        }});
+    }
+    $(document).ready(function(){
+          $("#tableFilter").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#tableList li").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+          });
+          $("#macroFilter").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#macroList li").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+          });
+    });
+</script>
+{% endblock %}
