@@ -33,6 +33,12 @@
         </div>
        {% endfor %}
     </div>
+    <div class="row" id="pinned_items">
+        {% set pin_list = form.pins.data.strip().split(' ') %}
+        {% for item in pin_list %}
+            <button onclick="addTableOrMacro('{{ item }}')">{{ item }}</button>
+        {% endfor %}
+    </div>
 	<div class="row">
 		<div class="col-md-8">
             {% if current_user.can(Permission.WRITE_ARTICLES) %}
@@ -95,6 +101,10 @@
             pins.val(pins.val() + id + " ");
             $(element).attr("class","ui-icon ui-icon-pin-w");
         }
+        $("#pinned_items").empty();
+        $.each(pins.val().trim().split(" "), function(id, value) {
+            $("#pinned_items").append(`<button onclick="addTableOrMacro('${value}')">${value}</button>`);
+        });
     }
 
     function addTableOrMacro(id) {
@@ -107,15 +117,19 @@
     function addTable(tableId) {
         var get_random_table_url = "{{ url_for('.get_random_value', id='') }}" + tableId;
         $.ajax({url: get_random_table_url, success: function(result){
-            var story_text = $("#story")
-            story_text.val(story_text.val() + result);
+            $("#story").focus();
+            var story_text_val = $("#story").val()
+            $("#story").val('')
+            $("#story").val(story_text_val + result + " ");
         }});
     }
     function addMacro(macroId) {
         var get_macro_url = "{{ url_for('.get_macro', id='') }}" + macroId;
         $.ajax({url: get_macro_url, success: function(result){
-            var story_text = $("#story")
-            story_text.val(story_text.val() + result);
+            $("#story").focus();
+            var story_text_val = $("#story").val()
+            $("#story").val('')
+            $("#story").val(story_text_val + result + " ");
         }});
     }
     $(document).ready(function(){
