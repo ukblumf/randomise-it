@@ -73,6 +73,7 @@ class TableForm(FlaskForm):
 class StoryForm(FlaskForm):
     title = StringField('Title', validators=[Length(0, 255)])
     story = TextAreaField("Story", validators=[DataRequired()], render_kw={"rows": 24, "cols": 60})
+    pins = TextAreaField("Pins", validators=None, render_kw={"rows": 5, "cols": 60})
     submit = SubmitField('Save')
 
 

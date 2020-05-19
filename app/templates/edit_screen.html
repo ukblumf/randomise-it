@@ -18,7 +18,8 @@
     </div>
     <div class="row">
 		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
-            <ul class="list-group row">
+            <input class="form-control" id="setFilter" type="text" placeholder="Search..">
+            <ul class="list-group" id="setList">
                 {% for set in sets %}
                 <li class="list-group-item">
                     <a href="{{ url_for('.edit_set', id=set.id) }}">{{ set.name }}</a>
@@ -27,7 +28,8 @@
             </ul>
         </div>
 		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
-            <ul class="list-group row">
+            <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
+            <ul class="list-group" id=""macroList">
                 {% for macro in macro_list %}
                 <li class="list-group-item">
                     <a href="{{ url_for('.edit_macro', id=macro.id) }}">{{ macro.name }}</a>
@@ -36,7 +38,8 @@
             </ul>
         </div>
 		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
-            <ul class="list-group row">
+            <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
+            <ul class="list-group" id="tableList">
                 {% for table in tables %}
                 <li class="list-group-item">
                     <a href="{{ url_for('.edit_table', id=table.id) }}">{{ table.name }}</a>
@@ -58,7 +61,8 @@
     </div>
     <div class="row">
 		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
-            <ul class="list-group row">
+            <input class="form-control" id="productFilter" type="text" placeholder="Search..">
+            <ul class="list-group" id="productList">
                 {% for product in products %}
                 <li class="list-group-item">
                     <a href="{{ url_for('.edit_product', id=product.id) }}">{{ product.name }}</a>
@@ -67,7 +71,8 @@
             </ul>
         </div>
 		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
-            <ul class="list-group row">
+            <input class="form-control" id="marketFilter" type="text" placeholder="Search..">
+            <ul class="list-group" id="marketList">
                 {% for market_product in market_products %}
                 <li class="list-group-item">
                     <a href="{{ url_for('.edit_market_product', id = market_product.id) }}">{{ market_product.name }}</a>
@@ -76,7 +81,8 @@
             </ul>
         </div>
         <div class="col-md-4" style="height: 250px; overflow-y: scroll;">
-            <ul class="list-group row">
+            <input class="form-control" id="storyFilter" type="text" placeholder="Search..">
+            <ul class="list-group" id="storyList">
                 {% for story in stories %}
                 <li class="list-group-item">
                     <a href="{{ url_for('.edit_story', id = story.id) }}">{{ story.title }}</a>
@@ -86,4 +92,47 @@
         </div>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script>
+    $(document).ready(function(){
+          $("#tableFilter").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#tableList li").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+          });
+          $("#macroFilter").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#macroList li").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+          });
+          $("#setFilter").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#setList li").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+          });
+          $("#productFilter").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#productList li").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+          });
+          $("#marketFilter").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#marketList li").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+          });
+          $("#storyFilter").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#storyList li").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+          });
+    });
+</script>
 {% endblock %}

@@ -372,6 +372,7 @@ def create_story():
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         story = Post(body=form.story.data,
                      title=form.title.data,
+                     pins=form.pins.data,
                      author=current_user._get_current_object())
         db.session.add(story)
         flash('Story Created')
@@ -401,6 +402,7 @@ def edit_story(id):
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         story.title = form.title.data
         story.body = form.story.data
+        story.pins = form.pins.data
         db.session.add(story)
         flash('Story Updated')
 
@@ -417,6 +419,7 @@ def edit_story(id):
 
     form.title.data = story.title
     form.story.data = story.body
+    form.pins.data = story.pins
 
     return render_template('create_story.html', form=form, tables=tables, macro_list=macros, menus=menus)
 

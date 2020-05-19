@@ -303,6 +303,7 @@ class Post(db.Model):
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    pins = db.Column(db.Text)
     # comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
     @staticmethod
@@ -320,6 +321,7 @@ class Post(db.Model):
             'title': self.title,
             'body': self.body,
             'body_html': self.body_html,
+            'pins': self.pins,
             'timestamp': self.timestamp,
             'author': url_for('api.get_user', id=self.author_id,
                               _external=True)
@@ -702,3 +704,28 @@ class ProductCategory(db.Model):
         category_id = json_post.get('category_id')
         return Product_Category(product_id=product_id, category_id=category_id)
 
+
+class StoryPins(db.Model):
+    __tablename__ = 'story_pins'
+    story_id = db.Column(db.Integer, db.ForeignKey('posts.id'), primary_key=True)
+    object_id = db.Column(db.Text, primary_key=True)
+
+    def to_json(self):
+
+        json_post = {
+            'story_id': self.story_id,
+            'object_id': self.object_id
+        }
+        return json_post
+
+    @staticmethod
+    def from_json(json_post):
+        # check required fields
+        for field in ('story_id', 'object_id'):
+            value = json_post.get(field)
+            if value is None or value == '':
+                raise ValidationError('Missing Field: '+field)
+
+        story_id = json_post.get('story_id')
+        object_id = json_post.get('object_id')
+        return StoryPins(story_id=story_id, object_id=object_id)

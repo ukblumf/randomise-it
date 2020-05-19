@@ -46,7 +46,13 @@
                 <ul class="list-group" id="macroList">
                     {% for macro in macro_list %}
                     <li class="list-group-item">
-                        <button onclick="addTableOrMacro('macro.{{ macro.id }}')">{{ macro.name }}</button>
+                        {% set icon_pin = 's' %}
+                        {% if form.pins.data %}
+                            {% if macro.id in form.pins.data %}
+                                {% set icon_pin = 'w' %}
+                            {% endif %}
+                        {% endif %}
+                        <span class="ui-icon ui-icon-pin-{{ icon_pin }}" onclick="pinItem('macro.{{ macro.id }}', this)" ></span> <button onclick="addTableOrMacro('macro.{{ macro.id }}')">{{ macro.name }}</button>
                     </li>
                     {% endfor %}
                 </ul>
@@ -57,7 +63,13 @@
                 <ul class="list-group" id="tableList">
                     {% for table in tables %}
                     <li class="list-group-item">
-                        <button onclick="addTableOrMacro('table.{{ table.id }}')">{{ table.name }}</button>
+                        {% set icon_pin = 's' %}
+                        {% if form.pins.data %}
+                            {% if table.id in form.pins.data %}
+                                {% set icon_pin = 'w' %}
+                            {% endif %}
+                        {% endif %}
+                        <span class="ui-icon ui-icon-pin-{{ icon_pin }}" onclick="pinItem('table.{{ table.id }}', this)"></span> <button onclick="addTableOrMacro('table.{{ table.id }}')">{{ table.name }}</button>
                     </li>
                     {% endfor %}
                 </ul>
@@ -71,6 +83,20 @@
 {% block scripts %}
 {{ super() }}
 <script>
+    function pinItem(id, element) {
+        //check if id already exists in pinned box
+        var pins = $("#pins");
+        if (pins.val().indexOf(id) >=0) {
+            //if exists remove
+            pins.val(pins.val().replace(id + " ",''));
+            $(element).attr("class","ui-icon ui-icon-pin-s");
+        } else {
+            //append to pinned items
+            pins.val(pins.val() + id + " ");
+            $(element).attr("class","ui-icon ui-icon-pin-w");
+        }
+    }
+
     function addTableOrMacro(id) {
         if (id.startsWith("table.")) {
             addTable(id.substring(6));
