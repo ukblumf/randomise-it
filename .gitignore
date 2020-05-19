@@ -1,4 +1,6 @@
 /venv/
 /.idea/
 /__pycache__/
-/data*
+data-dev.sqlite
+data-test.sqlite
+data.sqlite
