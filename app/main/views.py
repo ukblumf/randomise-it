@@ -380,15 +380,15 @@ def create_story():
 
     tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
     macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
-    parents_sets = Set.query.filter(Set.author_id == current_user.id, Set.parent == True).order_by(Set.timestamp.desc())
+    parent_sets = Set.query.filter(Set.author_id == current_user.id, Set.parent == True).order_by(Set.timestamp.desc())
+    sets = Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
     menus = collections.OrderedDict()
-
-    for parent_set in parents_sets:
+    for parent_set in parent_sets:
         menus[parent_set.name] = build_menu(parent_set, 0)
 
     # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
 
-    return render_template('create_story.html', form=form, tables=tables, macro_list=macros, menus=menus)
+    return render_template('create_story.html', form=form, tables=tables, macro_list=macros, menus=menus, sets=sets)
 
 
 @main.route('/edit-story/<int:id>', methods=['GET', 'POST'])
@@ -409,6 +409,7 @@ def edit_story(id):
     tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
     macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
     parents_sets = Set.query.filter(Set.author_id == current_user.id, Set.parent == True).order_by(Set.timestamp.desc())
+    sets = Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
     menus = collections.OrderedDict()
 
     for parent_set in parents_sets:
@@ -421,7 +422,7 @@ def edit_story(id):
     form.story.data = story.body
     form.pins.data = story.pins
 
-    return render_template('create_story.html', form=form, tables=tables, macro_list=macros, menus=menus)
+    return render_template('create_story.html', form=form, tables=tables, macro_list=macros, menus=menus, sets=sets)
 
 
 def build_menu(set_obj, recur):
@@ -624,6 +625,11 @@ def edit_set(id):
 
     return render_template('edit_set.html', form=form, macro_list=macros, tables=tables, sets=sets, form_type='set')
 
+
+@main.route('/set/<string:id>', methods=['GET'])
+def get_set(id):
+    set_data = Set.query.get_or_404([id, current_user.id])
+    return set_data.definition
 
 @main.route('/create-product', methods=['GET', 'POST'])
 @login_required
