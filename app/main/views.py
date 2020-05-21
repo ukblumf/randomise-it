@@ -626,7 +626,7 @@ def create_product():
     form = ProductForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         product = Products(id=form.id.data,
-                           name=form.name.data,
+                           name=form.product_name.data,
                            description=form.description.data,
                            permissions=0,
                            author_id=current_user.id)
@@ -647,15 +647,15 @@ def edit_product(id):
         abort(403)
     form = ProductForm()
     if form.validate_on_submit():
-        product.name = form.name.data
-        product.description = form.description.data
+        product.name = form.product_name.data
+        product.description = form.product_description.data
 
         db.session.add(product)
         flash('Your product has been updated.')
 
     # form.id.data = set_obj.id
-    form.name.data = product.name
-    form.description.data = product.description
+    form.product_name.data = product.name
+    form.product_description.data = product.description
 
     tables = RandomTable.query.filter(RandomTable.author_id == current_user.id, RandomTable.product_id == id).order_by(
         RandomTable.timestamp.desc())
@@ -663,7 +663,7 @@ def edit_product(id):
         Macros.timestamp.desc())
     sets = Set.query.filter(Set.author_id == current_user.id, Set.product_id == id).order_by(Set.timestamp.desc())
 
-    del form.id  # remove id from edit screen
+    del form.product_id  # remove id from edit screen
 
     return render_template('edit_product.html', form=form, macro_list=macros, tables=tables, sets=sets, form_type='product')
 
