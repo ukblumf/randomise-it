@@ -89,34 +89,40 @@
         if (pins.val().indexOf(id) >=0) {
             //if exists remove
             pins.val(pins.val().replace(id + " ",''));
-            $(element).attr("class","ui-icon ui-icon-pin-s");
+            if (element) {
+                $(element).attr("class","ui-icon ui-icon-pin-s");
+            }
         } else {
             //append to pinned items
             pins.val(pins.val() + id + " ");
-            $(element).attr("class","ui-icon ui-icon-pin-w");
+            if (element) {
+                $(element).attr("class","ui-icon ui-icon-pin-w");
+            }
         }
         refreshPinnedItems();
+        return false;
     }
 
     function refreshPinnedItems() {
         var pins = $("#pins");
         var pinned_items = $("#pinned_items")
         pinned_items.empty();
-        $.each(pins.val().trim().split(" "), function(id, value) {
+        pinned_items.append('<h4>Pinned items <small>(right-click to remove pinned item)</h4>')
+        $.each(pins.val().trim().split(" "), function(i, value) {
             if (value.startsWith('set')) {
                 //create menu
                 var set_id = value.substring(4);
-
                 var dropdown = $(`<div class='dropdown col-md-2'>
-                                    <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary">
+                                    <a id='${set_id}' role="button" data-toggle="dropdown" class="btn btn-primary"
+                                    oncontextmenu='pinItem("${value}", ""); return false;'>
                                         ${set_id} <span class="caret"></span>
                                     </a>
                                   </div>`).appendTo('#pinned_items');
                 var menu = $(`<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu"/>`).appendTo(dropdown);
                 createPinnedSet(set_id, menu);
             } else if (value) {
-                pinned_items.append(`<div class="col-md-2">
-                                        <button onclick="addItem('${value}')">${value}</button>
+                pinned_items.append(`<div class='col-md-2'>
+                                        <button onclick="addItem('${value}')" id="${value}" oncontextmenu='pinItem("${value}", ""); return false;'>${value}</button>
                                      </div>`);
             }
         });
@@ -191,7 +197,6 @@
             });
           });
           refreshPinnedItems();
-
     });
 </script>
 {% endblock %}
