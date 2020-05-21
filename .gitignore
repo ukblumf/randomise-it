@@ -4,3 +4,5 @@
 data-dev.sqlite
 data-test.sqlite
 data.sqlite
+*.pyc
+*.pyo
