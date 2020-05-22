@@ -54,7 +54,6 @@
 
 {% block scripts %}
 {{ super() }}
-<script src="{{ url_for('static', filename='quill.js') }}"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
         integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
         crossorigin="anonymous">
@@ -122,41 +121,6 @@ $(document).ready(function(){
         }});
     }
     });
-
-    // Initialize the Quill editor
-    var quill = new Quill('#editor', {
-        modules: {
-            toolbar: [
-              [{ 'list': 'bullet' }],
-                [{ 'indent': '-1'}, { 'indent': '+1' }]
-            ]
-          },
-          placeholder: 'Compose an epic...',
-          theme: 'snow'  // or 'bubble'
-        });
-
-    // When the submit button is pressed, retrieve several pieces of info
-    // from the QuillJS API (https://quilljs.com/docs/api/#content), copy
-    // them into to WTForms hidden fields, and submit the form
-    var submit_entry = function () {
-
-    // Get the contents of the text editor
-    var hidden_text_field = document.getElementById('delta');
-    hidden_text_field.value = JSON.stringify(quill.getContents());
-
-    // Get the length of the contents of the text editor
-    var hidden_length_field = document.getElementById('length');
-    hidden_length_field.value = quill.getLength();
-    }
-
-    // Attach the onclick function to the submit button Flask-WTF creates
-    var new_post_form = document.getElementsByClassName('form')[0];
-    new_post_form.onsubmit = submit_entry;
-
-    //Click and Hide the bullet list button.
-    $(".ql-list").click();
-    $(".ql-list").hide();
-
 
     $( "#set_definition" )
       // don't navigate away from the field on tab when selecting an item

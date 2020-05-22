@@ -66,7 +66,7 @@ class TableForm(FlaskForm):
     # table_permissions = RadioField('Table Type',
     #                                choices=[('0', 'Private'), ('1', 'Public Open'), ('5', 'Public Closed'),
     #                                         ('2', 'Commercial Open'), ('6', 'Commercial Closed')])
-    products = SelectField('Products')
+    table_tags = SelectField('Tags')
     submit = SubmitField('Save')
 
 
@@ -81,7 +81,7 @@ class MacroForm(FlaskForm):
     macro_name = StringField('Macro Name', validators=[Length(0, 64)])
     macro_id = StringField('Identifier', validators=[Length(0, 64)])
     macro_body = TextAreaField("Create Macro", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
-    macro_products = SelectField('Products')
+    macro_tags = SelectField('Tags')
     submit = SubmitField('Save')
 
 
@@ -91,25 +91,12 @@ class SetForm(FlaskForm):
     set_description = TextAreaField('Description')
     set_definition = TextAreaField("Define Set", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
     set_is_parent = RadioField('Is Parent', choices=[('0', 'False'), ('1', 'True')])
-    set_products = SelectField('Products')
-    delta = HiddenField(
-        'delta',
-        validators=[Length(0, 255)],
-    )
-    content_length = IntegerField(
-        label='',
-        validators=[
-            NumberRange(2, 255, "Blank sets aren't very interesting.")
-        ],
-        widget=HiddenInput()
-    )
+    set_tags = SelectField('Tags')
     submit = SubmitField('Save')
 
 
-class ProductForm(FlaskForm):
-    product_name = StringField('Product Name', validators=[Length(0, 64)])
-    product_id = StringField('Identifier', validators=[Length(0, 64)])
-    product_description = TextAreaField('Description')
+class TagForm(FlaskForm):
+    tag_id = StringField('Tag ID', validators=[Length(0, 64)])
     submit = SubmitField('Save')
 
 
@@ -119,7 +106,7 @@ class MarketForm(FlaskForm):
     commercial = BooleanField('Commercial Product', render_kw={"title": "Is this Product for sale, tick box if so. Leave unticked to be publicly available"})
     open = BooleanField('Open', render_kw={"title": "If ticked the contents of the product are viewable, if unticked users can only get the results of selecting the table/macro."})
     editable = BooleanField('Editable', render_kw={"title": "Only used if Product is Open, if so check this box if you want to allow users ability to edit the tables/macros."})
-    product = SelectField('Product')
-    category1 = SelectField('Category 1')
-    category2 = SelectField('Category 2')
+    market_tags = SelectField('Tags')
+    category1 = SelectField('Market Place Category 1')
+    category2 = SelectField('Market Place Category 2')
     submit = SubmitField('Save')

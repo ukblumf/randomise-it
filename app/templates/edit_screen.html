@@ -50,7 +50,7 @@
     </div>
     <div class="row">
 		<div class="col-md-4">
-            <h2>Products</h2>
+            <h2>Tags</h2>
         </div>
 		<div class="col-md-4">
             <h2>Market Products</h2>
@@ -61,12 +61,10 @@
     </div>
     <div class="row">
 		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
-            <input class="form-control" id="productFilter" type="text" placeholder="Search..">
-            <ul class="list-group" id="productList">
-                {% for product in products %}
-                <li class="list-group-item">
-                    <a href="{{ url_for('.edit_product', id=product.id) }}">{{ product.name }}</a>
-                </li>
+            <input class="form-control" id="tagFilter" type="text" placeholder="Search..">
+            <ul class="list-group" id="ptagList">
+                {% for tag in tags %}
+                <li class="list-group-item">{{ tag.id }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -115,9 +113,9 @@
               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
           });
-          $("#productFilter").on("keyup", function() {
+          $("#tagFilter").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#productList li").filter(function() {
+            $("#tagList li").filter(function() {
               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
           });

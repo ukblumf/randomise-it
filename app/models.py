@@ -392,7 +392,7 @@ class RandomTable(db.Model):
     permissions = db.Column(db.Integer, index=True)
     line_type = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    product_id = db.Column(db.Text)
+    tags = db.Column(db.Text, index=True)
     original_author_id = db.Column(db.Integer)
 
     @staticmethod
@@ -418,7 +418,7 @@ class RandomTable(db.Model):
             'timestamp': self.timestamp,
             'author': url_for('api.get_user', id=self.author_id,
                               _external=True),
-            'product_id': self.product_id,
+            'tags': self.tags,
             'original_author_id': self.original_author_id
         }
         return json_post
@@ -456,7 +456,7 @@ class Macros(db.Model):
     definition_html = db.Column(db.Text)
     permissions = db.Column(db.Integer, index=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    product_id = db.Column(db.Text)
+    tags = db.Column(db.Text, index=True)
     original_author_id = db.Column(db.Integer)
 
     @staticmethod
@@ -481,7 +481,7 @@ class Macros(db.Model):
             'timestamp': self.timestamp,
             'author': url_for('api.get_user', id=self.author_id,
                               _external=True),
-            'product_id': self.product_id,
+            'tags': self.tags,
             'original_author_id': self.original_author_id
 
         }
@@ -520,7 +520,7 @@ class Set(db.Model):
     parent = db.Column(db.Integer)
     permissions = db.Column(db.Integer, index=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    product_id = db.Column(db.Text)
+    tags = db.Column(db.Text, index=True)
     original_author_id = db.Column(db.Integer)
 
     def to_json(self):
@@ -538,7 +538,7 @@ class Set(db.Model):
             'timestamp': self.timestamp,
             'author': url_for('api.get_user', id=self.author_id,
                               _external=True),
-            'product_id': self.product_id,
+            'tags': self.tags,
             'original_author_id': self.original_author_id
 
         }
@@ -566,33 +566,16 @@ class Set(db.Model):
         return Set(id=id, name=name, definition=definition, parent=parent, description=description)
 
 
-class Products(db.Model):
-    __tablename__ = 'products'
+class Tags(db.Model):
+    __tablename__ = 'tags'
     id = db.Column(db.Text, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    name = db.Column(db.Text)
-    description = db.Column(db.Text)
-    tables = db.Column(db.Text)
-    macros = db.Column(db.Text)
-    sets = db.Column(db.Text)
-    permissions = db.Column(db.Integer, index=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def to_json(self):
-
-        tables = self.tables.splitlines()
-        macros = self.macros.splitlines()
-        sets = self.sets.splitlines()
-
         json_post = {
             'url': url_for('api.get_macro', id=self.id, _external=True),
             'id': self.id,
-            'name': self.name,
-            'description': self.description,
-            'tablees': tables,
-            'macros': macros,
-            'sets': sets,
-            'permissions': self.permissions,
             'timestamp': self.timestamp,
             'author': url_for('api.get_user', id=self.author_id,
                               _external=True)
@@ -602,20 +585,13 @@ class Products(db.Model):
     @staticmethod
     def from_json(json_post):
         # check required fields
-        for field in ('id', 'name', 'tables', 'macros', 'sets'):
+        for field in ('id'):
             value = json_post.get(field)
             if value is None or value == '':
                 raise ValidationError('Missing Field: '+field)
 
         id = json_post.get('id')
-        name = json_post.get('name')
-        description = json_post.get('description')
-        tables = str(json_post.get('tables'))
-        macros = str(json_post.get('macros'))
-        sets = str(json_post.get('sets'))
-        # permisssions = json_post.get('permissions')
-        return Products(id=id, name=name, description=description,
-                        tables=tables, macros=macros, sets=sets)
+        return Tags(id=id)
 
 
 class MarketPlace(db.Model):
@@ -625,14 +601,14 @@ class MarketPlace(db.Model):
     name = db.Column(db.Text)
     description = db.Column(db.Text)
     description_html = db.Column(db.Text)
-    product_id = db.Column(db.Text, index=True)
+    tags = db.Column(db.Text, index=True)
     permissions = db.Column(db.Integer)
     count = db.Column(db.Integer, default=0)
     price = db.Column(db.Float, default=0)
     on_sale = db.Column(db.Boolean, default=False)
     sale_price = db.Column(db.Float, default=0)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
-    categories = db.relationship('ProductCategory', backref='market_product', lazy='dynamic')
+    categories = db.relationship('MarketCategory', backref='market_product', lazy='dynamic')
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
@@ -649,7 +625,7 @@ class MarketPlace(db.Model):
             'name': self.name,
             'description': self.description,
             'description_html': self.description_html,
-            'product_id': self.product_id,
+            'tags': self.tags,
             'permissions': self.permissions,
             'timestamp': self.timestamp,
             'author': url_for('api.get_user', id=self.author_id,
@@ -667,7 +643,7 @@ class MarketPlace(db.Model):
 
         name = json_post.get('name')
         description = json_post.get('description')
-        product_id = str(json_post.get('product_id'))
+        tags = str(json_post.get('tags'))
         permissions = 0
 
         return MarketPlace(name=name, description=description, product_id=product_id, permissions=permissions)
@@ -676,10 +652,10 @@ class MarketPlace(db.Model):
 db.event.listen(MarketPlace.description, 'set', MarketPlace.on_changed_body)
 
 
-class ProductCategory(db.Model):
-    __tablename__ = 'product_category'
+class MarketCategory(db.Model):
+    __tablename__ = 'market_category'
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
-    product_id = db.Column(db.Integer, db.ForeignKey('marketplace.id'), primary_key=True)
+    marketplace_id = db.Column(db.Integer, db.ForeignKey('marketplace.id'), primary_key=True)
     category_id = db.Column(db.Text, primary_key=True)
 
     def to_json(self):
@@ -687,7 +663,7 @@ class ProductCategory(db.Model):
         json_post = {
             'author': url_for('api.get_user', id=self.author_id,
                               _external=True),
-            'product_id': self.product_id,
+            'marketplace_id': self.marketplace_id,
             'category_id': self.category_id
         }
         return json_post
@@ -695,37 +671,11 @@ class ProductCategory(db.Model):
     @staticmethod
     def from_json(json_post):
         # check required fields
-        for field in ('product_id', 'category_id'):
+        for field in ('marketplace_id', 'category_id'):
             value = json_post.get(field)
             if value is None or value == '':
                 raise ValidationError('Missing Field: '+field)
 
-        product_id = json_post.get('product_id')
+        marketplace_id = json_post.get('marketplace_id')
         category_id = json_post.get('category_id')
-        return Product_Category(product_id=product_id, category_id=category_id)
-
-
-class StoryPins(db.Model):
-    __tablename__ = 'story_pins'
-    story_id = db.Column(db.Integer, db.ForeignKey('posts.id'), primary_key=True)
-    object_id = db.Column(db.Text, primary_key=True)
-
-    def to_json(self):
-
-        json_post = {
-            'story_id': self.story_id,
-            'object_id': self.object_id
-        }
-        return json_post
-
-    @staticmethod
-    def from_json(json_post):
-        # check required fields
-        for field in ('story_id', 'object_id'):
-            value = json_post.get(field)
-            if value is None or value == '':
-                raise ValidationError('Missing Field: '+field)
-
-        story_id = json_post.get('story_id')
-        object_id = json_post.get('object_id')
-        return StoryPins(story_id=story_id, object_id=object_id)
+        return MarketCategory(marketplace_id=marketplace_id, category_id=category_id)

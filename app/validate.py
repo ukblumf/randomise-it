@@ -59,7 +59,7 @@ def check_table_definition_validity(table):
                 else:
                     if int(match_values.group(1)) < min_rng:
                         min_rng = int(match_values.group(1))
-                    if match_values.group(2) > max_rng:
+                    if int(match_values.group(2)) > max_rng:
                         max_rng = int(match_values.group(2))
             if bool(re.search(r'^\d+$', line_def[0])):
                 match_values = re.search(r'^(\d+)$', line_def[0])
@@ -70,7 +70,7 @@ def check_table_definition_validity(table):
             row_text = line_def[1]
 
         if validate_table_definition:
-            validate_table_definition, error_message = validate_text(row_text)
+            validate_table_definition, error_message = validate_text(row_text, table.id)
             error_message += ", line number: " + str(line_number)
 
     return max_rng, min_rng, validate_table_definition, table_line_type, error_message

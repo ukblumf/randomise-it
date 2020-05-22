@@ -4,10 +4,10 @@ from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, TableForm, StoryForm, MacroForm, \
-    SetForm, ProductForm, MarketForm
+    SetForm, TagForm, MarketForm
 from .. import db
-from ..models import Permission, Role, User, Post, Comment, RandomTable, Macros, ProductPermission, Set, Products, \
-    MarketPlace, ProductCategory
+from ..models import Permission, Role, User, Post, Comment, RandomTable, Macros, ProductPermission, Set, Tags, \
+    MarketPlace, MarketCategory
 from ..decorators import admin_required, permission_required
 from ..validate import check_table_definition_validity, validate_text, validate_set
 from ..get_random_value import get_row_from_random_table_definition, process_text
@@ -285,11 +285,11 @@ def moderate_disable(id):
 @login_required
 def create_table():
     form = TableForm()
-    form.products.choices = [(p.id, p.name) for p in Products
+    form.table_tags.choices = [(p.id) for p in Tags
         .query
-        .filter(Products.author_id == current_user.id, Products.permissions == 0)
-        .order_by(Products.name)]
-    form.products.choices.insert(0, (' ', ''))
+        .filter(Tags.id == current_user.id)
+        .order_by(Tags.id)]
+    form.table_tags.choices.insert(0, (' ', ''))
 
     if current_user.can(Permission.WRITE_ARTICLES) and \
             form.validate_on_submit():
@@ -297,7 +297,7 @@ def create_table():
                             name=form.table_name.data,
                             description=form.table_description.data,
                             definition=form.table_definition.data,
-                            product_id=form.products.data,
+                            tags=form.table_tags.data,
                             author_id=current_user.id)
 
         max_rng, min_rng, validate_table_definition, table_type, error_message = check_table_definition_validity(table)
@@ -326,18 +326,18 @@ def edit_table(id):
             not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = TableForm()
-    form.products.choices = [(p.id, p.name) for p in Products
+    form.table_tags.choices = [(p.id) for p in Tags
         .query
-        .filter(Products.author_id == current_user.id, Products.permissions == 0)
-        .order_by(Products.name)]
-    form.products.choices.insert(0, (' ', ''))
+        .filter(Tags.author_id == current_user.id)
+        .order_by(Tags.id)]
+    form.table_tags.choices.insert(0, (' ', ''))
 
     if form.validate_on_submit():
         # table.id = form.table_id.data
         table.name = form.table_name.data
         table.description = form.table_description.data
         table.definition = form.table_definition.data
-        table.product_id = form.products.data
+        table.tags = form.table_tags.data
 
         max_rng, min_rng, validate_table_definition, table_type, error_message = check_table_definition_validity(table)
         if validate_table_definition:
@@ -355,7 +355,7 @@ def edit_table(id):
     form.table_description.data = table.description
     form.table_definition.data = table.definition
     # form.table_permissions.data = str(table.permissions)
-    form.products.data = table.product_id
+    form.table_tags.data = table.tags
 
     tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
     macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
@@ -458,17 +458,17 @@ def get_random_value(id):
 @login_required
 def create_macro():
     form = MacroForm()
-    form.macro_products.choices = [(p.id, p.name) for p in Products
+    form.macro_tags.choices = [(p.id) for p in Tags
         .query
-        .filter(Products.author_id == current_user.id, Products.permissions == 0)
-        .order_by(Products.name)]
-    form.macro_products.choices.insert(0, (' ', ''))
+        .filter(Tags.author_id == current_user.id)
+        .order_by(Tags.id)]
+    form.macro_tags.choices.insert(0, (' ', ''))
 
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         macro = Macros(id=form.macro_id.data,
                        name=form.macro_name.data,
                        definition=form.macro_body.data,
-                       product_id=form.macro_products.data,
+                       tags=form.macro_tags.data,
                        author_id=current_user.id)
 
         validate_macro_definition, error_message = validate_text(macro.definition, macro.id)
@@ -493,16 +493,16 @@ def edit_macro(id):
     if current_user.id != macro.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = MacroForm()
-    form.macro_products.choices = [(p.id, p.name) for p in Products
+    form.macro_tags.choices = [(p.id) for p in Tags
         .query
-        .filter(Products.author_id == current_user.id, Products.permissions == 0)
-        .order_by(Products.name)]
-    form.macro_products.choices.insert(0, ('', '---'))
+        .filter(Tags.author_id == current_user.id)
+        .order_by(Tags.id)]
+    form.macro_tags.choices.insert(0, ('', '---'))
     if form.validate_on_submit():
         macro.name = form.macro_name.data
         macro.definition = form.macro_body.data
-        if form.macro_products.data != '':
-            macro.product_id = form.macro_products.data
+        if form.macro_tags.data != '':
+            macro.tags = form.macro_tags.data
 
         validate_macro_definition, error_message = validate_text(macro.definition, macro.id)
         if validate_macro_definition:
@@ -515,8 +515,8 @@ def edit_macro(id):
     form.macro_name.data = macro.name
     form.macro_body.data = macro.definition
     # form.permissions.data = 0
-    if macro.product_id:
-        form.macro_products.data = macro.product_id
+    if macro.tags:
+        form.macro_tags.data = macro.tags
 
     tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
     macros = Macros.query.filter(Macros.author_id == current_user.id, Macros.id != id).order_by(Macros.timestamp.desc())
@@ -540,18 +540,18 @@ def get_macro(id):
 @login_required
 def create_set():
     form = SetForm()
-    form.set_products.choices = [(p.id, p.name) for p in Products
+    form.set_tags.choices = [(p.id) for p in Tags
         .query
-        .filter(Products.author_id == current_user.id, Products.permissions == 0)
-        .order_by(Products.name)]
+        .filter(Tags.author_id == current_user.id)
+        .order_by(Tags.id)]
 
-    form.set_products.choices.insert(0, (' ', ''))
+    form.set_tags.choices.insert(0, (' ', ''))
 
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         set_obj = Set(id=form.set_id.data,
                       name=form.set_name.data,
                       definition=form.set_definition.data,
-                      product_id=form.set_products.data,
+                      tags=form.set_tags.data,
                       parent=form.set_is_parent.data,
                       author_id=current_user.id)
 
@@ -578,19 +578,19 @@ def edit_set(id):
     if current_user.id != set_obj.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = SetForm()
-    form.set_products.choices = [(p.id, p.name) for p in Products
+    form.set_tags.choices = [(p.id) for p in Tags
         .query
-        .filter(Products.author_id == current_user.id, Products.permissions == 0)
-        .order_by(Products.name)]
+        .filter(Tags.author_id == current_user.id)
+        .order_by(Tags.id)]
 
-    form.set_products.choices.insert(0, (' ', ''))
+    form.set_tags.choices.insert(0, (' ', ''))
 
     if form.validate_on_submit():
         set_obj.name = form.set_name.data
         set_obj.description = form.set_description.data
         set_obj.definition = form.set_definition.data
         set_obj.parent = form.set_is_parent.data
-        set_obj.product_id = form.set_products.data
+        set_obj.tags = form.set_tags.data
 
         validate, error_message = validate_set(set_obj.definition)
         if validate:
@@ -604,7 +604,7 @@ def edit_set(id):
     form.set_definition.data = set_obj.definition
     form.set_is_parent.data = set_obj.parent
     # form.permissions.data = 0
-    form.set_products.data = set_obj.product_id
+    form.set_tags.data = set_obj.tags
 
     tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
     macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
@@ -620,62 +620,30 @@ def get_set(id):
     set_data = Set.query.get_or_404([id, current_user.id])
     return set_data.definition
 
-@main.route('/create-product', methods=['GET', 'POST'])
+
+@main.route('/create-tag', methods=['GET', 'POST'])
 @login_required
-def create_product():
-    form = ProductForm()
+def create_tag():
+    form = TagForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-        product = Products(id=form.id.data,
-                           name=form.product_name.data,
-                           description=form.description.data,
-                           permissions=0,
-                           author_id=current_user.id)
+        tag = Tags(id=form.id.data,
+                   author_id=current_user.id)
 
-        db.session.add(product)
-        flash('Product Created')
-        return redirect(url_for('.create_product'))
+        db.session.add(tag)
+        flash('Tag Created')
+        return redirect(url_for('.create_tag'))
 
-    return render_template('create_product.html', form=form, form_type='product')
-
-
-@main.route('/edit-product/<string:id>', methods=['GET', 'POST'])
-@login_required
-def edit_product(id):
-    # current_app.logger.warning(current_user._get_current_object().id)
-    product = Products.query.get_or_404([id, current_user.id])
-    if current_user.id != product.author_id and not current_user.can(Permission.ADMINISTER):
-        abort(403)
-    form = ProductForm()
-    if form.validate_on_submit():
-        product.name = form.product_name.data
-        product.description = form.product_description.data
-
-        db.session.add(product)
-        flash('Your product has been updated.')
-
-    # form.id.data = set_obj.id
-    form.product_name.data = product.name
-    form.product_description.data = product.description
-
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id, RandomTable.product_id == id).order_by(
-        RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id, Macros.product_id == id).order_by(
-        Macros.timestamp.desc())
-    sets = Set.query.filter(Set.author_id == current_user.id, Set.product_id == id).order_by(Set.timestamp.desc())
-
-    del form.product_id  # remove id from edit screen
-
-    return render_template('edit_product.html', form=form, macro_list=macros, tables=tables, sets=sets, form_type='product')
+    return render_template('create_tag.html', form=form, form_type='tag')
 
 
 @main.route('/create-market-product', methods=['GET', 'POST'])
 @login_required
 def create_market_product():
     form = MarketForm()
-    form.product.choices = [(p.id, p.name) for p in Products
+    form.market_tags.choices = [(p.id) for p in Tags
         .query
-        .filter(Products.author_id == current_user.id, Products.permissions == 0)
-        .order_by(Products.name)]
+        .filter(Tags.author_id == current_user.id)
+        .order_by(Tags.id)]
     form.category1.choices = current_app.config['CATEGORIES'][:]
     form.category1.choices.insert(0, ["0", ""])
     form.category2.choices = current_app.config['CATEGORIES'][:]
@@ -695,22 +663,22 @@ def create_market_product():
         market_product = MarketPlace(name=form.name.data,
                                      description=form.description.data,
                                      permissions=permission,
-                                     product_id=form.product.data,
+                                     tags=form.market_tags.data,
                                      author_id=current_user.id)
 
         db.session.add(market_product)
         db.session.commit()
         # add categories
         if bool(form.category1.data):
-            product_category1 = ProductCategory(author_id=current_user.id,
-                                                product_id=market_product.id,
-                                                category_id=form.category1.data)
-            db.session.add(product_category1)
+            market_category1 = MarketCategory(author_id=current_user.id,
+                                              marketplace_id=market_product.id,
+                                              category_id=form.category1.data)
+            db.session.add(market_category1)
         if bool(form.category2.data):
-            product_category2 = ProductCategory(author_id=current_user.id,
-                                                product_id=market_product.id,
-                                                category_id=form.category2.data)
-            db.session.add(product_category2)
+            market_category2 = MarketCategory(author_id=current_user.id,
+                                              marketplace_id=market_product.id,
+                                              category_id=form.category2.data)
+            db.session.add(market_category2)
         db.session.commit()
         flash('Market Product Created')
         return redirect(url_for('.create_market_product'))
@@ -726,10 +694,10 @@ def edit_market_product(id):
     if current_user.id != market_product.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = MarketForm()
-    form.product.choices = [(p.id, p.name) for p in Products
+    form.market_tags.choices = [(p.id) for p in Tags
         .query
-        .filter(Products.author_id == current_user.id, Products.permissions == 0)
-        .order_by(Products.name)]
+        .filter(Tags.author_id == current_user.id)
+        .order_by(Tags.id)]
     form.category1.choices = current_app.config['CATEGORIES'][:]
     form.category1.choices.insert(0, ["0", ""])
     form.category2.choices = current_app.config['CATEGORIES'][:]
@@ -738,7 +706,7 @@ def edit_market_product(id):
     if form.validate_on_submit():
         market_product.name = form.name.data
         market_product.description = form.description.data
-
+        market_product.tags = form.market_tags.data;
         permission = 0
         if form.commercial.data:
             permission = permission & ProductPermission.COMMERCIAL
@@ -757,11 +725,11 @@ def edit_market_product(id):
     form.name.data = market_product.name
     form.description.data = market_product.description
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id, RandomTable.product_id == id).order_by(
+    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id, RandomTable.tags == market_product.tags).order_by(
         RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id, Macros.product_id == id).order_by(
+    macros = Macros.query.filter(Macros.author_id == current_user.id, Macros.tags == market_product.tags).order_by(
         Macros.timestamp.desc())
-    sets = Set.query.filter(Set.author_id == current_user.id, Set.product_id == id).order_by(Set.timestamp.desc())
+    sets = Set.query.filter(Set.author_id == current_user.id, Set.tags == market_product.tags).order_by(Set.timestamp.desc())
 
     return render_template('edit_market_product.html', form=form, macro_list=macros, tables=tables, sets=sets)
 
@@ -772,13 +740,13 @@ def edit_screen():
     tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
     macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
     sets = Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
-    products = Products.query.filter(Products.author_id == current_user.id).order_by(Products.timestamp.desc())
+    tags = Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.timestamp.desc())
     market_products = MarketPlace.query.filter(MarketPlace.author_id == current_user.id).order_by(
         MarketPlace.timestamp.desc())
     stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
 
     return render_template('edit_screen.html', macro_list=macros, tables=tables, sets=sets,
-                           products=products, market_products=market_products, stories=stories)
+                           tags=tags, market_products=market_products, stories=stories)
 
 
 @main.route('/marketplace', methods=['GET'])
@@ -788,9 +756,9 @@ def view_marketplace():
 
     all_categories = current_app.config['CATEGORIES'][:]
 
-    product_categories = [pc[0] for pc in db.session.query(ProductCategory.category_id).distinct()]
+    market_categories = [pc[0] for pc in db.session.query(MarketCategory.category_id).distinct()]
 
-    used_categories = [cat for cat in all_categories if cat[0] in product_categories]
+    used_categories = [cat for cat in all_categories if cat[0] in market_categories]
 
     return render_template('view_marketplace.html',
                            all_categories=all_categories,
@@ -810,8 +778,8 @@ def id_exists(type, id):
         check = db.session.query(Macros.id).filter_by(id=id).scalar() is not None
     elif type == 'set':
         check = db.session.query(Set.id).filter_by(id=id).scalar() is not None
-    elif type == 'product':
-        check = db.session.query(Products.id).filter_by(id=id).scalar() is not None
+    elif type == 'tag':
+        check = db.session.query(Tags.id).filter_by(id=id).scalar() is not None
     elif type == 'marketproduct':
         check = db.session.query(MarketPlace.id).filter_by(id=id).scalar() is not None
 
