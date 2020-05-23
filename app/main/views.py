@@ -17,7 +17,6 @@ import bleach
 import collections
 import re
 
-
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                 'h1', 'h2', 'h3']
@@ -44,17 +43,6 @@ def after_request(response):
                 % (query.statement, query.parameters, query.duration,
                    query.context))
     return response
-
-
-@main.route('/shutdown')
-def server_shutdown():
-    if not current_app.testing:
-        abort(404)
-    shutdown = request.environ.get('werkzeug.server.shutdown')
-    if not shutdown:
-        abort(500)
-    shutdown()
-    return 'Shutting down...'
 
 
 @main.route('/', methods=['GET', 'POST'])
@@ -84,9 +72,9 @@ def user(username):
         error_out=False)
     stories = pagination.items
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
-    sets = Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
+    tables = table_query()
+    macros = macro_query()
+    sets = set_query()
 
     return render_template('user.html', user=user, stories=stories,
                            pagination=pagination, tables=tables, macro_list=macros, sets=sets)
@@ -136,44 +124,6 @@ def edit_profile_admin(id):
     return render_template('edit_profile.html', form=form, user=user)
 
 
-@main.route('/post/<int:id>', methods=['GET', 'POST'])
-def post(id):
-    post = Post.query.get_or_404(id)
-    form = CommentForm()
-    if form.validate_on_submit():
-        comment = Comment(body=form.body.data,
-                          post=post,
-                          author=current_user._get_current_object())
-        db.session.add(comment)
-        flash('Your comment has been published.')
-        return redirect(url_for('.post', id=post.id, page=-1))
-    page = request.args.get('page', 1, type=int)
-    if page == -1:
-        page = (post.comments.count() - 1) // \
-               current_app.config['RANDOMISE_IT_COMMENTS_PER_PAGE'] + 1
-    pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
-        page, per_page=current_app.config['RANDOMISE_IT_COMMENTS_PER_PAGE'],
-        error_out=False)
-    comments = pagination.items
-    return render_template('post.html', posts=[post], form=form,
-                           comments=comments, pagination=pagination)
-
-
-@main.route('/edit-post/<int:id>', methods=['GET', 'POST'])
-@login_required
-def edit_post(id):
-    post = Post.query.get_or_404(id)
-    if current_user != post.author and \
-            not current_user.can(Permission.ADMINISTER):
-        abort(403)
-    form = PostForm()
-    if form.validate_on_submit():
-        post.body = form.body.data
-        db.session.add(post)
-        flash('The post has been updated.')
-        return redirect(url_for('.post', id=post.id))
-    form.body.data = post.body
-    return render_template('edit_post.html', form=form)
 
 
 @main.route('/follow/<username>')
@@ -297,10 +247,7 @@ def moderate_disable(id):
 @login_required
 def create_table():
     form = TableForm()
-    form.table_tags.choices = [(p.id, p.id) for p in Tags
-        .query
-        .filter(Tags.author_id == current_user.id)
-        .order_by(Tags.id)]
+    form.table_tags.choices = tag_list()
     form.table_tags.choices.insert(0, (' ', ''))
 
     if current_user.can(Permission.WRITE_ARTICLES) and \
@@ -323,8 +270,8 @@ def create_table():
         else:
             flash(error_message)
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
+    tables = table_query()
+    macros = macro_query()
 
     return render_template('create_table.html', form=form, tables=tables, macro_list=macros, form_type='table')
 
@@ -338,10 +285,7 @@ def edit_table(id):
             not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = TableForm()
-    form.table_tags.choices = [(p.id, p.id) for p in Tags
-        .query
-        .filter(Tags.author_id == current_user.id)
-        .order_by(Tags.id)]
+    form.table_tags.choices = tag_list()
     form.table_tags.choices.insert(0, (' ', ''))
 
     if form.validate_on_submit():
@@ -369,8 +313,8 @@ def edit_table(id):
     # form.table_permissions.data = str(table.permissions)
     form.table_tags.data = table.tags
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
+    tables = table_query()
+    macros = macro_query()
 
     del form.table_id  # remove id from edit screen form
 
@@ -381,10 +325,7 @@ def edit_table(id):
 @login_required
 def bulk_table_import():
     form = BulkTableImportForm()
-    form.bulk_tag.choices = [(p.id, p.id) for p in Tags
-        .query
-        .filter(Tags.author_id == current_user.id)
-        .order_by(Tags.id)]
+    form.bulk_tag.choices = tag_list()
     form.bulk_tag.choices.insert(0, (' ', ''))
 
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
@@ -440,6 +381,7 @@ def bulk_table_import():
 
     return render_template('bulk_table_import.html', form=form)
 
+
 @main.route('/create-story', methods=['GET', 'POST'])
 @login_required
 def create_story():
@@ -453,9 +395,9 @@ def create_story():
         flash('Story Created')
         return redirect(url_for('.create_story'))
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
-    sets = Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
+    tables = table_query()
+    macros = macro_query()
+    sets = set_query()
     # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
 
     return render_template('create_story.html', form=form, tables=tables, macro_list=macros, sets=sets)
@@ -476,9 +418,9 @@ def edit_story(id):
         db.session.add(story)
         flash('Story Updated')
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
-    sets = Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
+    tables = table_query()
+    macros = macro_query()
+    sets = set_query()
     # required in order to talk to API
     # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
 
@@ -533,10 +475,7 @@ def get_random_value(id):
 @login_required
 def create_macro():
     form = MacroForm()
-    form.macro_tags.choices = [(p.id, p.id) for p in Tags
-        .query
-        .filter(Tags.author_id == current_user.id)
-        .order_by(Tags.id)]
+    form.macro_tags.choices = tag_list()
     form.macro_tags.choices.insert(0, (' ', ''))
 
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
@@ -554,8 +493,8 @@ def create_macro():
         else:
             flash(error_message)
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
+    tables = table_query()
+    macros = macro_query()
 
     return render_template('create_macro.html', form=form, macro_list=macros, tables=tables, form_type='macro')
 
@@ -568,10 +507,7 @@ def edit_macro(id):
     if current_user.id != macro.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = MacroForm()
-    form.macro_tags.choices = [(p.id, p.id) for p in Tags
-        .query
-        .filter(Tags.author_id == current_user.id)
-        .order_by(Tags.id)]
+    form.macro_tags.choices = tag_list()
     form.macro_tags.choices.insert(0, ('', '---'))
     if form.validate_on_submit():
         macro.name = form.macro_name.data
@@ -593,8 +529,8 @@ def edit_macro(id):
     if macro.tags:
         form.macro_tags.data = macro.tags
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id, Macros.id != id).order_by(Macros.timestamp.desc())
+    tables = table_query()
+    macros = macro_query(id)
 
     del form.macro_id  # remove id from edit screen
     return render_template('edit_macro.html', form=form, macro_list=macros, tables=tables, edit_macro=macro, form_type='macro')
@@ -615,11 +551,7 @@ def get_macro(id):
 @login_required
 def create_set():
     form = SetForm()
-    form.set_tags.choices = [(p.id, p.id) for p in Tags
-        .query
-        .filter(Tags.author_id == current_user.id)
-        .order_by(Tags.id)]
-
+    form.set_tags.choices = tag_list()
     form.set_tags.choices.insert(0, (' ', ''))
 
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
@@ -638,9 +570,9 @@ def create_set():
         else:
             flash(error_message)
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
-    sets = Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
+    tables = table_query()
+    macros = macro_query()
+    sets = set_query()
 
     return render_template('create_set.html', form=form, macro_list=macros, tables=tables, sets=sets, form_type='set')
 
@@ -653,11 +585,7 @@ def edit_set(id):
     if current_user.id != set_obj.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = SetForm()
-    form.set_tags.choices = [(p.id, p.id) for p in Tags
-        .query
-        .filter(Tags.author_id == current_user.id)
-        .order_by(Tags.id)]
-
+    form.set_tags.choices = tag_list()
     form.set_tags.choices.insert(0, (' ', ''))
 
     if form.validate_on_submit():
@@ -681,9 +609,9 @@ def edit_set(id):
     # form.permissions.data = 0
     form.set_tags.data = set_obj.tags
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
-    sets = Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
+    tables = table_query()
+    macros = macro_query()
+    sets = set_query()
 
     del form.set_id  # remove id from edit screen
 
@@ -715,10 +643,7 @@ def create_tag():
 @login_required
 def create_market_product():
     form = MarketForm()
-    form.market_tags.choices = [(p.id, p.id) for p in Tags
-        .query
-        .filter(Tags.author_id == current_user.id)
-        .order_by(Tags.id)]
+    form.market_tags.choices = tag_list()
     form.category1.choices = current_app.config['CATEGORIES'][:]
     form.category1.choices.insert(0, ["0", ""])
     form.category2.choices = current_app.config['CATEGORIES'][:]
@@ -769,10 +694,7 @@ def edit_market_product(id):
     if current_user.id != market_product.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = MarketForm()
-    form.market_tags.choices = [(p.id, p.id) for p in Tags
-        .query
-        .filter(Tags.author_id == current_user.id)
-        .order_by(Tags.id)]
+    form.market_tags.choices = tag_list()
     form.category1.choices = current_app.config['CATEGORIES'][:]
     form.category1.choices.insert(0, ["0", ""])
     form.category2.choices = current_app.config['CATEGORIES'][:]
@@ -812,9 +734,9 @@ def edit_market_product(id):
 @main.route('/edit', methods=['GET'])
 @login_required
 def edit_screen():
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
-    sets = Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
+    tables = table_query()
+    macros = macro_query()
+    sets = set_query()
     tags = Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.timestamp.desc())
     market_products = MarketPlace.query.filter(MarketPlace.author_id == current_user.id).order_by(
         MarketPlace.timestamp.desc())
@@ -859,3 +781,25 @@ def id_exists(type, id):
         check = db.session.query(MarketPlace.id).filter_by(id=id).scalar() is not None
 
     return str(int(check == True))
+
+
+def tag_list():
+    return [(p.id, p.id) for p in Tags
+        .query
+        .filter(Tags.author_id == current_user.id)
+        .order_by(Tags.id)]
+
+
+def macro_query(macro_id=None):
+    if macro_id:
+        return Macros.query.filter(Macros.author_id == current_user.id, Macros.id != macro_id).order_by(Macros.timestamp.desc())
+    return Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
+
+
+def table_query():
+    return RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
+
+
+def set_query():
+    return Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
+
