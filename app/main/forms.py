@@ -110,3 +110,9 @@ class MarketForm(FlaskForm):
     category1 = SelectField('Market Place Category 1')
     category2 = SelectField('Market Place Category 2')
     submit = SubmitField('Save')
+
+
+class BulkTableImportForm(FlaskForm):
+    tables = TextAreaField('Bulk Table Definitions', validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
+    bulk_tag = SelectField('Tag')
+    submit = SubmitField('Save')

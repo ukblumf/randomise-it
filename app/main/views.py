@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, TableForm, StoryForm, MacroForm, \
-    SetForm, TagForm, MarketForm
+    SetForm, TagForm, MarketForm, BulkTableImportForm
 from .. import db
 from ..models import Permission, Role, User, Post, Comment, RandomTable, Macros, ProductPermission, Set, Tags, \
     MarketPlace, MarketCategory
@@ -21,6 +21,18 @@ import re
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                 'h1', 'h2', 'h3']
+
+non_url_safe = ['"', '#', '$', '%', '&', '+',
+                ',', '/', ':', ';', '=', '?',
+                '@', '[', '\\', ']', '^', '`',
+                '{', '|', '}', '~', "'"]
+translate_table = {ord(char): u'' for char in non_url_safe}
+
+
+def slugify(text):
+    text = text.translate(translate_table)
+    text = u'_'.join(text.split())
+    return text
 
 
 @main.after_app_request
@@ -364,6 +376,69 @@ def edit_table(id):
 
     return render_template('edit_table.html', tables=tables, macro_list=macros, form=form, form_type='table')
 
+
+@main.route('/bulk-table-import', methods=['GET', 'POST'])
+@login_required
+def bulk_table_import():
+    form = BulkTableImportForm()
+    form.bulk_tag.choices = [(p.id, p.id) for p in Tags
+        .query
+        .filter(Tags.author_id == current_user.id)
+        .order_by(Tags.id)]
+    form.bulk_tag.choices.insert(0, (' ', ''))
+
+    if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+        new_table = ''
+        new_table_id = ''
+        new_table_definition = ''
+        table_lines = form.tables.data.splitlines()
+        table_count = 0
+        error_on_import = False
+        for line in table_lines:
+            if not new_table:
+                new_table = line
+                new_table_id = slugify(line)
+                if not RandomTable.query.get([new_table_id, current_user.id]):
+                    continue
+                else:
+                    flash("Table '" + new_table + "' already exists. Bulk import cancelled.")
+                    db.session.rollback()
+                    error_on_import= True
+                    break
+            if not line:
+                # Blank line denotes separator
+                # write table
+                table = RandomTable(id=new_table_id,
+                                    name=new_table,
+                                    description='',
+                                    definition=new_table_definition,
+                                    tags=form.bulk_tag.data,
+                                    author_id=current_user.id)
+
+                max_rng, min_rng, validate_table_definition, table_type, error_message = check_table_definition_validity(
+                    table)
+                if validate_table_definition:
+                    table.min = min_rng
+                    table.max = max_rng
+                    table.line_type = table_type
+                    db.session.add(table)
+                    table_count += 1
+                    new_table = ''
+                    new_table_id = ''
+                    new_table_definition = ''
+                    continue
+                else:
+                    flash(error_message)
+                    db.session.rollback()
+                    error_on_import = True
+                    break
+            new_table_definition += line + '\n'
+        if not error_on_import:
+            db.session.commit()
+            flash(str(table_count) + ' Tables Created')
+        return redirect(url_for('.bulk_table_import'))
+
+    return render_template('bulk_table_import.html', form=form)
 
 @main.route('/create-story', methods=['GET', 'POST'])
 @login_required
