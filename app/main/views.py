@@ -285,9 +285,9 @@ def moderate_disable(id):
 @login_required
 def create_table():
     form = TableForm()
-    form.table_tags.choices = [(p.id) for p in Tags
+    form.table_tags.choices = [(p.id, p.id) for p in Tags
         .query
-        .filter(Tags.id == current_user.id)
+        .filter(Tags.author_id == current_user.id)
         .order_by(Tags.id)]
     form.table_tags.choices.insert(0, (' ', ''))
 
@@ -326,7 +326,7 @@ def edit_table(id):
             not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = TableForm()
-    form.table_tags.choices = [(p.id) for p in Tags
+    form.table_tags.choices = [(p.id, p.id) for p in Tags
         .query
         .filter(Tags.author_id == current_user.id)
         .order_by(Tags.id)]
@@ -458,7 +458,7 @@ def get_random_value(id):
 @login_required
 def create_macro():
     form = MacroForm()
-    form.macro_tags.choices = [(p.id) for p in Tags
+    form.macro_tags.choices = [(p.id, p.id) for p in Tags
         .query
         .filter(Tags.author_id == current_user.id)
         .order_by(Tags.id)]
@@ -493,7 +493,7 @@ def edit_macro(id):
     if current_user.id != macro.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = MacroForm()
-    form.macro_tags.choices = [(p.id) for p in Tags
+    form.macro_tags.choices = [(p.id, p.id) for p in Tags
         .query
         .filter(Tags.author_id == current_user.id)
         .order_by(Tags.id)]
@@ -540,7 +540,7 @@ def get_macro(id):
 @login_required
 def create_set():
     form = SetForm()
-    form.set_tags.choices = [(p.id) for p in Tags
+    form.set_tags.choices = [(p.id, p.id) for p in Tags
         .query
         .filter(Tags.author_id == current_user.id)
         .order_by(Tags.id)]
@@ -578,7 +578,7 @@ def edit_set(id):
     if current_user.id != set_obj.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = SetForm()
-    form.set_tags.choices = [(p.id) for p in Tags
+    form.set_tags.choices = [(p.id, p.id) for p in Tags
         .query
         .filter(Tags.author_id == current_user.id)
         .order_by(Tags.id)]
@@ -626,7 +626,7 @@ def get_set(id):
 def create_tag():
     form = TagForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-        tag = Tags(id=form.id.data,
+        tag = Tags(id=form.tag_id.data,
                    author_id=current_user.id)
 
         db.session.add(tag)
@@ -640,7 +640,7 @@ def create_tag():
 @login_required
 def create_market_product():
     form = MarketForm()
-    form.market_tags.choices = [(p.id) for p in Tags
+    form.market_tags.choices = [(p.id, p.id) for p in Tags
         .query
         .filter(Tags.author_id == current_user.id)
         .order_by(Tags.id)]
@@ -694,7 +694,7 @@ def edit_market_product(id):
     if current_user.id != market_product.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
     form = MarketForm()
-    form.market_tags.choices = [(p.id) for p in Tags
+    form.market_tags.choices = [(p.id, p.id) for p in Tags
         .query
         .filter(Tags.author_id == current_user.id)
         .order_by(Tags.id)]

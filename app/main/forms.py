@@ -59,8 +59,8 @@ class CommentForm(FlaskForm):
 
 
 class TableForm(FlaskForm):
-    table_name = StringField('Table name', validators=[Length(0, 64)])
-    table_id = StringField('Identifier', validators=[Length(0, 64)])
+    table_name = StringField('Table name', validators=[Length(0, 255)])
+    table_id = StringField('Identifier', validators=[Length(0, 255)])
     table_description = TextAreaField('Description')
     table_definition = TextAreaField('Random Table Definition', render_kw={"rows": 10, "cols": 70})
     # table_permissions = RadioField('Table Type',
@@ -78,16 +78,16 @@ class StoryForm(FlaskForm):
 
 
 class MacroForm(FlaskForm):
-    macro_name = StringField('Macro Name', validators=[Length(0, 64)])
-    macro_id = StringField('Identifier', validators=[Length(0, 64)])
+    macro_name = StringField('Macro Name', validators=[Length(0, 255)])
+    macro_id = StringField('Identifier', validators=[Length(0, 255)])
     macro_body = TextAreaField("Create Macro", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
     macro_tags = SelectField('Tags')
     submit = SubmitField('Save')
 
 
 class SetForm(FlaskForm):
-    set_name = StringField('Set Name', validators=[Length(0, 64)])
-    set_id = StringField('Identifier', validators=[Length(0, 64)])
+    set_name = StringField('Set Name', validators=[Length(0, 255)])
+    set_id = StringField('Identifier', validators=[Length(0, 255)])
     set_description = TextAreaField('Description')
     set_definition = TextAreaField("Define Set", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
     set_is_parent = RadioField('Is Parent', choices=[('0', 'False'), ('1', 'True')])
@@ -101,7 +101,7 @@ class TagForm(FlaskForm):
 
 
 class MarketForm(FlaskForm):
-    name = StringField('Marketplace Name', validators=[Length(0, 64)])
+    name = StringField('Marketplace Name', validators=[Length(0, 255)])
     description = TextAreaField('Description')
     commercial = BooleanField('Commercial Product', render_kw={"title": "Is this Product for sale, tick box if so. Leave unticked to be publicly available"})
     open = BooleanField('Open', render_kw={"title": "If ticked the contents of the product are viewable, if unticked users can only get the results of selecting the table/macro."})
