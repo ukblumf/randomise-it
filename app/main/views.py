@@ -737,7 +737,7 @@ def edit_screen():
     tables = table_query()
     macros = macro_query()
     sets = set_query()
-    tags = Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.timestamp.desc())
+    tags = Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.id.asc())
     market_products = MarketPlace.query.filter(MarketPlace.author_id == current_user.id).order_by(
         MarketPlace.timestamp.desc())
     stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
