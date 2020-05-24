@@ -17,35 +17,56 @@
         </div>
     </div>
     <div class="row">
-		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+		<div class="col-md-4">
             <input class="form-control" id="setFilter" type="text" placeholder="Search..">
-            <ul class="list-group" id="setList">
+            <table class="table table-striped table-bordered fixed_header">
+                <thead>
+                    <tr>
+                      <th>Name (click to edit)</th>
+                    </tr>
+                </thead>
+                <tbody id="setList" style="height: 200px">
                 {% for set in sets %}
-                <li class="list-group-item">
-                    <a href="{{ url_for('.edit_set', id=set.id) }}">{{ set.name }}</a>
-                </li>
+                    <tr>
+                        <td><a href="{{ url_for('.edit_set', id=set.id) }}">{{ set.name }}</a></td>
+                    </tr>
                 {% endfor %}
-            </ul>
+                </tbody>
+            </table>
         </div>
-		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+		<div class="col-md-4">
             <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
-            <ul class="list-group" id=""macroList">
+            <table class="table table-striped table-bordered fixed_header">
+                <thead>
+                    <tr>
+                      <th>Name (click to edit)</th>
+                    </tr>
+                </thead>
+                <tbody id="macroList" style="height: 200px">
                 {% for macro in macro_list %}
-                <li class="list-group-item">
-                    <a href="{{ url_for('.edit_macro', id=macro.id) }}">{{ macro.name }}</a>
-                </li>
+                    <tr>
+                        <td><a href="{{ url_for('.edit_macro', id=macro.id) }}">{{ macro.name }}</a></td>
+                    </tr>
                 {% endfor %}
-            </ul>
+                </tbody>
+            </table>
         </div>
-		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+		<div class="col-md-4">
             <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
-            <ul class="list-group" id="tableList">
+            <table class="table table-striped table-bordered fixed_header">
+                <thead>
+                    <tr>
+                      <th>Name (click to edit)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableList" style="height: 200px">
                 {% for table in tables %}
-                <li class="list-group-item">
-                    <a href="{{ url_for('.edit_table', id=table.id) }}">{{ table.name }}</a>
-                </li>
+                    <tr>
+                        <td><a href="{{ url_for('.edit_table', id=table.id) }}">{{ table.name }}</a></td>
+                    </tr>
                 {% endfor %}
-            </ul>
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="row">
@@ -60,33 +81,56 @@
         </div>
     </div>
     <div class="row">
-		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+		<div class="col-md-4">
             <input class="form-control" id="tagFilter" type="text" placeholder="Search..">
-            <ul class="list-group" id="ptagList">
+            <table class="table table-striped table-bordered fixed_header">
+                <thead>
+                    <tr>
+                      <th>Name (click to edit)</th>
+                    </tr>
+                </thead>
+                <tbody id="tagList" style="height: 200px">
                 {% for tag in tags %}
-                <li class="list-group-item">{{ tag.id }}</li>
+                    <tr>
+                        <td><a href="{{ url_for('.create_tag', id=tag.id) }}">{{ tag.id }}</a></td>
+                    </tr>
                 {% endfor %}
-            </ul>
+                </tbody>
+            </table>
         </div>
-		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+		<div class="col-md-4">
             <input class="form-control" id="marketFilter" type="text" placeholder="Search..">
-            <ul class="list-group" id="marketList">
+            <table class="table table-striped table-bordered fixed_header">
+                <thead>
+                    <tr>
+                      <th>Name (click to edit)</th>
+                    </tr>
+                </thead>
+                <tbody id="marketList" style="height: 200px">
                 {% for market_product in market_products %}
-                <li class="list-group-item">
-                    <a href="{{ url_for('.edit_market_product', id = market_product.id) }}">{{ market_product.name }}</a>
-                </li>
+                    <tr>
+                        <td><a href="{{ url_for('.edit_market_product', id=market_product.id) }}">{{ market_product.name }}</a></td>
+                    </tr>
                 {% endfor %}
-            </ul>
+                </tbody>
+            </table>
         </div>
-        <div class="col-md-4" style="height: 250px; overflow-y: scroll;">
+        <div class="col-md-4">
             <input class="form-control" id="storyFilter" type="text" placeholder="Search..">
-            <ul class="list-group" id="storyList">
+            <table class="table table-striped table-bordered fixed_header">
+                <thead>
+                    <tr>
+                      <th>Name (click to edit)</th>
+                    </tr>
+                </thead>
+                <tbody id="storyList" style="height: 200px">
                 {% for story in stories %}
-                <li class="list-group-item">
-                    <a href="{{ url_for('.edit_story', id = story.id) }}">{{ story.title }}</a>
-                </li>
+                    <tr>
+                        <td><a href="{{ url_for('.edit_story', id=story.id) }}">{{ story.title }}</a></td>
+                    </tr>
                 {% endfor %}
-            </ul>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
@@ -97,37 +141,37 @@
     $(document).ready(function(){
           $("#tableFilter").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#tableList li").filter(function() {
+            $("#tableList tr").filter(function() {
               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
           });
           $("#macroFilter").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#macroList li").filter(function() {
+            $("#macroList tr").filter(function() {
               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
           });
           $("#setFilter").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#setList li").filter(function() {
+            $("#setList tr").filter(function() {
               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
           });
           $("#tagFilter").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#tagList li").filter(function() {
+            $("#tagList tr").filter(function() {
               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
           });
           $("#marketFilter").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#marketList li").filter(function() {
+            $("#marketList tr").filter(function() {
               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
           });
           $("#storyFilter").on("keyup", function() {
             var value = $(this).val().toLowerCase();
-            $("#storyList li").filter(function() {
+            $("#storyList tr").filter(function() {
               $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
             });
           });
