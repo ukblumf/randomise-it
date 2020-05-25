@@ -272,8 +272,9 @@ def create_table():
 
     tables = table_query()
     macros = macro_query()
+    tags = tag_query()
 
-    return render_template('create_table.html', form=form, tables=tables, macro_list=macros, form_type='table')
+    return render_template('table.html', form=form, tables=tables, macro_list=macros, tags=tags)
 
 
 @main.route('/edit-table/<string:id>', methods=['GET', 'POST'])
@@ -315,10 +316,11 @@ def edit_table(id):
 
     tables = table_query()
     macros = macro_query()
+    tags = tag_query()
 
     del form.table_id  # remove id from edit screen form
 
-    return render_template('edit_table.html', tables=tables, macro_list=macros, form=form, form_type='table')
+    return render_template('table.html', tables=tables, macro_list=macros, form=form, tags=tags)
 
 
 @main.route('/bulk-table-import', methods=['GET', 'POST'])
@@ -401,7 +403,7 @@ def create_story():
     tags = tag_query()
     # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
 
-    return render_template('create_story.html', form=form, tables=tables, macro_list=macros, sets=sets, tags=tags)
+    return render_template('story.html', form=form, tables=tables, macro_list=macros, sets=sets, tags=tags)
 
 
 @main.route('/edit-story/<int:id>', methods=['GET', 'POST'])
@@ -430,7 +432,7 @@ def edit_story(id):
     form.story.data = story.body
     form.pins.data = story.pins
 
-    return render_template('create_story.html', form=form, tables=tables, macro_list=macros, sets=sets, tags=tags)
+    return render_template('story.html', form=form, tables=tables, macro_list=macros, sets=sets, tags=tags)
 
 
 def build_menu(set_obj, recur):
@@ -497,8 +499,9 @@ def create_macro():
 
     tables = table_query()
     macros = macro_query()
+    tags = tag_query()
 
-    return render_template('create_macro.html', form=form, macro_list=macros, tables=tables, form_type='macro')
+    return render_template('macro.html', form=form, macro_list=macros, tables=tables, form_type='macro', tags=tags)
 
 
 @main.route('/edit-macro/<string:id>', methods=['GET', 'POST'])
@@ -533,9 +536,10 @@ def edit_macro(id):
 
     tables = table_query()
     macros = macro_query(id)
+    tags = tag_query()
 
     del form.macro_id  # remove id from edit screen
-    return render_template('edit_macro.html', form=form, macro_list=macros, tables=tables, edit_macro=macro, form_type='macro')
+    return render_template('macro.html', form=form, macro_list=macros, tables=tables, edit_macro=macro, form_type='macro', tags=tags)
 
 
 @main.route('/macro/<string:id>', methods=['GET'])
@@ -575,8 +579,9 @@ def create_set():
     tables = table_query()
     macros = macro_query()
     sets = set_query()
+    tags = tag_query()
 
-    return render_template('create_set.html', form=form, macro_list=macros, tables=tables, sets=sets, form_type='set')
+    return render_template('set.html', form=form, macro_list=macros, tables=tables, sets=sets, tags=tags)
 
 
 @main.route('/edit-set/<string:id>', methods=['GET', 'POST'])
@@ -614,10 +619,11 @@ def edit_set(id):
     tables = table_query()
     macros = macro_query()
     sets = set_query()
+    tags = tag_query()
 
     del form.set_id  # remove id from edit screen
 
-    return render_template('edit_set.html', form=form, macro_list=macros, tables=tables, sets=sets, form_type='set')
+    return render_template('set.html', form=form, macro_list=macros, tables=tables, sets=sets, tags=tags)
 
 
 @main.route('/set/<string:id>', methods=['GET'])

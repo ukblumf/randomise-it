@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Randomise iT - Create Story{% endblock %}
+
+{% block page_content %}
+<h4 id="comments">Create your Story - Powered by Randomness and Imagination</h4>
+{% if current_user.can(Permission.WRITE_ARTICLES) %}
+<div class="container-fluid">
+    <div class="row" id="pinned_items">
+
+    </div>
+	<div class="row">
+		<div class="col-md-8">
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            {{ wtf.quick_form(form) }}
+            {% endif %}
+		</div>
+        <div class="col-md-4">
+            <label for="tagFilter">Tag:</label>
+            <select id="tagFilter">
+                <option label="" selected></option>
+                {% for tag in tags %}
+                    <option label="{{ tag.id}}">{{ tag.id }}</option>
+                {% endfor %}
+            </select>
+            <h3>Macros</h3>
+            <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="macroList">
+                    {% for macro in macro_list %}
+                    <li class="list-group-item" data-tag="{{ macro.tags }}">
+                        {% set icon_pin = 's' %}
+                        {% if form.pins.data %}
+                            {% if macro.id in form.pins.data %}
+                                {% set icon_pin = 'w' %}
+                            {% endif %}
+                        {% endif %}
+                        <span class="ui-icon ui-icon-pin-{{ icon_pin }}" onclick="pinItem('macro.{{ macro.id }}', this)" ></span> <button onclick="addItem('macro.{{ macro.id }}')">{{ macro.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <h3>Random Tables</h3>
+            <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="tableList">
+                    {% for table in tables %}
+                    <li class="list-group-item" data-tag="{{ table.tags }}">
+                        {% set icon_pin = 's' %}
+                        {% if form.pins.data %}
+                            {% if table.id in form.pins.data %}
+                                {% set icon_pin = 'w' %}
+                            {% endif %}
+                        {% endif %}
+                        <span class="ui-icon ui-icon-pin-{{ icon_pin }}" onclick="pinItem('table.{{ table.id }}', this)"></span> <button onclick="addItem('table.{{ table.id }}')">{{ table.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <h3>Sets</h3>
+            <input class="form-control" id="setFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="setList">
+                    {% for set in sets %}
+                    <li class="list-group-item" data-tag="{{ set.tags }}">
+                        {% set icon_pin = 's' %}
+                        {% if form.pins.data %}
+                            {% if set.id in form.pins.data %}
+                                {% set icon_pin = 'w' %}
+                            {% endif %}
+                        {% endif %}
+                        <span class="ui-icon ui-icon-pin-{{ icon_pin }}" onclick="pinItem('set.{{ set.id }}', this)"></span>{{ set.id }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
+        </div>
+	</div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+        crossorigin="anonymous">
+</script>
+<script>
+    function pinItem(id, element) {
+        //check if id already exists in pinned box
+        var pins = $("#pins");
+        if (pins.val().indexOf(id) >= 0) {
+            //if exists remove
+            pins.val(pins.val().replace(id + " ", ''));
+            if (element) {
+                $(element).attr("class", "ui-icon ui-icon-pin-s");
+            }
+        } else {
+            //append to pinned items
+            pins.val(pins.val() + id + " ");
+            if (element) {
+                $(element).attr("class", "ui-icon ui-icon-pin-w");
+            }
+        }
+        refreshPinnedItems();
+        return false;
+    }
+
+    function refreshPinnedItems() {
+        var pins = $("#pins");
+        var pinned_items = $("#pinned_items")
+        pinned_items.empty();
+        pinned_items.append('<h4>Pinned items <small>(right-click to remove pinned item)</h4>')
+        $.each(pins.val().trim().split(" "), function (i, value) {
+            if (value.startsWith('set')) {
+                //create menu
+                var set_id = value.substring(4);
+                var dropdown = $(`<div class='dropdown col-md-2'>
+                                    <a id='${set_id}' role="button" data-toggle="dropdown" class="btn btn-primary"
+                                    oncontextmenu='pinItem("${value}", ""); return false;'>
+                                        ${set_id} <span class="caret"></span>
+                                    </a>
+                                  </div>`).appendTo('#pinned_items');
+                var menu = $(`<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu"/>`).appendTo(dropdown);
+                createPinnedSet(set_id, menu);
+            } else if (value) {
+                pinned_items.append(`<div class='col-md-2'>
+                                        <button onclick="addItem('${value}')" id="${value}" oncontextmenu='pinItem("${value}", ""); return false;'>${value}</button>
+                                     </div>`);
+            }
+        });
+    }
+
+    function createPinnedSet(set_id, menu) {
+        var get_set_url = "{{ url_for('.get_set', id='') }}" + set_id;
+        $.when($.ajax({url: get_set_url}), menu).done(function (result, menu) {
+            $.each(result[0].split("\n"), function (i, set_item) {
+                set_item = set_item.trim();
+                if (set_item) {
+                    if (set_item.startsWith('set')) {
+                        var sub_menu = $(`<ul class="dropdown-menu"/>`)
+                        createPinnedSet(set_item.substring(4), sub_menu);
+                        var dropdown = $(`<li class="dropdown-submenu"><a tabindex="-1">${set_item}</a></li>`).append(sub_menu);
+                        menu.append(dropdown);
+                    } else {
+                        menu.append(`<li><a onclick="addItem('${set_item}')">${set_item}</a></li>`)
+                    }
+                }
+            });
+        });
+    }
+
+    function addItem(id) {
+        if (id.startsWith("table.")) {
+            addTable(id.substring(6));
+        } else {
+            addMacro(id.substring(6));
+        }
+    }
+
+    function addTable(tableId) {
+        var get_random_table_url = "{{ url_for('.get_random_value', id='') }}" + tableId;
+        $.ajax({
+            url: get_random_table_url, success: function (result) {
+                insertText(result);
+            }
+        });
+    }
+
+    function addMacro(macroId) {
+        var get_macro_url = "{{ url_for('.get_macro', id='') }}" + macroId;
+        $.ajax({
+            url: get_macro_url, success: function (result) {
+                insertText(result);
+            }
+        });
+    }
+
+    function insertText(result) {
+        $("#story").focus();
+        var story_text_val = $("#story").val();
+        var cursor_pos = $("#story").prop("selectionStart");
+        $("#story").val('');
+        $("#story").val(story_text_val.slice(0, cursor_pos) + result + " " + story_text_val.slice(cursor_pos));
+        $('#story').prop('selectionStart', cursor_pos + result.length);
+        $('#story').prop('selectionEnd', cursor_pos + result.length);
+    }
+
+    $(document).ready(function () {
+        function filterList(list, filter, tag) {
+            $("#" + list + " li").filter(function () {
+                $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
+            });
+        }
+        $("#tagFilter").change(function () {
+            let tag = $(this).children("option:selected").val();
+            filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
+            filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
+            filterList('setList', $("#setFilter").val().toLowerCase(), tag);
+        });
+        $("#tableFilter").on("keyup", function () {
+            filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+        });
+        $("#macroFilter").on("keyup", function () {
+            filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+        });
+        $("#setFilter").on("keyup", function () {
+            filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+        });
+        refreshPinnedItems();
+    });
+</script>
+{% endblock %}

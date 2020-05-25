@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+{% block title %}Randomise iT - Create Set{% endblock %}
+
+{% block page_content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+            <div id="editor">
+            </div>
+            {{ wtf.quick_form(form) }}
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+            <label for="tagFilter">Tag:</label>
+            <select id="tagFilter">
+                <option label="" selected></option>
+                {% for tag in tags %}
+                <option label="{{ tag.id}}">{{ tag.id }}</option>
+                {% endfor %}
+            </select>
+            <h4>Random Tables</h4>
+            <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="tableList">
+                    {% for table in tables %}
+                    <li class="list-group-item" data-tag="{{ table.tags }}">
+                        <button onclick="addId('table.{{ table.id }}')">{{ table.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <h4>Macros</h4>
+            <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="macroList">
+                    {% for macro in macro_list %}
+                    <li class="list-group-item" data-tag="{{ macro.tags }}">
+                        <button onclick="addId('macro.{{ macro.id }}')">{{ macro.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <h4>Sets</h4>
+            <input class="form-control" id="setFilter" type="text" placeholder="Search..">
+            <div style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="setList">
+                    {% for set in sets %}
+                    <li class="list-group-item" data-tag="{{ set.tags }}">
+                        <button onclick="addId('set.{{ set.id }}')">{{ set.name }}</button>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+        crossorigin="anonymous">
+</script>
+<script>
+    function addId(id) {
+        document.getElementById("set_definition").value += id + '\n';
+        document.getElementById("set_definition").focus();
+    }
+    $(function () {
+        $(document).ready(function () {
+            function filterList(list, filter, tag) {
+                $("#" + list + " li").filter(function () {
+                    $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
+                });
+            }
+
+            $("#tagFilter").change(function () {
+                const tag = $(this).children("option:selected").val();
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
+            });
+            $("#tableFilter").on("keyup", function () {
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+
+            $("#macroFilter").on("keyup", function () {
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+
+            $("#setFilter").on("keyup", function () {
+                filterList('setList', $("#setFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+
+            const name_form_field = $("#set_name");
+            const id_form_field = $("#set_id");
+
+            name_form_field.blur(function () {
+                if (!(id_form_field.val())) {
+                    const slug_text = name_form_field.val();
+                    id_form_field.val(slugify(slug_text));
+                }
+            });
+
+            id_form_field.blur(function () {
+                if (id_form_field.val()) {
+                    const id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
+
+                    $.ajax({
+                        url: id_exists_url, success: function (result) {
+                            if (result == '1') {
+                                $("label[for='{{ form_type }}_id']").text("Identifier -- ERROR Identifier already exists");
+                            } else {
+                                $("label[for='{{ form_type }}_id']").text("Identifier");
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+
