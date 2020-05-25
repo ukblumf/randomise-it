@@ -5,7 +5,6 @@ from .models import RandomTable, Macros
 
 
 def check_table_definition_validity(table):
-
     error_message = ''
     table_list = table.definition.splitlines()
     table_iter = iter(table_list)
@@ -73,7 +72,7 @@ def check_table_definition_validity(table):
             validate_table_definition, error_message = validate_text(row_text, table.id)
             error_message += ", line number: " + str(line_number)
 
-    return max_rng, min_rng, validate_table_definition, table_line_type, error_message
+    return max_rng, min_rng, validate_table_definition, table_line_type, error_message, number_of_rows
 
 
 def validate_text(definition, id):

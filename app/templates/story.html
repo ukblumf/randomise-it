@@ -54,7 +54,8 @@
                                 {% set icon_pin = 'w' %}
                             {% endif %}
                         {% endif %}
-                        <span class="ui-icon ui-icon-pin-{{ icon_pin }}" onclick="pinItem('table.{{ table.id }}', this)"></span> <button onclick="addItem('table.{{ table.id }}')">{{ table.name }}</button>
+                        <span class="ui-icon ui-icon-pin-{{ icon_pin }}" onclick="pinItem('table.{{ table.id }}', this)"></span>
+                        <button onclick="addItem('table.{{ table.id }}')">{{ table.name }} <small class="text-muted">({{ table.row_count}})</small></button>
                     </li>
                     {% endfor %}
                 </ul>
@@ -186,8 +187,8 @@
         var cursor_pos = $("#story").prop("selectionStart");
         $("#story").val('');
         $("#story").val(story_text_val.slice(0, cursor_pos) + result + " " + story_text_val.slice(cursor_pos));
-        $('#story').prop('selectionStart', cursor_pos + result.length);
-        $('#story').prop('selectionEnd', cursor_pos + result.length);
+        $('#story').prop('selectionStart', cursor_pos + result.length + 1);
+        $('#story').prop('selectionEnd', cursor_pos + result.length + 1);
     }
 
     $(document).ready(function () {

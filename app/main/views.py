@@ -60,6 +60,16 @@ def index():
         macros = Macros.query.filter_by(permissions=ProductPermission.PUBLIC) \
             .order_by(Macros.timestamp.desc()).paginate(1, per_page=1000, error_out=False)
 
+    # Hacky DB update :)
+    # update_row_count = RandomTable.query.filter_by(row_count=None)
+    # if update_row_count.count() >0:
+    #     for t in update_row_count:
+    #         if t.line_type == 0:
+    #             t.row_count = t.max
+    #         else:
+    #             t.row_count = len(t.definition.splitlines())
+    #     db.session.commit()
+
     return render_template('index.html', tables=tables.items, macro_list=macros.items)
 
 
@@ -94,7 +104,7 @@ def edit_profile():
     form.name.data = current_user.name
     form.location.data = current_user.location
     form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', form=form)
+    return render_template('profile.html', form=form)
 
 
 @main.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
@@ -121,7 +131,7 @@ def edit_profile_admin(id):
     form.name.data = user.name
     form.location.data = user.location
     form.about_me.data = user.about_me
-    return render_template('edit_profile.html', form=form, user=user)
+    return render_template('profile.html', form=form, user=user)
 
 
 
@@ -259,11 +269,12 @@ def create_table():
                             tags=form.table_tags.data,
                             author_id=current_user.id)
 
-        max_rng, min_rng, validate_table_definition, table_type, error_message = check_table_definition_validity(table)
+        max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(table)
         if validate_table_definition:
             table.min = min_rng
             table.max = max_rng
             table.line_type = table_type
+            table.row_count = row_count
             db.session.add(table)
             flash('Table Created')
             return redirect(url_for('.create_table'))
@@ -296,11 +307,12 @@ def edit_table(id):
         table.definition = form.table_definition.data
         table.tags = form.table_tags.data
 
-        max_rng, min_rng, validate_table_definition, table_type, error_message = check_table_definition_validity(table)
+        max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(table)
         if validate_table_definition:
             table.min = min_rng
             table.max = max_rng
             table.line_type = table_type
+            table.row_count = row_count
             db.session.add(table)
             flash('Your table has been updated.')
             return redirect(url_for('.edit_table', id=table.id, page=-1))
@@ -358,12 +370,13 @@ def bulk_table_import():
                                     tags=form.bulk_tag.data,
                                     author_id=current_user.id)
 
-                max_rng, min_rng, validate_table_definition, table_type, error_message = check_table_definition_validity(
+                max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
                     table)
                 if validate_table_definition:
                     table.min = min_rng
                     table.max = max_rng
                     table.line_type = table_type
+                    table.row_count = row_count
                     db.session.add(table)
                     table_count += 1
                     new_table = ''
@@ -425,6 +438,7 @@ def edit_story(id):
     macros = macro_query()
     sets = set_query()
     tags = tag_query()
+
     # required in order to talk to API
     # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
 
@@ -691,7 +705,12 @@ def create_market_product():
         flash('Market Product Created')
         return redirect(url_for('.create_market_product'))
 
-    return render_template('create_market_product.html', form=form)
+    tables = table_query()
+    macros = macro_query()
+    sets = set_query()
+    tags = tag_query()
+
+    return render_template('market_product.html', form=form, macro_list=macros, tables=tables, sets=sets, tags=tags)
 
 
 @main.route('/edit-market-product/<int:id>', methods=['GET', 'POST'])
@@ -730,13 +749,12 @@ def edit_market_product(id):
     form.name.data = market_product.name
     form.description.data = market_product.description
 
-    tables = RandomTable.query.filter(RandomTable.author_id == current_user.id, RandomTable.tags == market_product.tags).order_by(
-        RandomTable.timestamp.desc())
-    macros = Macros.query.filter(Macros.author_id == current_user.id, Macros.tags == market_product.tags).order_by(
-        Macros.timestamp.desc())
-    sets = Set.query.filter(Set.author_id == current_user.id, Set.tags == market_product.tags).order_by(Set.timestamp.desc())
+    tables = table_query()
+    macros = macro_query()
+    sets = set_query()
+    tags = tag_query()
 
-    return render_template('edit_market_product.html', form=form, macro_list=macros, tables=tables, sets=sets)
+    return render_template('market_product.html', form=form, macro_list=macros, tables=tables, sets=sets, tags=tags)
 
 
 @main.route('/edit', methods=['GET'])

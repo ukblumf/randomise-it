@@ -27,7 +27,7 @@
                 <ul class="list-group" id="tableList">
                     {% for table in tables %}
                     <li class="list-group-item" data-tag="{{ table.tags }}">
-                        <button onclick="addId('table.{{ table.id }}')">{{ table.name }}</button>
+                        <button onclick="addId('table.{{ table.id }}')">{{ table.name }} <small class="text-muted">({{ table.row_count}})</small></button>
                     </li>
                     {% endfor %}
                 </ul>

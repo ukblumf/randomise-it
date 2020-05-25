@@ -21,8 +21,7 @@
         <tbody id="random-tables">
         {% for table in tables %}
             <tr>
-                <td><a href="{{ url_for('.edit_table', id=table.id) }}">{{ table.name }}</a></td>
-                <!-- <td><a class="pull-right bg-primary" href="{{ url_for('.get_random_value', id=table.id) }}" id="get-random-value">PREVIEW</a></td> -->
+                <td><a href="{{ url_for('.edit_table', id=table.id) }}">{{ table.name }} <small class="text-muted">({{ table.row_count}})</small></a></td>
                 <td><button id="get-random-value" value="{{ url_for('.get_random_value', id=table.id) }}">Test</button></td>
             </tr>
         {% endfor %}

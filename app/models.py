@@ -394,6 +394,7 @@ class RandomTable(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     tags = db.Column(db.Text, index=True)
     original_author_id = db.Column(db.Integer)
+    row_count = db.Column(db.Integer)
 
     @staticmethod
     def on_changed_table(target, value, oldvalue, initiator):
