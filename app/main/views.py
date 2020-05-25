@@ -398,9 +398,10 @@ def create_story():
     tables = table_query()
     macros = macro_query()
     sets = set_query()
+    tags = tag_query()
     # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
 
-    return render_template('create_story.html', form=form, tables=tables, macro_list=macros, sets=sets)
+    return render_template('create_story.html', form=form, tables=tables, macro_list=macros, sets=sets, tags=tags)
 
 
 @main.route('/edit-story/<int:id>', methods=['GET', 'POST'])
@@ -421,6 +422,7 @@ def edit_story(id):
     tables = table_query()
     macros = macro_query()
     sets = set_query()
+    tags = tag_query()
     # required in order to talk to API
     # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
 
@@ -428,7 +430,7 @@ def edit_story(id):
     form.story.data = story.body
     form.pins.data = story.pins
 
-    return render_template('create_story.html', form=form, tables=tables, macro_list=macros, sets=sets)
+    return render_template('create_story.html', form=form, tables=tables, macro_list=macros, sets=sets, tags=tags)
 
 
 def build_menu(set_obj, recur):
@@ -737,7 +739,7 @@ def edit_screen():
     tables = table_query()
     macros = macro_query()
     sets = set_query()
-    tags = Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.id.asc())
+    tags = tag_query()
     market_products = MarketPlace.query.filter(MarketPlace.author_id == current_user.id).order_by(
         MarketPlace.timestamp.desc())
     stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
@@ -803,3 +805,6 @@ def table_query():
 def set_query():
     return Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
 
+
+def tag_query():
+    return Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.id.asc())

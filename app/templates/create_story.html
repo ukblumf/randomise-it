@@ -18,12 +18,19 @@
             {% endif %}
 		</div>
         <div class="col-md-4">
-            <h2>Macros</h2>
+            <label for="tagFilter">Tag:</label>
+            <select id="tagFilter">
+                <option label="" selected></option>
+                {% for tag in tags %}
+                    <option label="{{ tag.id}}">{{ tag.id }}</option>
+                {% endfor %}
+            </select>
+            <h3>Macros</h3>
             <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
             <div style="height: 200px; overflow-y: scroll;">
                 <ul class="list-group" id="macroList">
                     {% for macro in macro_list %}
-                    <li class="list-group-item">
+                    <li class="list-group-item" data-tag="{{ macro.tags }}">
                         {% set icon_pin = 's' %}
                         {% if form.pins.data %}
                             {% if macro.id in form.pins.data %}
@@ -35,12 +42,12 @@
                     {% endfor %}
                 </ul>
             </div>
-            <h2>Random Tables</h2>
+            <h3>Random Tables</h3>
             <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
             <div style="height: 200px; overflow-y: scroll;">
                 <ul class="list-group" id="tableList">
                     {% for table in tables %}
-                    <li class="list-group-item">
+                    <li class="list-group-item" data-tag="{{ table.tags }}">
                         {% set icon_pin = 's' %}
                         {% if form.pins.data %}
                             {% if table.id in form.pins.data %}
@@ -52,12 +59,12 @@
                     {% endfor %}
                 </ul>
             </div>
-            <h2>Sets</h2>
+            <h3>Sets</h3>
             <input class="form-control" id="setFilter" type="text" placeholder="Search..">
             <div style="height: 200px; overflow-y: scroll;">
                 <ul class="list-group" id="setList">
                     {% for set in sets %}
-                    <li class="list-group-item">
+                    <li class="list-group-item" data-tag="{{ set.tags }}">
                         {% set icon_pin = 's' %}
                         {% if form.pins.data %}
                             {% if set.id in form.pins.data %}
@@ -86,17 +93,17 @@
     function pinItem(id, element) {
         //check if id already exists in pinned box
         var pins = $("#pins");
-        if (pins.val().indexOf(id) >=0) {
+        if (pins.val().indexOf(id) >= 0) {
             //if exists remove
-            pins.val(pins.val().replace(id + " ",''));
+            pins.val(pins.val().replace(id + " ", ''));
             if (element) {
-                $(element).attr("class","ui-icon ui-icon-pin-s");
+                $(element).attr("class", "ui-icon ui-icon-pin-s");
             }
         } else {
             //append to pinned items
             pins.val(pins.val() + id + " ");
             if (element) {
-                $(element).attr("class","ui-icon ui-icon-pin-w");
+                $(element).attr("class", "ui-icon ui-icon-pin-w");
             }
         }
         refreshPinnedItems();
@@ -108,7 +115,7 @@
         var pinned_items = $("#pinned_items")
         pinned_items.empty();
         pinned_items.append('<h4>Pinned items <small>(right-click to remove pinned item)</h4>')
-        $.each(pins.val().trim().split(" "), function(i, value) {
+        $.each(pins.val().trim().split(" "), function (i, value) {
             if (value.startsWith('set')) {
                 //create menu
                 var set_id = value.substring(4);
@@ -130,8 +137,8 @@
 
     function createPinnedSet(set_id, menu) {
         var get_set_url = "{{ url_for('.get_set', id='') }}" + set_id;
-        $.when($.ajax( { url: get_set_url } ), menu ).done( function( result, menu ) {
-            $.each(result[0].split("\n"), function( i, set_item) {
+        $.when($.ajax({url: get_set_url}), menu).done(function (result, menu) {
+            $.each(result[0].split("\n"), function (i, set_item) {
                 set_item = set_item.trim();
                 if (set_item) {
                     if (set_item.startsWith('set')) {
@@ -154,17 +161,23 @@
             addMacro(id.substring(6));
         }
     }
+
     function addTable(tableId) {
         var get_random_table_url = "{{ url_for('.get_random_value', id='') }}" + tableId;
-        $.ajax({url: get_random_table_url, success: function(result){
-            insertText(result);
-        }});
+        $.ajax({
+            url: get_random_table_url, success: function (result) {
+                insertText(result);
+            }
+        });
     }
+
     function addMacro(macroId) {
         var get_macro_url = "{{ url_for('.get_macro', id='') }}" + macroId;
-        $.ajax({url: get_macro_url, success: function(result){
-            insertText(result);
-        }});
+        $.ajax({
+            url: get_macro_url, success: function (result) {
+                insertText(result);
+            }
+        });
     }
 
     function insertText(result) {
@@ -177,26 +190,28 @@
         $('#story').prop('selectionEnd', cursor_pos + result.length);
     }
 
-    $(document).ready(function(){
-          $("#tableFilter").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("#tableList li").filter(function() {
-              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    $(document).ready(function () {
+        function filterList(list, filter, tag) {
+            $("#" + list + " li").filter(function () {
+                $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
             });
-          });
-          $("#macroFilter").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("#macroList li").filter(function() {
-              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            });
-          });
-          $("#setFilter").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("#setList li").filter(function() {
-              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-            });
-          });
-          refreshPinnedItems();
+        }
+        $("#tagFilter").change(function () {
+            let tag = $(this).children("option:selected").val();
+            filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
+            filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
+            filterList('setList', $("#setFilter").val().toLowerCase(), tag);
+        });
+        $("#tableFilter").on("keyup", function () {
+            filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+        });
+        $("#macroFilter").on("keyup", function () {
+            filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+        });
+        $("#setFilter").on("keyup", function () {
+            filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+        });
+        refreshPinnedItems();
     });
 </script>
 {% endblock %}
