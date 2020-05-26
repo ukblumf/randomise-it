@@ -5,7 +5,7 @@ from . import api
 from .decorators import permission_required
 from .errors import forbidden, bad_request, not_found
 from sqlalchemy import exists, and_
-from ..validate import validate_set, validate_text, check_table_definition_validity
+from ..validate import validate_collection, validate_text, check_table_definition_validity
 
 
 @api.route('/market-products/<string:cat_id>', methods=['GET'])

@@ -83,7 +83,7 @@ class User(UserMixin, db.Model):
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     tables = db.relationship('RandomTable', backref='author', lazy='dynamic')
-    # TODO - add in sets and macros to relationship data
+
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
                                backref=db.backref('follower', lazy='joined'),
@@ -511,8 +511,8 @@ class Macros(db.Model):
 db.event.listen(Macros.definition, 'set', Macros.on_changed_table)
 
 
-class Set(db.Model):
-    __tablename__ = 'set'
+class Collection(db.Model):
+    __tablename__ = 'collection'
     id = db.Column(db.Text, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     name = db.Column(db.Text)
@@ -529,7 +529,7 @@ class Set(db.Model):
         items = self.items.splitlines()
 
         json_post = {
-            'url': url_for('api.get_set', id=self.id, _external=True),
+            'url': url_for('api.get_collection', id=self.id, _external=True),
             'id': self.id,
             'name': self.name,
             'description': self.description,
@@ -564,7 +564,7 @@ class Set(db.Model):
             if idx < len(definition_lines)-1:
                 definition+= "\n"
         # permisssions = json_post.get('permissions')
-        return Set(id=id, name=name, definition=definition, parent=parent, description=description)
+        return Collection(id=id, name=name, definition=definition, parent=parent, description=description)
 
 
 class Tags(db.Model):

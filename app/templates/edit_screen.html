@@ -16,7 +16,7 @@
     </div>
     <div class="row">
 		<div class="col-md-4">
-            <h2>Sets</h2>
+            <h2>Collections</h2>
         </div>
 		<div class="col-md-4">
             <h2>Macros</h2>
@@ -27,7 +27,7 @@
     </div>
     <div class="row">
 		<div class="col-md-4">
-            {{ macros.list_rows_in_table('set', sets) }}
+            {{ macros.list_rows_in_table('collection', collections) }}
         </div>
 		<div class="col-md-4">
             {{ macros.list_rows_in_table('macro', macro_list) }}
@@ -68,7 +68,7 @@
             let tag = $(this).children("option:selected").val();
             filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
             filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
-            filterList('setList', $("#setFilter").val().toLowerCase(), tag);
+            filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag);
             filterList('market_productList', $("#market_productFilter").val().toLowerCase(), tag);
         });
         $("#tableFilter").on("keyup", function () {
@@ -77,8 +77,8 @@
         $("#macroFilter").on("keyup", function () {
             filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
         });
-        $("#setFilter").on("keyup", function () {
-            filterList('setList', $("#setFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+        $("#collectionFilter").on("keyup", function () {
+            filterList('collectionList', $("#collectionFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
         });
         $("#marketFilter").on("keyup", function () {
             filterList('marketList', $("#marketFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());

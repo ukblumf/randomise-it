@@ -139,7 +139,7 @@ def validate_text(definition, id):
     return validate_definition, error_message
 
 
-def validate_set(items):
+def validate_collection(items):
     error_message = ''
     validate = True
 

@@ -85,13 +85,13 @@ class MacroForm(FlaskForm):
     submit = SubmitField('Save')
 
 
-class SetForm(FlaskForm):
-    set_name = StringField('Set Name', validators=[Length(0, 255)])
-    set_id = StringField('Identifier', validators=[Length(0, 255)])
-    set_description = TextAreaField('Description')
-    set_definition = TextAreaField("Define Set", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
-    set_is_parent = RadioField('Is Parent', choices=[('0', 'False'), ('1', 'True')])
-    set_tags = SelectField('Tags')
+class CollectionForm(FlaskForm):
+    collection_name = StringField('Collection Name', validators=[Length(0, 255)])
+    collection_id = StringField('Identifier', validators=[Length(0, 255)])
+    collection_description = TextAreaField('Description')
+    collection_definition = TextAreaField("Collection Items", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
+    collection_is_parent = RadioField('Is Parent', choices=[('0', 'False'), ('1', 'True')])
+    collection_tags = SelectField('Tags')
     submit = SubmitField('Save')
 
 

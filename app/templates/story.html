@@ -23,8 +23,8 @@
             {{  macros.list_rows_in_ul_with_pin('macro', macro_list, form.pins.data) }}
             <h4>Random Tables</h4>
             {{  macros.list_rows_in_ul_with_pin('table', tables, form.pins.data) }}
-            <h4>Sets</h4>
-            {{  macros.list_rows_in_ul_with_pin('set', sets, form.pins.data) }}
+            <h4>Collections</h4>
+            {{  macros.list_rows_in_ul_with_pin('collection', collections, form.pins.data) }}
         </div>
 	</div>
 </div>
@@ -64,17 +64,17 @@
         pinned_items.empty();
         pinned_items.append('<h4>Pinned items <small>(right-click to remove pinned item)</h4>')
         $.each(pins.val().trim().split(" "), function (i, value) {
-            if (value.startsWith('set')) {
+            if (value.startsWith('collection')) {
                 //create menu
-                var set_id = value.substring(4);
+                var collection_id = value.substring(11);
                 var dropdown = $(`<div class='dropdown col-md-2'>
-                                    <a id='${set_id}' role="button" data-toggle="dropdown" class="btn btn-primary"
+                                    <a id='${collection_id}' role="button" data-toggle="dropdown" class="btn btn-primary"
                                     oncontextmenu='pinItem("${value}", ""); return false;'>
-                                        ${set_id} <span class="caret"></span>
+                                        ${collection_id} <span class="caret"></span>
                                     </a>
                                   </div>`).appendTo('#pinned_items');
                 var menu = $(`<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu"/>`).appendTo(dropdown);
-                createPinnedSet(set_id, menu);
+                createPinnedCollection(collection_id, menu);
             } else if (value) {
                 pinned_items.append(`<div class='col-md-2'>
                                         <button onclick="addItem('${value}')" id="${value}" oncontextmenu='pinItem("${value}", ""); return false;'>${value}</button>
@@ -83,19 +83,19 @@
         });
     }
 
-    function createPinnedSet(set_id, menu) {
-        var get_set_url = "{{ url_for('.get_set', id='') }}" + set_id;
-        $.when($.ajax({url: get_set_url}), menu).done(function (result, menu) {
-            $.each(result[0].split("\n"), function (i, set_item) {
-                set_item = set_item.trim();
-                if (set_item) {
-                    if (set_item.startsWith('set')) {
+    function createPinnedCollection(collection_id, menu) {
+        var url = "{{ url_for('.get_collection', id='') }}" + collection_id;
+        $.when($.ajax({url: url}), menu).done(function (result, menu) {
+            $.each(result[0].split("\n"), function (i, item) {
+                item = item.trim();
+                if (item) {
+                    if (item.startsWith('collection')) {
                         var sub_menu = $(`<ul class="dropdown-menu"/>`)
-                        createPinnedSet(set_item.substring(4), sub_menu);
-                        var dropdown = $(`<li class="dropdown-submenu"><a tabindex="-1">${set_item}</a></li>`).append(sub_menu);
+                        createPinnedCollection(item.substring(11), sub_menu);
+                        var dropdown = $(`<li class="dropdown-submenu"><a tabindex="-1">${item}</a></li>`).append(sub_menu);
                         menu.append(dropdown);
                     } else {
-                        menu.append(`<li><a onclick="addItem('${set_item}')">${set_item}</a></li>`)
+                        menu.append(`<li><a onclick="addItem('${item}')">${item}</a></li>`)
                     }
                 }
             });
@@ -148,7 +148,7 @@
             let tag = $(this).children("option:selected").val();
             filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
             filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
-            filterList('setList', $("#setFilter").val().toLowerCase(), tag);
+            filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag);
         });
         $("#tableFilter").on("keyup", function () {
             filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
@@ -156,8 +156,8 @@
         $("#macroFilter").on("keyup", function () {
             filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
         });
-        $("#setFilter").on("keyup", function () {
-            filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+        $("#collectionFilter").on("keyup", function () {
+            filterList('collectionList', $("#collectionFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
         });
         refreshPinnedItems();
     });

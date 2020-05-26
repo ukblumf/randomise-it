@@ -4,12 +4,12 @@ from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, TableForm, StoryForm, MacroForm, \
-    SetForm, TagForm, MarketForm, BulkTableImportForm
+    CollectionForm, TagForm, MarketForm, BulkTableImportForm
 from .. import db
-from ..models import Permission, Role, User, Post, Comment, RandomTable, Macros, ProductPermission, Set, Tags, \
+from ..models import Permission, Role, User, Post, Comment, RandomTable, Macros, ProductPermission, Collection, Tags, \
     MarketPlace, MarketCategory
 from ..decorators import admin_required, permission_required
-from ..validate import check_table_definition_validity, validate_text, validate_set
+from ..validate import check_table_definition_validity, validate_text, validate_collection
 from ..get_random_value import get_row_from_random_table_definition, process_text
 import base64
 from markdown import markdown
@@ -81,13 +81,12 @@ def user(username):
         page, per_page=current_app.config['RANDOMISE_IT_POSTS_PER_PAGE'],
         error_out=False)
     stories = pagination.items
-
     tables = table_query()
     macros = macro_query()
-    sets = set_query()
+    collection_list = collection_query()
 
     return render_template('user.html', user=user, stories=stories,
-                           pagination=pagination, tables=tables, macro_list=macros, sets=sets)
+                           pagination=pagination, tables=tables, macro_list=macros, collections=collection_list)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -132,8 +131,6 @@ def edit_profile_admin(id):
     form.location.data = user.location
     form.about_me.data = user.about_me
     return render_template('profile.html', form=form, user=user)
-
-
 
 
 @main.route('/follow/<username>')
@@ -412,11 +409,11 @@ def create_story():
 
     tables = table_query()
     macros = macro_query()
-    sets = set_query()
+    collection_list = collection_query()
     tags = tag_query()
     # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
 
-    return render_template('story.html', form=form, tables=tables, macro_list=macros, sets=sets, tags=tags)
+    return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list, tags=tags)
 
 
 @main.route('/edit-story/<int:id>', methods=['GET', 'POST'])
@@ -436,7 +433,7 @@ def edit_story(id):
 
     tables = table_query()
     macros = macro_query()
-    sets = set_query()
+    collection_list = collection_query()
     tags = tag_query()
 
     # required in order to talk to API
@@ -446,32 +443,7 @@ def edit_story(id):
     form.story.data = story.body
     form.pins.data = story.pins
 
-    return render_template('story.html', form=form, tables=tables, macro_list=macros, sets=sets, tags=tags)
-
-
-def build_menu(set_obj, recur):
-    if recur > 5:
-        flash('Recursion limit in build_menu exceeded, possibly a set referencing an earlier set.')
-        return collections.OrderedDict()
-
-    # current_app.logger.warning('process set:' + set_obj.name)
-    set_dict = collections.OrderedDict()
-    set_definition = set_obj.definition.splitlines()
-
-    for set_item in set_definition:
-        if set_item.startswith('table.'):
-            table = RandomTable.query.get([set_item[6:], current_user.id])
-            if table is not None:
-                set_dict[table.name] = set_item
-        elif set_item.startswith('macro.'):
-            macro = Macros.query.get([set_item[6:], current_user.id])
-            if macro is not None:
-                set_dict[macro.name] = set_item
-        elif set_item.startswith('set.'):
-            sub_set = Set.query.get([set_item[4:], current_user.id])
-            if sub_set is not None:
-                set_dict[sub_set.name] = build_menu(sub_set, recur + 1)
-    return set_dict
+    return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list, tags=tags)
 
 
 @main.route('/random-value/<string:id>', methods=['GET'])
@@ -567,83 +539,83 @@ def get_macro(id):
     return text
 
 
-@main.route('/create-set', methods=['GET', 'POST'])
+@main.route('/create-collection', methods=['GET', 'POST'])
 @login_required
-def create_set():
-    form = SetForm()
-    form.set_tags.choices = tag_list()
-    form.set_tags.choices.insert(0, (' ', ''))
+def create_collection():
+    form = CollectionForm()
+    form.collection_tags.choices = tag_list()
+    form.collection_tags.choices.insert(0, (' ', ''))
 
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-        set_obj = Set(id=form.set_id.data,
-                      name=form.set_name.data,
-                      definition=form.set_definition.data,
-                      tags=form.set_tags.data,
-                      parent=form.set_is_parent.data,
-                      author_id=current_user.id)
+        collection_obj = Collection(id=form.collection_id.data,
+                             name=form.collection_name.data,
+                             definition=form.collection_definition.data,
+                             tags=form.collection_tags.data,
+                             parent=form.collection_is_parent.data,
+                             author_id=current_user.id)
 
-        validate, error_message = validate_set(set_obj.definition)
+        validate, error_message = validate_collection(collection_obj.definition)
         if validate:
-            db.session.add(set_obj)
-            flash('Set Created')
-            return redirect(url_for('.create_set'))
+            db.session.add(collection_obj)
+            flash('Collection Created')
+            return redirect(url_for('.create_collection'))
         else:
             flash(error_message)
 
     tables = table_query()
     macros = macro_query()
-    sets = set_query()
+    collection_list = collection_query()
     tags = tag_query()
 
-    return render_template('set.html', form=form, macro_list=macros, tables=tables, sets=sets, tags=tags)
+    return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list, tags=tags)
 
 
-@main.route('/edit-set/<string:id>', methods=['GET', 'POST'])
+@main.route('/edit-collection/<string:id>', methods=['GET', 'POST'])
 @login_required
-def edit_set(id):
+def edit_collection(id):
     # current_app.logger.warning(current_user._get_current_object().id)
-    set_obj = Set.query.get_or_404([id, current_user.id])
-    if current_user.id != set_obj.author_id and not current_user.can(Permission.ADMINISTER):
+    collection_obj = Collection.query.get_or_404([id, current_user.id])
+    if current_user.id != collection_obj.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
-    form = SetForm()
-    form.set_tags.choices = tag_list()
-    form.set_tags.choices.insert(0, (' ', ''))
+    form = CollectionForm()
+    form.collection_tags.choices = tag_list()
+    form.collection_tags.choices.insert(0, (' ', ''))
 
     if form.validate_on_submit():
-        set_obj.name = form.set_name.data
-        set_obj.description = form.set_description.data
-        set_obj.definition = form.set_definition.data
-        set_obj.parent = form.set_is_parent.data
-        set_obj.tags = form.set_tags.data
+        collection_obj.name = form.collection_name.data
+        collection_obj.description = form.collection_description.data
+        collection_obj.definition = form.collection_definition.data
+        collection_obj.parent = form.collection_is_parent.data
+        collection_obj.tags = form.collection_tags.data
 
-        validate, error_message = validate_set(set_obj.definition)
+        validate, error_message = validate_collection(collection_obj.definition)
         if validate:
-            db.session.add(set_obj)
-            flash('Your set has been updated.')
+            db.session.add(collection_obj)
+            flash('Your collection has been updated.')
         else:
             flash(error_message)
 
-    form.set_name.data = set_obj.name
-    form.set_description.data = set_obj.description
-    form.set_definition.data = set_obj.definition
-    form.set_is_parent.data = set_obj.parent
+    form.collection_name.data = collection_obj.name
+    form.collection_description.data = collection_obj.description
+    form.collection_definition.data = collection_obj.definition
+    form.collection_is_parent.data = collection_obj.parent
     # form.permissions.data = 0
-    form.set_tags.data = set_obj.tags
+    form.collection_tags.data = collection_obj.tags
 
     tables = table_query()
     macros = macro_query()
-    sets = set_query()
+    collection_list = collection_query()
     tags = tag_query()
 
-    del form.set_id  # remove id from edit screen
+    del form.collection_id  # remove id from edit screen
 
-    return render_template('set.html', form=form, macro_list=macros, tables=tables, sets=sets, tags=tags)
+    return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list, tags=tags)
 
 
-@main.route('/set/<string:id>', methods=['GET'])
-def get_set(id):
-    set_data = Set.query.get_or_404([id, current_user.id])
-    return set_data.definition
+@main.route('/collection/<string:id>', methods=['GET'])
+def get_collection(id):
+    collection_data = Collection.query.get_or_404([id, current_user.id])
+    return collection_data.definition
 
 
 @main.route('/create-tag', methods=['GET', 'POST'])
@@ -707,10 +679,10 @@ def create_market_product():
 
     tables = table_query()
     macros = macro_query()
-    sets = set_query()
+    collection_list = collection_query()
     tags = tag_query()
 
-    return render_template('market_product.html', form=form, macro_list=macros, tables=tables, sets=sets, tags=tags)
+    return render_template('market_product.html', form=form, macro_list=macros, tables=tables, collections=collection_list, tags=tags)
 
 
 @main.route('/edit-market-product/<int:id>', methods=['GET', 'POST'])
@@ -745,16 +717,15 @@ def edit_market_product(id):
         db.session.add(market_product)
         flash('Your market product has been updated.')
 
-    # form.id.data = set_obj.id
     form.name.data = market_product.name
     form.description.data = market_product.description
 
     tables = table_query()
     macros = macro_query()
-    sets = set_query()
+    collection_list = collection_query()
     tags = tag_query()
 
-    return render_template('market_product.html', form=form, macro_list=macros, tables=tables, sets=sets, tags=tags)
+    return render_template('market_product.html', form=form, macro_list=macros, tables=tables, collections=collection_list, tags=tags)
 
 
 @main.route('/edit', methods=['GET'])
@@ -762,13 +733,13 @@ def edit_market_product(id):
 def edit_screen():
     tables = table_query()
     macros = macro_query()
-    sets = set_query()
+    collection_list = collection_query()
     tags = tag_query()
     market_products = MarketPlace.query.filter(MarketPlace.author_id == current_user.id).order_by(
         MarketPlace.timestamp.desc())
     stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
 
-    return render_template('edit_screen.html', macro_list=macros, tables=tables, sets=sets,
+    return render_template('edit_screen.html', macro_list=macros, tables=tables, collections=collection_list,
                            tags=tags, market_products=market_products, stories=stories)
 
 
@@ -799,8 +770,8 @@ def id_exists(type, id):
         check = db.session.query(RandomTable.id).filter_by(id=id).scalar() is not None
     elif type == 'macro':
         check = db.session.query(Macros.id).filter_by(id=id).scalar() is not None
-    elif type == 'set':
-        check = db.session.query(Set.id).filter_by(id=id).scalar() is not None
+    elif type == 'collection':
+        check = db.session.query(Collection.id).filter_by(id=id).scalar() is not None
     elif type == 'tag':
         check = db.session.query(Tags.id).filter_by(id=id).scalar() is not None
     elif type == 'marketproduct':
@@ -826,8 +797,8 @@ def table_query():
     return RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
 
 
-def set_query():
-    return Set.query.filter(Set.author_id == current_user.id).order_by(Set.timestamp.desc())
+def collection_query():
+    return Collection.query.filter(Collection.author_id == current_user.id).order_by(Collection.timestamp.desc())
 
 
 def tag_query():
