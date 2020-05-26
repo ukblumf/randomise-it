@@ -12,35 +12,11 @@
             {{ wtf.quick_form(form) }}
 		</div>
 		<div class="col-md-4">
-            <label for="tagFilter">Tag:</label>
-            <select id="tagFilter">
-                <option label="" selected></option>
-                {% for tag in tags %}
-                    <option label="{{ tag.id}}">{{ tag.id }}</option>
-                {% endfor %}
-            </select>
+            {{ macros.tag_filter(tags) }}
             <h4>Macros</h4>
-            <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
-            <div style="height: 200px; overflow-y: scroll;">
-                <ul class="list-group" id="macroList">
-                    {% for macro in macro_list %}
-                    <li class="list-group-item" data-tag="{{ macro.tags }}">
-                        <button onclick="addId('macro.{{ macro.id }}')">{{ macro.name }}</button>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {{  macros.list_rows_in_ul('macro', macro_list) }}
             <h4>Random Tables</h4>
-            <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
-            <div style="height: 200px; overflow-y: scroll;">
-                <ul class="list-group" id="tableList">
-                    {% for table in tables %}
-                    <li class="list-group-item" data-tag="{{ table.tags }}">
-                        <button onclick="addId('table.{{ table.id }}')">{{ table.name }}</button>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            {{  macros.list_rows_in_ul('table', tables) }}
 		</div>
 	</div>
 </div>
