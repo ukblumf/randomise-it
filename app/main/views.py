@@ -266,7 +266,8 @@ def create_table():
                             tags=form.table_tags.data,
                             author_id=current_user.id)
 
-        max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(table)
+        max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
+            table)
         if validate_table_definition:
             table.min = min_rng
             table.max = max_rng
@@ -304,7 +305,8 @@ def edit_table(id):
         table.definition = form.table_definition.data
         table.tags = form.table_tags.data
 
-        max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(table)
+        max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
+            table)
         if validate_table_definition:
             table.min = min_rng
             table.max = max_rng
@@ -355,7 +357,7 @@ def bulk_table_import():
                 else:
                     flash("Table '" + new_table + "' already exists. Bulk import cancelled.")
                     db.session.rollback()
-                    error_on_import= True
+                    error_on_import = True
                     break
             if not line:
                 # Blank line denotes separator
@@ -413,7 +415,8 @@ def create_story():
     tags = tag_query()
     # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
 
-    return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list, tags=tags)
+    return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list,
+                           tags=tags)
 
 
 @main.route('/edit-story/<int:id>', methods=['GET', 'POST'])
@@ -443,7 +446,8 @@ def edit_story(id):
     form.story.data = story.body
     form.pins.data = story.pins
 
-    return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list, tags=tags)
+    return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list,
+                           tags=tags)
 
 
 @main.route('/random-value/<string:id>', methods=['GET'])
@@ -525,7 +529,8 @@ def edit_macro(id):
     tags = tag_query()
 
     del form.macro_id  # remove id from edit screen
-    return render_template('macro.html', form=form, macro_list=macros, tables=tables, edit_macro=macro, form_type='macro', tags=tags)
+    return render_template('macro.html', form=form, macro_list=macros, tables=tables, edit_macro=macro,
+                           form_type='macro', tags=tags)
 
 
 @main.route('/macro/<string:id>', methods=['GET'])
@@ -548,11 +553,10 @@ def create_collection():
 
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         collection_obj = Collection(id=form.collection_id.data,
-                             name=form.collection_name.data,
-                             definition=form.collection_definition.data,
-                             tags=form.collection_tags.data,
-                             parent=form.collection_is_parent.data,
-                             author_id=current_user.id)
+                                    name=form.collection_name.data,
+                                    definition=form.collection_definition.data,
+                                    tags=form.collection_tags.data,
+                                    author_id=current_user.id)
 
         validate, error_message = validate_collection(collection_obj.definition)
         if validate:
@@ -567,7 +571,8 @@ def create_collection():
     collection_list = collection_query()
     tags = tag_query()
 
-    return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list, tags=tags)
+    return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list,
+                           tags=tags)
 
 
 @main.route('/edit-collection/<string:id>', methods=['GET', 'POST'])
@@ -585,7 +590,6 @@ def edit_collection(id):
         collection_obj.name = form.collection_name.data
         collection_obj.description = form.collection_description.data
         collection_obj.definition = form.collection_definition.data
-        collection_obj.parent = form.collection_is_parent.data
         collection_obj.tags = form.collection_tags.data
 
         validate, error_message = validate_collection(collection_obj.definition)
@@ -598,7 +602,6 @@ def edit_collection(id):
     form.collection_name.data = collection_obj.name
     form.collection_description.data = collection_obj.description
     form.collection_definition.data = collection_obj.definition
-    form.collection_is_parent.data = collection_obj.parent
     # form.permissions.data = 0
     form.collection_tags.data = collection_obj.tags
 
@@ -609,7 +612,8 @@ def edit_collection(id):
 
     del form.collection_id  # remove id from edit screen
 
-    return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list, tags=tags)
+    return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list,
+                           tags=tags)
 
 
 @main.route('/collection/<string:id>', methods=['GET'])
@@ -682,7 +686,8 @@ def create_market_product():
     collection_list = collection_query()
     tags = tag_query()
 
-    return render_template('market_product.html', form=form, macro_list=macros, tables=tables, collections=collection_list, tags=tags)
+    return render_template('market_product.html', form=form, macro_list=macros, tables=tables,
+                           collections=collection_list, tags=tags)
 
 
 @main.route('/edit-market-product/<int:id>', methods=['GET', 'POST'])
@@ -725,7 +730,8 @@ def edit_market_product(id):
     collection_list = collection_query()
     tags = tag_query()
 
-    return render_template('market_product.html', form=form, macro_list=macros, tables=tables, collections=collection_list, tags=tags)
+    return render_template('market_product.html', form=form, macro_list=macros, tables=tables,
+                           collections=collection_list, tags=tags)
 
 
 @main.route('/edit', methods=['GET'])
@@ -789,7 +795,8 @@ def tag_list():
 
 def macro_query(macro_id=None):
     if macro_id:
-        return Macros.query.filter(Macros.author_id == current_user.id, Macros.id != macro_id).order_by(Macros.timestamp.desc())
+        return Macros.query.filter(Macros.author_id == current_user.id, Macros.id != macro_id).order_by(
+            Macros.timestamp.desc())
     return Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
 
 

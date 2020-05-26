@@ -518,16 +518,13 @@ class Collection(db.Model):
     name = db.Column(db.Text)
     description = db.Column(db.Text)
     definition = db.Column(db.Text)
-    parent = db.Column(db.Integer)
     permissions = db.Column(db.Integer, index=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     tags = db.Column(db.Text, index=True)
     original_author_id = db.Column(db.Integer)
 
     def to_json(self):
-
         items = self.items.splitlines()
-
         json_post = {
             'url': url_for('api.get_collection', id=self.id, _external=True),
             'id': self.id,
@@ -541,7 +538,6 @@ class Collection(db.Model):
                               _external=True),
             'tags': self.tags,
             'original_author_id': self.original_author_id
-
         }
         return json_post
 
