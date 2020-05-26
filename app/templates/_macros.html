@@ -85,7 +85,7 @@
         <ul class="list-group" id="{{ name }}List">
             {% for item in items %}
             <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}{% endif %}">
-                <button onclick="addId('macro.{{ item.id }}')">{{ item.name }}</button>
+                <button onclick="addId('{{ name }}.{{ item.id }}')">{{ item.name }}</button>
             </li>
             {% endfor %}
         </ul>
