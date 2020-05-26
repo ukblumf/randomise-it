@@ -504,7 +504,7 @@ class Macros(db.Model):
             definition += line
             if idx < len(definition_lines)-1:
                 definition += "\n"
-        # permisssions = json_post.get('permissions')
+        # permissions = json_post.get('permissions')
         return Macros(id=id, name=name, definition=definition)
 
 
@@ -559,7 +559,7 @@ class Collection(db.Model):
             definition += line
             if idx < len(definition_lines)-1:
                 definition+= "\n"
-        # permisssions = json_post.get('permissions')
+        # permissions = json_post.get('permissions')
         return Collection(id=id, name=name, definition=definition, parent=parent, description=description)
 
 
