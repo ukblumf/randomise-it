@@ -5,84 +5,108 @@
 {% block title %}Randomise iT - Create Macro{% endblock %}
 
 {% block page_content %}
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-8">
-            {% if current_user.can(Permission.WRITE_ARTICLES) %}
-            {{ wtf.quick_form(form) }}
-            {% endif %}
-		</div>
-		<div class="col-md-4">
-            {{ macros.tag_filter(tags) }}
-            <h4>Macros</h4>
-            {{  macros.list_rows_in_ul('macro', macro_list) }}
-            <h4>Random Tables</h4>
-            {{  macros.list_rows_in_ul('table', tables) }}
-		</div>
-	</div>
-</div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-5">
+                {% if current_user.can(Permission.WRITE_ARTICLES) %}
+                    {{ wtf.quick_form(form) }}
+                {% endif %}
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="panel panel-default">
+                    <br/>
+                    <button class="btn btn-primary" id="preview-btn">Preview</button>
+                    <div class="panel-body text-left" id="preview-text">
+                    </div>
+                    <div class="panel-body" id="preview-error"></div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                {{ macros.tag_filter(tags) }}
+                <h4>Macros</h4>
+                {{ macros.list_rows_in_ul('macro', macro_list) }}
+                <h4>Random Tables</h4>
+                {{ macros.list_rows_in_ul('table', tables) }}
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block scripts %}
-{{ super() }}
-<script>
-    function addId(id) {
-        const insert_text = '<<' + id + '>>';
-        $("#macro_body").focus();
-        const macro_text_val = $("#macro_body").val();
-        const cursor_pos = $("#macro_body").prop("selectionStart");
-        $("#macro_body").val(macro_text_val.slice(0, cursor_pos) + insert_text + " " + macro_text_val.slice(cursor_pos));
-        $('#macro_body').prop('selectionStart', cursor_pos + insert_text.length);
-        $('#macro_body').prop('selectionEnd', cursor_pos + insert_text.length);
-    }
-
-    $(document).ready(function () {
-        function filterList(list, filter, tag) {
-            $("#" + list + " li").filter(function () {
-                $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
-            });
+    {{ super() }}
+    <script>
+        function addId(id) {
+            const insert_text = '<<' + id + '>>';
+            $("#macro_body").focus();
+            const macro_text_val = $("#macro_body").val();
+            const cursor_pos = $("#macro_body").prop("selectionStart");
+            $("#macro_body").val(macro_text_val.slice(0, cursor_pos) + insert_text + " " + macro_text_val.slice(cursor_pos));
+            $('#macro_body').prop('selectionStart', cursor_pos + insert_text.length);
+            $('#macro_body').prop('selectionEnd', cursor_pos + insert_text.length);
         }
 
-        $("#tagFilter").change(function () {
-            const tag = $(this).children("option:selected").val();
-            filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
-            filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
-        });
-        $("#tableFilter").on("keyup", function () {
-            filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-        });
-
-        $("#macroFilter").on("keyup", function () {
-            filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-        });
-
-        let name_form_field = $("#{{ form_type }}_name");
-        let id_form_field = $("#{{ form_type }}_id");
-
-        name_form_field.blur(function () {
-            if (!(id_form_field.val())) {
-                const slug_text = name_form_field.val();
-                id_form_field.val(slugify(slug_text));
-            }
-        });
-
-        id_form_field.blur(function () {
-            if (id_form_field.val()) {
-                const id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
-
-                $.ajax({
-                    url: id_exists_url, success: function (result) {
-                        if (result == '1') {
-                            $("label[for='{{ form_type }}_id']").text("Identifier -- ERROR Identifier already exists");
-                        } else {
-                            $("label[for='{{ form_type }}_id']").text("Identifier");
-                        }
-                    }
+        $(document).ready(function () {
+            function filterList(list, filter, tag) {
+                $("#" + list + " li").filter(function () {
+                    $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
                 });
             }
-        });
 
-    });
-</script>
+            $("#tagFilter").change(function () {
+                const tag = $(this).children("option:selected").val();
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
+            });
+            $("#tableFilter").on("keyup", function () {
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+
+            $("#macroFilter").on("keyup", function () {
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+
+            let name_form_field = $("#{{ form_type }}_name");
+            let id_form_field = $("#{{ form_type }}_id");
+
+            name_form_field.blur(function () {
+                if (!(id_form_field.val())) {
+                    const slug_text = name_form_field.val();
+                    id_form_field.val(slugify(slug_text));
+                }
+            });
+
+            id_form_field.blur(function () {
+                if (id_form_field.val()) {
+                    const id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
+
+                    $.ajax({
+                        url: id_exists_url, success: function (result) {
+                            if (result == '1') {
+                                $("label[for='{{ form_type }}_id']").text("Identifier -- ERROR Identifier already exists");
+                            } else {
+                                $("label[for='{{ form_type }}_id']").text("Identifier");
+                            }
+                        }
+                    });
+                }
+            });
+
+            $("#preview-btn").click(function () {
+                $.ajax({
+                    url: "{{ url_for('.preview_macro') }}",
+                    type: 'POST',
+                    async: true,
+                    data: {'macro': $("#macro_body").val()},
+                    success: function (data) {
+                        $("#preview-text").html(data)
+                    },
+                    error: function (err) {
+                        $("#preview-error").append("Error occurred: <strong>" + JSON.stringify(err) + "</strong");
+                    }
+                });
+            });
+
+        });
+    </script>
 {% endblock %}
 

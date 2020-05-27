@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, abort, flash, request, \
 from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
 from . import main
-from .forms import EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, TableForm, StoryForm, MacroForm, \
+from .forms import EditProfileForm, EditProfileAdminForm, TableForm, StoryForm, MacroForm, \
     CollectionForm, TagForm, MarketForm, BulkTableImportForm
 from .. import db
 from ..models import Permission, Role, User, Post, Comment, RandomTable, Macros, ProductPermission, Collection, Tags, \
@@ -14,12 +14,11 @@ from ..get_random_value import get_row_from_random_table_definition, process_tex
 import base64
 from markdown import markdown
 import bleach
-import collections
 import re
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
-                'h1', 'h2', 'h3']
+                'h1', 'h2', 'h3', 'br']
 
 non_url_safe = ['"', '#', '$', '%', '&', '+',
                 ',', '/', ':', ';', '=', '?',
@@ -542,6 +541,17 @@ def get_macro(id):
         tags=ALLOWED_TAGS, strip=True))
 
     return text
+
+
+@main.route('/preview-macro', methods=['POST'])
+def preview_macro():
+    macro = request.form['macro'].replace('\n', '<br/>')
+    if macro:
+        return bleach.linkify(bleach.clean(
+            markdown(process_text(macro), output_format='html'),
+            tags=ALLOWED_TAGS, strip=True))
+    else:
+        abort(400)
 
 
 @main.route('/create-collection', methods=['GET', 'POST'])
