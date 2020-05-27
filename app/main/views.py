@@ -604,13 +604,13 @@ def edit_collection(id):
     form.collection_definition.data = collection_obj.definition
     # form.permissions.data = 0
     form.collection_tags.data = collection_obj.tags
+    form.collection_id.data = collection_obj.id
+    form.collection_id.render_kw = {'readonly': True}
 
     tables = table_query()
     macros = macro_query()
     collection_list = collection_query()
     tags = tag_query()
-
-    del form.collection_id  # remove id from edit screen
 
     return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list,
                            tags=tags)
