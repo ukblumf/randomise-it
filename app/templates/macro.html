@@ -31,7 +31,6 @@
         $("#macro_body").focus();
         const macro_text_val = $("#macro_body").val();
         const cursor_pos = $("#macro_body").prop("selectionStart");
-        $("#macro_body").val('');
         $("#macro_body").val(macro_text_val.slice(0, cursor_pos) + insert_text + " " + macro_text_val.slice(cursor_pos));
         $('#macro_body').prop('selectionStart', cursor_pos + insert_text.length);
         $('#macro_body').prop('selectionEnd', cursor_pos + insert_text.length);

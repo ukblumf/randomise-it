@@ -4,91 +4,157 @@
 {% block title %}Randomise iT - Create Collection{% endblock %}
 
 {% block page_content %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-md-8">
-            {% if current_user.can(Permission.WRITE_ARTICLES) %}
-            <div id="editor">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-5">
+                {% if current_user.can(Permission.WRITE_ARTICLES) %}
+                    {{ wtf.quick_form(form) }}
+                {% endif %}
             </div>
-            {{ wtf.quick_form(form) }}
-            {% endif %}
-        </div>
-        <div class="col-md-4">
-            {{ macros.tag_filter(tags) }}
-            <h4>Macros</h4>
-            {{  macros.list_rows_in_ul('macro', macro_list) }}
-            <h4>Random Tables</h4>
-            {{  macros.list_rows_in_ul('table', tables) }}
-            <h4>Collections</h4>
-            {{  macros.list_rows_in_ul('collection', collections) }}
+            <div class="col-md-3">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Preview</div>
+                    <div class="panel-body" id="preview-panel">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                {{ macros.tag_filter(tags) }}
+                <h4>Macros</h4>
+                {{ macros.list_rows_in_ul('macro', macro_list) }}
+                <h4>Random Tables</h4>
+                {{ macros.list_rows_in_ul('table', tables) }}
+                <h4>Collections</h4>
+                {{ macros.list_rows_in_ul('collection', collections) }}
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
 
 {% block scripts %}
-{{ super() }}
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-        crossorigin="anonymous">
-</script>
-<script>
-    function addId(id) {
-        document.getElementById("collection_definition").value += id + '\n';
-        document.getElementById("collection_definition").focus();
-    }
-    $(function () {
-        $(document).ready(function () {
-            function filterList(list, filter, tag) {
-                $("#" + list + " li").filter(function () {
-                    $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
-                });
-            }
-
-            $("#tagFilter").change(function () {
-                const tag = $(this).children("option:selected").val();
-                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
-                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
-            });
-            $("#tableFilter").on("keyup", function () {
-                filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-            });
-
-            $("#macroFilter").on("keyup", function () {
-                filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-            });
-
-            $("#collectionFilter").on("keyup", function () {
-                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-            });
-
-            const name_form_field = $("#collection_name");
-            const id_form_field = $("#collection_id");
-
-            name_form_field.blur(function () {
-                if (!(id_form_field.val())) {
-                    const slug_text = name_form_field.val();
-                    id_form_field.val(slugify(slug_text));
+    {{ super() }}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous">
+    </script>
+    <script>
+        function createCollectionPreview(collection_definition, menu) {
+            $.each(collection_definition.split("\n"), function (i, item) {
+                const item_trimmed = item.replace(/[^a-z0-9-_\.]/g, '');
+                if (item_trimmed) {
+                    if (item_trimmed.startsWith('collection')) {
+                        if (item_trimmed.substring(11) != $("#collection_id").val()) {
+                            const url = "{{ url_for('.get_collection', id='') }}" + item_trimmed.substring(11);
+                            const coll_data = doAjax(url);
+                            let sub_menu = $(`<ul class="dropdown-menu"/>`);
+                            createCollectionPreview(coll_data, sub_menu);
+                            const dropdown = $(`<li class="dropdown-submenu"><a tabindex="-1">${item_trimmed}</a></li>`).append(sub_menu);
+                            menu.append(dropdown);
+                        } else {
+                            $("#preview-error").append("<strong>Cannot reference self</strong><br/>");
+                        }
+                    } else {
+                        menu.append(`<li><a href="#">${item_trimmed}</a></li>`)
+                    }
                 }
             });
+        }
 
-            id_form_field.blur(function () {
-                if (id_form_field.val()) {
-                    const id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
+        function doAjax(url) {
+            const result = $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'text',
+                async: false,
+                success: function (data) {
+                },
+                error: function (err) {
+                    $("#preview-error").append("<strong>" + err + "</strong");
+                }
+            }).responseText;
+            return result;
+        }
 
-                    $.ajax({
-                        url: id_exists_url, success: function (result) {
-                            if (result == '1') {
-                                $("label[for='{{ form_type }}_id']").text("Identifier -- ERROR Identifier already exists");
-                            } else {
-                                $("label[for='{{ form_type }}_id']").text("Identifier");
-                            }
-                        }
+        function addId(id) {
+            const definition = $("#collection_definition");
+            definition.focus();
+            const text_val = definition.val();
+            const cursor_pos = definition.prop("selectionStart");
+            definition.val(text_val.slice(0, cursor_pos) + id + text_val.slice(cursor_pos));
+            definition.prop('selectionStart', cursor_pos + id.length);
+            definition.prop('selectionEnd', cursor_pos + id.length);
+        }
+
+        function createPreview() {
+            $("#preview-panel").empty();
+            $("#preview-panel").append(`<div class='dropdown col-md-2'>
+                                <a id='preview-button' role="button" data-toggle="dropdown" class="btn btn-primary">
+                                    Preview <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu"
+                                    id="preview-list"/>
+                            </div><br/><div id="preview-error"></div>`);
+            $("#preview-button").html(" " + $("#collection_name").val() + " <span class='caret'></span>");
+            createCollectionPreview($("#collection_definition").val(), $("#preview-list"));
+        }
+
+        $(function () {
+            $(document).ready(function () {
+                function filterList(list, filter, tag) {
+                    $("#" + list + " li").filter(function () {
+                        $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
                     });
                 }
+
+                $("#tagFilter").change(function () {
+                    const tag = $(this).children("option:selected").val();
+                    filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
+                    filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
+                });
+                $("#tableFilter").on("keyup", function () {
+                    filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+                });
+
+                $("#macroFilter").on("keyup", function () {
+                    filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+                });
+
+                $("#collectionFilter").on("keyup", function () {
+                    filterList('collectionList', $("#collectionFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+                });
+
+                const name_form_field = $("#collection_name");
+                const id_form_field = $("#collection_id");
+
+                name_form_field.blur(function () {
+                    if (!(id_form_field.val())) {
+                        const slug_text = name_form_field.val();
+                        id_form_field.val(slugify(slug_text));
+                    }
+                });
+
+                id_form_field.blur(function () {
+                    if (id_form_field.val()) {
+                        const id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
+
+                        $.ajax({
+                            url: id_exists_url, success: function (result) {
+                                if (result == '1') {
+                                    $("label[for='{{ form_type }}_id']").text("Identifier -- ERROR Identifier already exists");
+                                } else {
+                                    $("label[for='{{ form_type }}_id']").text("Identifier");
+                                }
+                            }
+                        });
+                    }
+                });
+                createPreview();
+
+                $("#collection_definition").focusout(function () {
+                    createPreview();
+                })
             });
         });
-    });
-</script>
+    </script>
 {% endblock %}
 

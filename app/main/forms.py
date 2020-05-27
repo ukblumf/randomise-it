@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField, SelectField, SubmitField, RadioField, FieldList, HiddenField, IntegerField
+from wtforms import StringField, TextAreaField, BooleanField, SelectField, SubmitField, RadioField, FieldList, \
+    HiddenField, IntegerField
 from wtforms.validators import Length, Email, Regexp, DataRequired, NumberRange
 from wtforms import ValidationError
 from flask_pagedown.fields import PageDownField
@@ -89,7 +90,8 @@ class CollectionForm(FlaskForm):
     collection_name = StringField('Collection Name', validators=[Length(0, 255)])
     collection_id = StringField('Identifier', validators=[Length(0, 255)])
     collection_description = TextAreaField('Description')
-    collection_definition = TextAreaField("Collection Items", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
+    collection_definition = TextAreaField("Collection Items", validators=[DataRequired()],
+                                          render_kw={"rows": 15, "cols": 60})
     collection_tags = SelectField('Tags')
     submit = SubmitField('Save')
 
@@ -102,9 +104,13 @@ class TagForm(FlaskForm):
 class MarketForm(FlaskForm):
     name = StringField('Marketplace Name', validators=[Length(0, 255)])
     description = TextAreaField('Description')
-    commercial = BooleanField('Commercial Product', render_kw={"title": "Is this Product for sale, tick box if so. Leave unticked to be publicly available"})
-    open = BooleanField('Open', render_kw={"title": "If ticked the contents of the product are viewable, if unticked users can only get the results of selecting the table/macro."})
-    editable = BooleanField('Editable', render_kw={"title": "Only used if Product is Open, if so check this box if you want to allow users ability to edit the tables/macros."})
+    commercial = BooleanField('Commercial Product', render_kw={"title": "Is this Product for sale, tick box if so. "
+                                                                        "Leave unticked to be publicly available"})
+    open = BooleanField('Open', render_kw={"title": "If ticked the contents of the product are viewable, if unticked "
+                                                    "users can only get the results of selecting the table/macro."})
+    editable = BooleanField('Editable', render_kw={
+        "title": "Only used if Product is Open, if so check this box if you want to allow users ability to edit the "
+                 "tables/macros."})
     market_tags = SelectField('Tags')
     category1 = SelectField('Market Place Category 1')
     category2 = SelectField('Market Place Category 2')
