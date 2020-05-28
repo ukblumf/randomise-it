@@ -98,10 +98,12 @@
                     async: true,
                     data: {'macro': $("#macro_body").val()},
                     success: function (data) {
-                        $("#preview-text").html(data)
+                        $("#preview-text").html(data);
+                        $("#preview-error").empty();
                     },
                     error: function (err) {
                         $("#preview-error").append("Error occurred: <strong>" + JSON.stringify(err) + "</strong");
+                        $("#preview-text").empty();
                     }
                 });
             });

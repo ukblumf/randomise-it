@@ -80,9 +80,10 @@
             definition.focus();
             const text_val = definition.val();
             const cursor_pos = definition.prop("selectionStart");
-            definition.val(text_val.slice(0, cursor_pos) + id + text_val.slice(cursor_pos));
-            definition.prop('selectionStart', cursor_pos + id.length);
-            definition.prop('selectionEnd', cursor_pos + id.length);
+            const inserted_text = id + '\n';
+            definition.val(text_val.slice(0, cursor_pos) + inserted_text + text_val.slice(cursor_pos));
+            definition.prop('selectionStart', cursor_pos + inserted_text.length);
+            definition.prop('selectionEnd', cursor_pos + inserted_text.length);
         }
 
         function createPreview() {
