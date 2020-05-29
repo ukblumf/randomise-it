@@ -48,16 +48,23 @@ def after_request(response):
 def index():
     tables = None
     macros = None
+    collections = None
+    market_products = None
+    stories = None
+    tags = None
     if current_user.is_authenticated:
-        tables = RandomTable.query.filter_by(author_id=current_user.id) \
-            .order_by(RandomTable.timestamp.desc()).paginate(1, per_page=1000, error_out=False)
-        macros = Macros.query.filter_by(author_id=current_user.id) \
-            .order_by(Macros.timestamp.desc()).paginate(1, per_page=1000, error_out=False)
+        tables = table_query()
+        macros = macro_query()
+        collections = collection_query()
+        market_products = MarketPlace.query.filter(MarketPlace.author_id == current_user.id).order_by(
+            MarketPlace.timestamp.desc())
+        stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
+        tags = tag_query()
     else:
         tables = RandomTable.query.filter_by(permissions=ProductPermission.PUBLIC) \
-            .order_by(RandomTable.timestamp.desc()).paginate(1, per_page=1000, error_out=False)
+            .order_by(RandomTable.timestamp.desc())
         macros = Macros.query.filter_by(permissions=ProductPermission.PUBLIC) \
-            .order_by(Macros.timestamp.desc()).paginate(1, per_page=1000, error_out=False)
+            .order_by(Macros.timestamp.desc())
 
     # Hacky DB update :)
     # update_row_count = RandomTable.query.filter_by(row_count=None)
@@ -69,7 +76,8 @@ def index():
     #             t.row_count = len(t.definition.splitlines())
     #     db.session.commit()
 
-    return render_template('index.html', tables=tables.items, macro_list=macros.items)
+    return render_template('index.html', tables=tables, macro_list=macros, collections=collections,
+                           market_products=market_products, stories=stories, tags=tags)
 
 
 @main.route('/user/<username>')
@@ -742,21 +750,6 @@ def edit_market_product(id):
 
     return render_template('market_product.html', form=form, macro_list=macros, tables=tables,
                            collections=collection_list, tags=tags)
-
-
-@main.route('/edit', methods=['GET'])
-@login_required
-def edit_screen():
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
-    tags = tag_query()
-    market_products = MarketPlace.query.filter(MarketPlace.author_id == current_user.id).order_by(
-        MarketPlace.timestamp.desc())
-    stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
-
-    return render_template('edit_screen.html', macro_list=macros, tables=tables, collections=collection_list,
-                           tags=tags, market_products=market_products, stories=stories)
 
 
 @main.route('/marketplace', methods=['GET'])
