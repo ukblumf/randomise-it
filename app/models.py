@@ -19,10 +19,15 @@ class Permission:
 
 
 class ProductPermission:
-    PUBLIC = 0x01
-    COMMERCIAL = 0x02
-    OPEN = 0x04
-    EDITABLE = 0x08
+    PUBLIC = 1
+    COMMERCIAL = 2
+    OPEN = 4
+    EDITABLE = 8
+    PRIVATE = 0
+    PUBLIC_OPEN = 5
+    PUBLIC_OPEN_EDITABLE = 13
+    COMMERCIAL_OPEN = 6
+    COMMERCIAL_OPEN_EDITABLE = 14
 
 
 class Role(db.Model):

@@ -64,16 +64,21 @@ class TableForm(FlaskForm):
     table_id = StringField('Identifier', validators=[Length(0, 255)])
     table_description = TextAreaField('Description')
     table_definition = TextAreaField('Random Table Definition', render_kw={"rows": 10, "cols": 70})
-    # table_permissions = RadioField('Table Type',
-    #                                choices=[('0', 'Private'), ('1', 'Public Open'), ('5', 'Public Closed'),
-    #                                         ('2', 'Commercial Open'), ('6', 'Commercial Closed')])
     table_tags = SelectField('Tags')
+    table_permissions = RadioField('Table Type',
+                                   choices=[('0', 'Private'), ('1', 'Public - Open'), ('5', 'Public - Closed')])
+
+    # table_permissions = RadioField('Table Type',
+    #                                choices=[('0', 'Private'), ('1', 'Public - Open'), ('5', 'Public - Closed'),
+    #                                         ('2', 'Commercial - Open'), ('6', 'Commercial - Closed')])
+
     submit = SubmitField('Save')
 
 
 class StoryForm(FlaskForm):
     story = TextAreaField("Story", validators=[DataRequired()], render_kw={"rows": 24, "cols": 60})
-    title = StringField('Title', description="(Title comes after story, let the story shape the title)", validators=[Length(0, 255)])
+    title = StringField('Title', description="(Title comes after story, let the story shape the title)",
+                        validators=[Length(0, 255)])
     pins = HiddenField("Pins", validators=None)
     submit = SubmitField('Save')
 
@@ -83,6 +88,8 @@ class MacroForm(FlaskForm):
     macro_id = StringField('Identifier', validators=[Length(0, 255)])
     macro_body = TextAreaField("Create Macro", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
     macro_tags = SelectField('Tags')
+    macro_permissions = RadioField('Macro Type',
+                                   choices=[('0', 'Private'), ('1', 'Public - Open'), ('5', 'Public - Closed')])
     submit = SubmitField('Save')
 
 

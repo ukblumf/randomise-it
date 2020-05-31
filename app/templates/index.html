@@ -33,13 +33,13 @@
             </div>
             <div class="row">
                 <div class="col-md-4">
-                    {{ macros.list_rows_in_table('story', stories) }}
+                    {{ macros.list_rows_in_table('story', stories, current_user) }}
                 </div>
                 <div class="col-md-4">
-                    {{ macros.list_rows_in_table('table', tables) }}
+                    {{ macros.list_rows_in_table('table', tables, current_user) }}
                 </div>
                 <div class="col-md-4">
-                    {{ macros.list_rows_in_table('macro', macro_list) }}
+                    {{ macros.list_rows_in_table('macro', macro_list, current_user) }}
                 </div>
             </div>
             <div class="row">
@@ -55,10 +55,10 @@
             </div>
             <div class="row">
                 <div class="col-md-4">
-                    {{ macros.list_rows_in_table('collection', collections) }}
+                    {{ macros.list_rows_in_table('collection', collections, current_user) }}
                 </div>
                 <div class="col-md-4">
-                    {{ macros.list_rows_in_table('market_product', market_products) }}
+                    {{ macros.list_rows_in_table('market_product', market_products, current_user) }}
                 </div>
                 <div class="col-md-4 panel panel-default">
                     <div class="panel-body" id="preview-panel">
@@ -82,10 +82,10 @@
             </div>
             <div class="row">
                 <div class="col-md-4">
-                    {{ macros.list_rows_in_table('table', tables) }}
+                    {{ macros.list_rows_in_table('table', tables, current_user) }}
                 </div>
                 <div class="col-md-4">
-                    {{ macros.list_rows_in_table('macro', macro_list) }}
+                    {{ macros.list_rows_in_table('macro', macro_list, current_user) }}
                 </div>
                 <div class="col-md-4 panel panel-default">
                     <div class="panel-body" id="preview-panel">
@@ -93,7 +93,6 @@
                 </div>
             </div>
         </div>
-
     {% endif %}
 {% endblock %}
 

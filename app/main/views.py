@@ -61,9 +61,10 @@ def index():
         stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
         tags = tag_query()
     else:
-        tables = RandomTable.query.filter_by(permissions=ProductPermission.PUBLIC) \
+        tables = RandomTable.query.filter(
+            RandomTable.permissions.op('&')(ProductPermission.PUBLIC) == ProductPermission.PUBLIC) \
             .order_by(RandomTable.timestamp.desc())
-        macros = Macros.query.filter_by(permissions=ProductPermission.PUBLIC) \
+        macros = Macros.query.filter(Macros.permissions.op('&')(ProductPermission.PUBLIC) == ProductPermission.PUBLIC) \
             .order_by(Macros.timestamp.desc())
 
     # Hacky DB update :)
@@ -271,7 +272,8 @@ def create_table():
                             description=form.table_description.data,
                             definition=form.table_definition.data,
                             tags=form.table_tags.data,
-                            author_id=current_user.id)
+                            author_id=current_user.id,
+                            permissions=form.table_permissions.data)
 
         max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
             table)
@@ -311,6 +313,7 @@ def edit_table(id):
         table.description = form.table_description.data
         table.definition = form.table_definition.data
         table.tags = form.table_tags.data
+        table.permissions = form.table_permissions.data
 
         max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
             table)
@@ -329,7 +332,7 @@ def edit_table(id):
     form.table_name.data = table.name
     form.table_description.data = table.description
     form.table_definition.data = table.definition
-    # form.table_permissions.data = str(table.permissions)
+    form.table_permissions.data = str(table.permissions)
     form.table_tags.data = table.tags
 
     tables = table_query()
@@ -484,7 +487,8 @@ def create_macro():
                        name=form.macro_name.data,
                        definition=form.macro_body.data,
                        tags=form.macro_tags.data,
-                       author_id=current_user.id)
+                       author_id=current_user.id,
+                       permissions=form.macro_permissions.data)
 
         validate_macro_definition, error_message = validate_text(macro.definition, macro.id)
         if validate_macro_definition:
@@ -516,6 +520,7 @@ def edit_macro(id):
         macro.definition = form.macro_body.data
         if form.macro_tags.data != '':
             macro.tags = form.macro_tags.data
+        macro.permissions = form.macro_permissions.data
 
         validate_macro_definition, error_message = validate_text(macro.definition, macro.id)
         if validate_macro_definition:
@@ -527,7 +532,7 @@ def edit_macro(id):
 
     form.macro_name.data = macro.name
     form.macro_body.data = macro.definition
-    # form.permissions.data = 0
+    form.macro_permissions.data = str(macro.permissions)
     if macro.tags:
         form.macro_tags.data = macro.tags
 

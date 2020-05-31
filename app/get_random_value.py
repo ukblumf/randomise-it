@@ -51,52 +51,48 @@ def get_row_from_random_table_definition(table):
 
 
 def process_text(text):
-    open_brackets = text.find("((")
-    # current_app.logger.warning('open brackets @ ' + str(open_brackets))
+    open_brackets = text.find("((")  # find first set of double open brackets
     while open_brackets >= 0:
-        close_brackets = text.find("))", open_brackets)
-        # current_app.logger.warning('close brackets @ ' + str(close_brackets))
-        generator = text[open_brackets + 2:close_brackets]
-        # current_app.logger.warning('generator ' + generator)
+        close_brackets = text.find("))", open_brackets)  # find matching closing double brackets
+        generator = text[open_brackets + 2:close_brackets]  # extract generator
         generated_text = ''
         value = 0
         # what type of generator
         if bool(re.search(r'^\d+d\d+$', generator, re.IGNORECASE)):
-            # current_app.logger.warning('found dice type random number')
+            # Found dice type random number
             dice = re.search(r'^(\d+)d(\d+)$', generator, re.IGNORECASE)
-            # current_app.logger.warning('number of dice ' + dice.group(1))
-            # current_app.logger.warning('dice size ' + dice.group(2))
+            # Comprising number of dice in dice.group(1))
+            # And dice size in dice.group(2))
             for d in range(int(dice.group(1))):
                 value += random.randint(1, int(dice.group(2)))
             generated_text = str(value)
 
         elif bool(re.search(r'^\d+d\d+x\d+$', generator, re.IGNORECASE)):
-            # current_app.logger.warning('found dice type random number with multiplier')
+            # Found dice type random number with multiplier
             dice = re.search(r'^(\d+)d(\d+)', generator, re.IGNORECASE)
             multiplier = re.search(r'x(\d+)$', generator, re.IGNORECASE)
-            # current_app.logger.warning('number of dice ' + dice.group(1))
-            # current_app.logger.warning('dice size ' + dice.group(2))
-            # current_app.logger.warning('multipler ' + multiplier.group(1))
+            # Number of dice in dice.group(1))
+            # Dice size in dice.group(2))
+            # Multiplier in multiplier.group(1))
             for d in range(int(dice.group(1))):
                 value += random.randint(1, int(dice.group(2)))
             value *= int(multiplier.group(1))
             generated_text = str(value)
 
         elif bool(re.search(r'^\d+-\d+$', generator, re.IGNORECASE)):
-            # current_app.logger.warning('found range type random number')
+            # Found range type random number
             rng = re.search(r'^(\d+)-(\d+)$', generator, re.IGNORECASE)
-            # current_app.logger.warning('min ' + rng.group(1))
-            # current_app.logger.warning('max ' + rng.group(2))
+            # Min range in rng.group(1))
+            # Max range in rng.group(2))
             value = random.randint(int(rng.group(1)), int(rng.group(2)))
             generated_text = str(value)
-
         elif bool(re.search(r'^\d+-\d+x\d+$', generator, re.IGNORECASE)):
-            # current_app.logger.warning('found range type random number with multiplier')
+            # Found range type random number with multiplier
             rng = re.search(r'^(\d+)-(\d+)', generator, re.IGNORECASE)
             multiplier = re.search(r'x(\d+)$', generator, re.IGNORECASE)
-            # current_app.logger.warning('min ' + rng.group(1))
-            # current_app.logger.warning('max ' + rng.group(2))
-            # current_app.logger.warning('multipler ' + multiplier.group(1))
+            # Min range in rng.group(1)
+            # Max range in rng.group(2))
+            # Multiplier in multiplier.group(1))
             value = random.randint(int(rng.group(1)), int(rng.group(2)))
             value *= int(multiplier.group(1))
             generated_text = str(value)
@@ -114,32 +110,31 @@ def process_text(text):
                     generated_text += get_row_from_external_table(0, external_table.group(1), 0, "") + ", "
 
         elif bool(re.search(r'^\d+-\d+x<<.*?>>$', generator, re.IGNORECASE)):
-            # current_app.logger.warning('found range type random number with external reference')
+            # Found range type random number with external reference
             rng = re.search(r'^(\d+)-(\d+)', generator, re.IGNORECASE)
-            # current_app.logger.warning('min ' + rng.group(1))
-            # current_app.logger.warning('max ' + rng.group(2))
+            # Min range in rng.group(1))
+            # Max range in rng.group(2))
             external_table = re.search(r'x<<(.*?)>>$', generator, re.IGNORECASE)
-            # current_app.logger.warning('external table ' + external_table.group(1))
+            # External table in external_table.group(1))
             roll = random.randint(int(rng.group(1)), int(rng.group(2)))
             for n in range(roll):
                 generated_text += get_row_from_external_table(0, external_table.group(1), 0, "") + ","
 
         text = text[:open_brackets] + generated_text.rstrip(' ').rstrip(',') + text[
-                                                                                                 close_brackets + 2:]
+                                                                               close_brackets + 2:]
         open_brackets = text.find("((", open_brackets)
 
     open_angle_brackets = text.find("<<")
     while open_angle_brackets >= 0:
         close_angle_brackets = text.find(">>", open_angle_brackets)
         external_id = text[open_angle_brackets + 2:close_angle_brackets]
-        # current_app.logger.warning('Found external id :' + external_id)
-
+        # Found external id in external_id)
         # check if chance
         if bool(re.search(r'^\d+%\s', external_id)):
             chance = re.search(r'^(^\d+)%\s(.*)$', external_id)
-            # current_app.logger.warning('Found chance :' + chance.group(1))
+            # Found chance in chance.group(1))
             if random.randint(1, 100) <= int(chance.group(1)):
-                # current_app.logger.warning('Chance succeeded')
+                # Chance succeeded
                 external_id = chance.group(2)
             else:
                 text = text[:open_angle_brackets] + text[close_angle_brackets + 2:]
