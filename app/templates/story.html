@@ -5,161 +5,215 @@
 {% block title %}Randomise iT - Create Story{% endblock %}
 
 {% block page_content %}
-<h4 id="comments">Create your Story - Powered by Randomness and Imagination</h4>
-{% if current_user.can(Permission.WRITE_ARTICLES) %}
-<div class="container-fluid">
-    <div class="row" id="pinned_items">
+    <h4 id="comments">Create your Story - Powered by Randomness and Imagination</h4>
+    {% if current_user.can(Permission.WRITE_ARTICLES) %}
+        <div class="container-fluid">
+            <div class="row" id="pinned_items">
 
-    </div>
-	<div class="row">
-		<div class="col-md-8">
-            {% if current_user.can(Permission.WRITE_ARTICLES) %}
-            {{ wtf.quick_form(form) }}
-            {% endif %}
-		</div>
-        <div class="col-md-4">
-            {{ macros.tag_filter(tags) }}
-            <h4>Macros</h4>
-            {{  macros.list_rows_in_ul_with_pin('macro', macro_list, form.pins.data) }}
-            <h4>Random Tables</h4>
-            {{  macros.list_rows_in_ul_with_pin('table', tables, form.pins.data) }}
-            <h4>Collections</h4>
-            {{  macros.list_rows_in_ul_with_pin('collection', collections, form.pins.data) }}
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    {% if current_user.can(Permission.WRITE_ARTICLES) %}
+                        {{ wtf.quick_form(form) }}
+                    {% endif %}
+                </div>
+                <div class="col-md-4">
+                    {{ macros.tag_filter(tags) }}
+                    <h4>Macros</h4>
+                    {{ macros.list_rows_in_ul_with_pin('macro', macro_list, form.pins.data) }}
+                    <h4>Random Tables</h4>
+                    {{ macros.list_rows_in_ul_with_pin('table', tables, form.pins.data) }}
+                    <h4>Collections</h4>
+                    {{ macros.list_rows_in_ul_with_pin('collection', collections, form.pins.data) }}
+                </div>
+            </div>
         </div>
-	</div>
-</div>
-{% endif %}
+        <div id="confirm">
+            <textarea id="random-output" rows="6" cols="50"></textarea>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
-{{ super() }}
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-        crossorigin="anonymous">
-</script>
-<script>
-    function pinItem(id, element) {
-        //check if id already exists in pinned box
-        var pins = $("#pins");
-        if (pins.val().indexOf(id) >= 0) {
-            //if exists remove
-            pins.val(pins.val().replace(id + " ", ''));
-            if (element) {
-                $(element).attr("class", "ui-icon ui-icon-pin-s");
+    {{ super() }}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous">
+    </script>
+    <script>
+        function pinItem(id, element) {
+            //check if id already exists in pinned box
+            const pins = $("#pins");
+            if (pins.val().indexOf(id) >= 0) {
+                //if exists remove
+                pins.val(pins.val().replace(id + " ", ''));
+                if (element) {
+                    $(element).attr("class", "ui-icon ui-icon-pin-s");
+                }
+            } else {
+                //append to pinned items
+                pins.val(pins.val() + id + " ");
+                if (element) {
+                    $(element).attr("class", "ui-icon ui-icon-pin-w");
+                }
             }
-        } else {
-            //append to pinned items
-            pins.val(pins.val() + id + " ");
-            if (element) {
-                $(element).attr("class", "ui-icon ui-icon-pin-w");
-            }
+            refreshPinnedItems();
+            return false;
         }
-        refreshPinnedItems();
-        return false;
-    }
 
-    function refreshPinnedItems() {
-        var pins = $("#pins");
-        var pinned_items = $("#pinned_items")
-        pinned_items.empty();
-        pinned_items.append('<h4>Pinned items <small>(right-click to remove pinned item)</h4>')
-        $.each(pins.val().trim().split(" "), function (i, value) {
-            if (value.startsWith('collection')) {
-                //create menu
-                var collection_id = value.substring(11);
-                var dropdown = $(`<div class='dropdown col-md-2'>
+        function refreshPinnedItems() {
+            const pins = $("#pins");
+            const pinned_items = $("#pinned_items");
+            pinned_items.empty();
+            pinned_items.append('<h4>Pinned items <small>(right-click to remove pinned item)</h4>')
+            $.each(pins.val().trim().split(" "), function (i, value) {
+                if (value.startsWith('collection')) {
+                    //create menu
+                    const collection_id = value.substring(11);
+                    const dropdown = $(`<div class='dropdown col-md-2'>
                                     <a id='${collection_id}' role="button" data-toggle="dropdown" class="btn btn-primary"
                                     oncontextmenu='pinItem("${value}", ""); return false;'>
                                         ${collection_id} <span class="caret"></span>
                                     </a>
                                   </div>`).appendTo('#pinned_items');
-                var menu = $(`<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu"/>`).appendTo(dropdown);
-                createPinnedCollection(collection_id, menu);
-            } else if (value) {
-                pinned_items.append(`<div class='col-md-2'>
+                    const menu = $(`<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu"/>`).appendTo(dropdown);
+                    createPinnedCollection(collection_id, menu);
+                } else if (value) {
+                    pinned_items.append(`<div class='col-md-2'>
                                         <button onclick="addItem('${value}')" id="${value}" oncontextmenu='pinItem("${value}", ""); return false;'>${value}</button>
                                      </div>`);
-            }
-        });
-    }
-
-    function createPinnedCollection(collection_id, menu) {
-        var url = "{{ url_for('.get_collection', id='') }}" + collection_id;
-        $.when($.ajax({url: url}), menu).done(function (result, menu) {
-            $.each(result[0].split("\n"), function (i, item) {
-                item = item.trim();
-                if (item) {
-                    if (item.startsWith('collection')) {
-                        var sub_menu = $(`<ul class="dropdown-menu"/>`)
-                        createPinnedCollection(item.substring(11), sub_menu);
-                        var dropdown = $(`<li class="dropdown-submenu"><a tabindex="-1">${item}</a></li>`).append(sub_menu);
-                        menu.append(dropdown);
-                    } else {
-                        menu.append(`<li><a onclick="addItem('${item}')">${item}</a></li>`)
-                    }
                 }
             });
-        });
-    }
-
-    function addItem(id) {
-        if (id.startsWith("table.")) {
-            addTable(id.substring(6));
-        } else {
-            addMacro(id.substring(6));
         }
-    }
 
-    function addTable(tableId) {
-        var get_random_table_url = "{{ url_for('.get_random_value', id='') }}" + tableId;
-        $.ajax({
-            url: get_random_table_url, success: function (result) {
-                insertText(result);
-            }
-        });
-    }
-
-    function addMacro(macroId) {
-        var get_macro_url = "{{ url_for('.get_macro', id='') }}" + macroId;
-        $.ajax({
-            url: get_macro_url, success: function (result) {
-                insertText(result);
-            }
-        });
-    }
-
-    function insertText(result) {
-        $("#story").focus();
-        var story_text_val = $("#story").val();
-        var cursor_pos = $("#story").prop("selectionStart");
-        $("#story").val('');
-        $("#story").val(story_text_val.slice(0, cursor_pos) + result + " " + story_text_val.slice(cursor_pos));
-        $('#story').prop('selectionStart', cursor_pos + result.length + 1);
-        $('#story').prop('selectionEnd', cursor_pos + result.length + 1);
-    }
-
-    $(document).ready(function () {
-        function filterList(list, filter, tag) {
-            $("#" + list + " li").filter(function () {
-                $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
+        function createPinnedCollection(collection_id, menu) {
+            const url = "{{ url_for('.get_collection', id='') }}" + collection_id;
+            $.when($.ajax({url: url}), menu).done(function (result, menu) {
+                $.each(result[0].split("\n"), function (i, item) {
+                    item = item.trim();
+                    if (item) {
+                        if (item.startsWith('collection')) {
+                            const sub_menu = $(`<ul class="dropdown-menu"/>`);
+                            createPinnedCollection(item.substring(11), sub_menu);
+                            const dropdown = $(`<li class="dropdown-submenu"><a tabindex="-1">${item}</a></li>`).append(sub_menu);
+                            menu.append(dropdown);
+                        } else {
+                            menu.append(`<li><a onclick="addItem('${item}')">${item}</a></li>`)
+                        }
+                    }
+                });
             });
         }
-        $("#tagFilter").change(function () {
-            let tag = $(this).children("option:selected").val();
-            filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
-            filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
-            filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag);
+
+        function addItem(id) {
+            if (id.startsWith("table.")) {
+                addTable(id.substring(6));
+            } else {
+                addMacro(id.substring(6));
+            }
+        }
+
+        function addTable(tableId) {
+            const get_random_table_url = "{{ url_for('.get_random_value', id='') }}" + tableId;
+            $.ajax({
+                url: get_random_table_url, tableId: tableId, success: function (result) {
+                    $("#random-output").text(result);
+                    $("#confirm").data('tableId', tableId).dialog({
+                        title: this.tableId,
+                        draggable: true,
+                        resizable: true,
+                        height: 250,
+                        width: 400,
+                        modal: true,
+                        buttons: [
+                            {
+                                text: "Refresh",
+                                click: function () {
+                                    $(this).dialog("close");
+                                    addTable(tableId);
+                                }
+                            },
+                            {
+                                text: "Insert",
+                                click: function () {
+                                    insertText($("#random-output").text());
+                                    $(this).dialog("close");
+                                }
+                            }
+                        ]
+                    });
+                }
+            });
+        }
+
+        function addMacro(macroId) {
+            const get_macro_url = "{{ url_for('.get_macro', id='') }}" + macroId;
+            $.ajax({
+                url: get_macro_url, macroId: macroId, success: function (result) {
+                    $("#random-output").text(result);
+                    $("#confirm").data('macroId', macroId).dialog({
+                        title: this.macroId,
+                        draggable: true,
+                        resizable: true,
+                        height: 400,
+                        width: 400,
+                        modal: true,
+                        buttons: [
+                            {
+                                text: "Refresh",
+                                click: function () {
+                                    $(this).dialog("close");
+                                    addMacro(macroId);
+                                }
+                            },
+                            {
+                                text: "Insert",
+                                click: function () {
+                                    insertText($("#random-output").text());
+                                    $(this).dialog("close");
+                                }
+                            }
+                        ]
+                    });
+                }
+            });
+        }
+
+        function insertText(result) {
+            $("#story").focus();
+            const story_text_val = $("#story").val();
+            const cursor_pos = $("#story").prop("selectionStart");
+            $("#story").val('');
+            $("#story").val(story_text_val.slice(0, cursor_pos) + result + " " + story_text_val.slice(cursor_pos));
+            $('#story').prop('selectionStart', cursor_pos + result.length + 1);
+            $('#story').prop('selectionEnd', cursor_pos + result.length + 1);
+        }
+
+        $(document).ready(function () {
+            $("#confirm").hide();
+
+            function filterList(list, filter, tag) {
+                $("#" + list + " li").filter(function () {
+                    $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
+                });
+            }
+
+            $("#tagFilter").change(function () {
+                let tag = $(this).children("option:selected").val();
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
+                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag);
+            });
+            $("#tableFilter").on("keyup", function () {
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+            $("#macroFilter").on("keyup", function () {
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+            $("#collectionFilter").on("keyup", function () {
+                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+            refreshPinnedItems();
         });
-        $("#tableFilter").on("keyup", function () {
-            filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-        });
-        $("#macroFilter").on("keyup", function () {
-            filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-        });
-        $("#collectionFilter").on("keyup", function () {
-            filterList('collectionList', $("#collectionFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-        });
-        refreshPinnedItems();
-    });
-</script>
+    </script>
 {% endblock %}
