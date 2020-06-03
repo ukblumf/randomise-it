@@ -183,7 +183,6 @@
             $("#story").focus();
             const story_text_val = $("#story").val();
             const cursor_pos = $("#story").prop("selectionStart");
-            $("#story").val('');
             $("#story").val(story_text_val.slice(0, cursor_pos) + result + " " + story_text_val.slice(cursor_pos));
             $('#story').prop('selectionStart', cursor_pos + result.length + 1);
             $('#story').prop('selectionEnd', cursor_pos + result.length + 1);

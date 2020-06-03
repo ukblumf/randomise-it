@@ -65,13 +65,6 @@ class TableForm(FlaskForm):
     table_description = TextAreaField('Description')
     table_definition = TextAreaField('Random Table Definition', render_kw={"rows": 10, "cols": 70})
     table_tags = SelectField('Tags')
-    table_permissions = RadioField('Table Type',
-                                   choices=[('0', 'Private'), ('1', 'Public - Open'), ('5', 'Public - Closed')])
-
-    # table_permissions = RadioField('Table Type',
-    #                                choices=[('0', 'Private'), ('1', 'Public - Open'), ('5', 'Public - Closed'),
-    #                                         ('2', 'Commercial - Open'), ('6', 'Commercial - Closed')])
-
     submit = SubmitField('Save')
 
 
@@ -88,8 +81,6 @@ class MacroForm(FlaskForm):
     macro_id = StringField('Identifier', validators=[Length(0, 255)])
     macro_body = TextAreaField("Create Macro", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
     macro_tags = SelectField('Tags')
-    macro_permissions = RadioField('Macro Type',
-                                   choices=[('0', 'Private'), ('1', 'Public - Open'), ('5', 'Public - Closed')])
     submit = SubmitField('Save')
 
 

@@ -272,8 +272,7 @@ def create_table():
                             description=form.table_description.data,
                             definition=form.table_definition.data,
                             tags=form.table_tags.data,
-                            author_id=current_user.id,
-                            permissions=form.table_permissions.data)
+                            author_id=current_user.id)
 
         max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
             table)
@@ -313,7 +312,6 @@ def edit_table(id):
         table.description = form.table_description.data
         table.definition = form.table_definition.data
         table.tags = form.table_tags.data
-        table.permissions = form.table_permissions.data
 
         max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
             table)
@@ -328,11 +326,9 @@ def edit_table(id):
         else:
             flash(error_message)
 
-    # form.table_id.data = table.id
     form.table_name.data = table.name
     form.table_description.data = table.description
     form.table_definition.data = table.definition
-    form.table_permissions.data = str(table.permissions)
     form.table_tags.data = table.tags
 
     tables = table_query()
@@ -520,7 +516,6 @@ def edit_macro(id):
         macro.definition = form.macro_body.data
         if form.macro_tags.data != '':
             macro.tags = form.macro_tags.data
-        macro.permissions = form.macro_permissions.data
 
         validate_macro_definition, error_message = validate_text(macro.definition, macro.id)
         if validate_macro_definition:
@@ -532,7 +527,6 @@ def edit_macro(id):
 
     form.macro_name.data = macro.name
     form.macro_body.data = macro.definition
-    form.macro_permissions.data = str(macro.permissions)
     if macro.tags:
         form.macro_tags.data = macro.tags
 
@@ -625,7 +619,6 @@ def edit_collection(id):
     form.collection_name.data = collection_obj.name
     form.collection_description.data = collection_obj.description
     form.collection_definition.data = collection_obj.definition
-    # form.permissions.data = 0
     form.collection_tags.data = collection_obj.tags
     form.collection_id.data = collection_obj.id
     form.collection_id.render_kw = {'readonly': True}

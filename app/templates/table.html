@@ -5,75 +5,83 @@
 {% block title %}Randomise iT - Create Table{% endblock %}
 
 {% block page_content %}
-{% if current_user.can(Permission.WRITE_ARTICLES) %}
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-8">
-            {{ wtf.quick_form(form) }}
-		</div>
-		<div class="col-md-4">
-            {{ macros.tag_filter(tags) }}
-            <h4>Macros</h4>
-            {{  macros.list_rows_in_ul('macro', macro_list) }}
-            <h4>Random Tables</h4>
-            {{  macros.list_rows_in_ul('table', tables) }}
-		</div>
-	</div>
-</div>
-{% endif %}
+    {% if current_user.can(Permission.WRITE_ARTICLES) %}
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8">
+                    {{ wtf.quick_form(form) }}
+                </div>
+                <div class="col-md-4">
+                    {{ macros.tag_filter(tags) }}
+                    <h4>Macros</h4>
+                    {{ macros.list_rows_in_ul('macro', macro_list) }}
+                    <h4>Random Tables</h4>
+                    {{ macros.list_rows_in_ul('table', tables) }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
-{{ super() }}
-<script>
-    function addId(id) {
-        document.getElementById("table_definition").value += '<<' + id + '>> ';
-        document.getElementById("table_definition").focus();
-    }
-
-    $(document).ready(function () {
-        function filterList(list, filter, tag) {
-            $("#" + list + " li").filter(function () {
-                $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
-            });
+    {{ super() }}
+    <script>
+        function addId(id) {
+            const table_definition = $("#table_definition")
+            table_definition.focus();
+            const story_text_val = table_definition.val();
+            const cursor_pos = table_definition.prop("selectionStart");
+            table_definition.val(story_text_val.slice(0, cursor_pos) + id + "\n" + story_text_val.slice(cursor_pos));
+            table_definition.prop('selectionStart', cursor_pos + id.length + 1);
+            table_definition.prop('selectionEnd', cursor_pos + id.length + 1);
         }
-        $("#tagFilter").change(function () {
-            const tag = $(this).children("option:selected").val();
-            filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
-            filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
-        });
-        $("#tableFilter").on("keyup", function () {
-            filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-        });
-        $("#macroFilter").on("keyup", function () {
-            filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-        });
 
-        var name_form_field = $("#{{ form_type }}_name");
-        var id_form_field = $("#{{ form_type }}_id");
-
-        name_form_field.blur(function () {
-            if (!(id_form_field.val())) {
-                var slug_text = name_form_field.val();
-                id_form_field.val(slugify(slug_text));
-            }
-        });
-
-        id_form_field.blur(function () {
-            if (id_form_field.val()) {
-                var id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
-
-                $.ajax({
-                    url: id_exists_url, success: function (result) {
-                        if (result == '1') {
-                            $("label[for='{{ form_type }}_id']").text("Identifier -- ERROR Identifier already exists");
-                        } else {
-                            $("label[for='{{ form_type }}_id']").text("Identifier");
-                        }
-                    }
+        $(document).ready(function () {
+            function filterList(list, filter, tag) {
+                $("#" + list + " li").filter(function () {
+                    $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
                 });
             }
+
+            $("#tagFilter").change(function () {
+                const tag = $(this).children("option:selected").val();
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
+            });
+            $("#tableFilter").on("keyup", function () {
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+            $("#macroFilter").on("keyup", function () {
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+
+            var name_form_field = $("#table_name");
+            var id_form_field = $("#table_id");
+
+            name_form_field.blur(function () {
+                if (!(id_form_field.val())) {
+                    var slug_text = name_form_field.val();
+                    id_form_field.val(slugify(slug_text));
+                }
+            });
+
+            id_form_field.blur(function () {
+                if (id_form_field.val()) {
+                    var id_exists_url = "{{ url_for('.id_exists', type='table', id='') }}" + id_form_field.val();
+
+                    $.ajax({
+                        url: id_exists_url, success: function (result) {
+                            if (result == '1') {
+                                $("label[for='table_id']").text("Identifier -- ERROR Identifier already exists");
+                            } else {
+                                $("label[for='table_id']").text("Identifier");
+                            }
+                        }
+                    });
+                }
+            });
+
+
         });
-    });
-</script>
+    </script>
 {% endblock %}
