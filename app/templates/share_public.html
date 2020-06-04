@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}Randomise iT - Sharing Free Content{% endblock %}
+
+{% block page_content %}
+    <div class="container-fluid">
+        <div class="row">
+            <label for="tagFilter">Tag:</label>
+            <select id="tagFilter">
+                <option label="" selected></option>
+                {% for tag in tags %}
+                    <option label="{{ tag.id }}">{{ tag.id }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="row">
+            <h2>Personal</h2>
+            <div class="col-md-4">
+                <h3>Collections</h3>
+            </div>
+            <div class="col-md-4">
+                <h3>Macros</h3>
+            </div>
+            <div class="col-md-4">
+                <h3>Tables</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                {{ macros.list_rows_in_ul('collection', collections) }}
+            </div>
+            <div class="col-md-4">
+                {{ macros.list_rows_in_ul('macro', macro_list) }}
+            </div>
+            <div class="col-md-4">
+                {{ macros.list_rows_in_ul('table', tables) }}
+            </div>
+        </div>
+        <div class="row">
+            <h2>To be shared free</h2>
+            <div class="col-md-4">
+                <h3>Collections</h3>
+            </div>
+            <div class="col-md-4">
+                <h3>Macros</h3>
+            </div>
+            <div class="col-md-4">
+                <h3>Tables</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <ul id="shared-collections">
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <ul id="shared-macros">
+
+                </ul>
+            </div>
+            <div class="col-md-4">
+                <ul id="shared-tables">
+
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            {% if current_user.can(Permission.WRITE_ARTICLES) %}
+                {{ wtf.quick_form(form) }}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        var collections = JSON.parse('{{collection_references | tojson}}');
+        var tables = JSON.parse('{{table_references | tojson}}');
+        var macros = JSON.parse('{{macro_references | tojson}}');
+
+        console.log(macros);
+
+        function addId(id) {
+            if (id.startsWith('collection.') && $("#collections_shared").val().indexOf(id) == -1) {
+                $("#shared-collections").append("<li onclick='removeId(this)' id='" + id + "'>" + id + "</button</li>");
+                $("#collections_shared").val($("#collections_shared").val() + id + " ");
+                addDependentReferences(collections[id]);
+            } else if (id.startsWith('macro.') && $("#macros_shared").val().indexOf(id) == -1) {
+                addDependentReferences(macros[id]);
+            } else if (id.startsWith('table.') && $("#tables_shared").val().indexOf(id) == -1) {
+                addDependentReferences(tables[id]);
+            }
+        }
+
+        function addDependentReferences(ref) {
+            console.log(typeof ref);
+            $.each(ref, function (k, v) {
+                console.log(k, typeof k);
+                console.log(v, typeof v);
+                if (typeof k === "number") {
+                    const id = v.substr(0, v.indexOf('::'));
+                    if (id.startsWith('table.')) {
+                        if ($("#tables_shared").val().indexOf(id) == -1) {
+                            $("#shared-tables").append("<li onclick='removeId(this)' id='" + id + "'>" + id + "</button</li>");
+                            $("#tables_shared").val($("#tables_shared").val() + id + " ");
+                        }
+                    } else if (id.startsWith('macro.')) {
+                        if ($("#macros_shared").val().indexOf(id) == -1) {
+                            $("#shared-macros").append("<li onclick='removeId(this)' id='" + id + "'>" + id + "</button</li>");
+                            $("#macros_shared").val($("#macros_shared").val() + id + " ");
+                        }
+                    }
+                } else {
+                    if (k.startsWith('collection.')) {
+                        if ($("#collections_shared").val().indexOf(k) == -1) {
+                            $("#shared-collections").append("<li onclick='removeId(this)' id='" + k + "'>" + k + "</button</li>");
+                            $("#collections_shared").val($("#collections_shared").val() + k + " ");
+                        }
+                        addDependentReferences(v);
+                    } else if (k.startsWith('table.')) {
+                        if ($("#tables_shared").val().indexOf(k) == -1) {
+                            $("#shared-tables").append("<li onclick='removeId(this)' id='" + k + "'>" + k + "</button</li>");
+                            $("#tables_shared").val($("#tables_shared").val() + k + " ");
+                        }
+                    } else if (k.startsWith('macro.')) {
+                        if ($("#macros_shared").val().indexOf(k) == -1) {
+                            $("#shared-macros").append("<li onclick='removeId(this)' id='" + k + "'>" + k + "</button</li>");
+                            $("#macros_shared").val($("#macros_shared").val() + k + " ");
+                        }
+                    }
+                }
+            });
+        }
+
+        function removeId(removeElement) {
+            if (removeElement.id.startsWith('collection.')) {
+                $("#collections_shared").val($("#collections_shared").val().replace(removeElement.id + " ", ''));
+                $(removeElement).remove();
+            } else if (removeElement.id.startsWith('macro.')) {
+                $("#macros_shared").val($("#macros_shared").val().replace(removeElement.id + " ", ''));
+                $(removeElement).remove();
+            } else if (removeElement.id.startsWith('table.')) {
+                $("#tables_shared").val($("#tables_shared").val().replace(removeElement.id + " ", ''));
+                $(removeElement).remove();
+            }
+        }
+
+        $(document).ready(function () {
+            function filterList(list, filter, tag) {
+                $("#" + list + " li").filter(function () {
+                    $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
+                });
+            }
+
+            $("#tagFilter").change(function () {
+                let tag = $(this).children("option:selected").val();
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
+                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag);
+            });
+            $("#tableFilter").on("keyup", function () {
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+            $("#macroFilter").on("keyup", function () {
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+            $("#collectionFilter").on("keyup", function () {
+                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            });
+
+
+        });
+    </script>
+{% endblock %}

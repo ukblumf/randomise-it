@@ -1,10 +1,12 @@
+import collections
+
 from flask import render_template, redirect, url_for, abort, flash, request, \
     current_app, make_response
 from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, TableForm, StoryForm, MacroForm, \
-    CollectionForm, TagForm, MarketForm, BulkTableImportForm
+    CollectionForm, TagForm, MarketForm, BulkTableImportForm, Share
 from .. import db
 from ..models import Permission, Role, User, Post, Comment, RandomTable, Macros, ProductPermission, Collection, Tags, \
     MarketPlace, MarketCategory
@@ -330,12 +332,12 @@ def edit_table(id):
     form.table_description.data = table.description
     form.table_definition.data = table.definition
     form.table_tags.data = table.tags
+    form.table_id.data = table.id
+    form.table_id.render_kw = {'readonly': True}
 
     tables = table_query()
     macros = macro_query()
     tags = tag_query()
-
-    del form.table_id  # remove id from edit screen form
 
     return render_template('table.html', tables=tables, macro_list=macros, form=form, tags=tags)
 
@@ -527,6 +529,8 @@ def edit_macro(id):
 
     form.macro_name.data = macro.name
     form.macro_body.data = macro.definition
+    form.macro_id.data = macro.id
+    form.macro_id.render_kw = {'readonly': True}
     if macro.tags:
         form.macro_tags.data = macro.tags
 
@@ -534,7 +538,6 @@ def edit_macro(id):
     macros = macro_query(id)
     tags = tag_query()
 
-    del form.macro_id  # remove id from edit screen
     return render_template('macro.html', form=form, macro_list=macros, tables=tables, edit_macro=macro,
                            form_type='macro', tags=tags)
 
@@ -785,6 +788,108 @@ def id_exists(type, id):
         check = db.session.query(MarketPlace.id).filter_by(id=id).scalar() is not None
 
     return str(int(check == True))
+
+
+@main.route('/share-public', methods=['GET', 'POST'])
+@login_required
+def share_public():
+    form = Share()
+    if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+        flash('Content Shared')
+        return redirect(url_for('.share_public'))
+
+    tables = table_query()
+    macros = macro_query()
+    collection_list = collection_query()
+    tags = tag_query()
+    collection_references = collections.OrderedDict()
+    table_references = collections.OrderedDict()
+    macro_references = collections.OrderedDict()
+    try:
+        if collection_list.count():
+            for c in collection_list:
+                collection_references['collection.' + c.id] = build_collection_references(c)
+
+        if tables.count():
+            for t in tables:
+                table_references['table.' + t.id] = find_references('table.' + t.id, t.definition,
+                                                                    ['table.' + t.id + '::0'], 0)
+        if macros.count():
+            for m in macros:
+                macro_references['macro.' + m.id] = find_references('macro.' + m.id, m.definition,
+                                                                    ['macro.' + m.id + '::0'], 0)
+    except Exception as inst:
+        return render_template('error_page.html', description=inst)
+
+    return render_template('share_public.html', form=form, tables=tables, macro_list=macros,
+                           collections=collection_list, tags=tags, collection_references=collection_references,
+                           table_references=table_references, macro_references=macro_references)
+
+
+def build_collection_references(coll_obj):
+    # current_app.logger.warning('process set:' + set_obj.name)
+    coll_dict = collections.OrderedDict()
+    coll_definition = coll_obj.definition.splitlines()
+
+    for coll_item in coll_definition:
+        if coll_item.startswith('table.'):
+            table = RandomTable.query.get([coll_item[6:], current_user.id])
+            if table is not None:
+                try:
+                    coll_dict[coll_item] = find_references(coll_item, table.definition, [coll_item + '::0'], 0)
+                except Exception as inst:
+                    raise inst
+            else:
+                raise Exception('Table not found', coll_item + ' not found in db for user ' + str(current_user.id))
+        elif coll_item.startswith('macro.'):
+            macro = Macros.query.get([coll_item[6:], current_user.id])
+            if macro is not None:
+                try:
+                    coll_dict[coll_item] = find_references(coll_item, macro.definition, [coll_item + '::0'], 0)
+                except Exception as inst:
+                    raise inst
+            else:
+                raise Exception('Macro not found', coll_item + ' not found in db for user ' + str(current_user.id))
+        elif coll_item.startswith('collection.'):
+            sub_coll = Collection.query.get([coll_item[11:], current_user.id])
+            if sub_coll is not None:
+                coll_dict[coll_item] = build_collection_references(sub_coll)
+            else:
+                raise Exception('Collection Not Found', coll_item + ' not found in db for user ' + str(current_user.id))
+    return coll_dict
+
+
+def find_references(obj_id, definition, references, depth):
+    depth += 1
+    open_angle_brackets = definition.find("<<")
+    while open_angle_brackets >= 0:
+        close_angle_brackets = definition.find(">>", open_angle_brackets)
+        external_id = definition[open_angle_brackets + 2:close_angle_brackets]
+        if external_id + '::' + str(depth) in references:
+            # already processed this id at this level
+            open_angle_brackets = definition.find("<<", close_angle_brackets)
+            continue
+        # find if reference exists up the chain
+        for d in range(0, depth - 1):
+            if external_id + '::' + str(d) in references:
+                raise Exception('CircularReference',
+                                external_id + ' already used in chain. Found in ' + obj_id + '. Depth = ' + str(depth))
+        if external_id.startswith('table.'):
+            table = RandomTable.query.get([external_id[6:], current_user.id])
+            if table is not None:
+                references.append(external_id + '::' + str(depth))
+                find_references(external_id, table.definition, references, depth)
+            else:
+                raise Exception('Table not found', external_id + ' not found in db for user:' + str(current_user.id))
+        elif external_id.startswith('macro.'):
+            macro = Macros.query.get([external_id[6:], current_user.id])
+            if macro is not None:
+                references.append(external_id + '::' + str(depth))
+                find_references(external_id, macro.definition, references, depth)
+            else:
+                raise Exception('Macro not found', external_id + ' not found in db for user:' + str(current_user.id))
+        open_angle_brackets = definition.find("<<", close_angle_brackets)
+    return references
 
 
 def tag_list():

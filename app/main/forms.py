@@ -118,4 +118,11 @@ class MarketForm(FlaskForm):
 class BulkTableImportForm(FlaskForm):
     tables = TextAreaField('Bulk Table Definitions', validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
     bulk_tag = SelectField('Tag')
-    submit = SubmitField('Save')
+    submit = SubmitField('Import')
+
+
+class Share(FlaskForm):
+    collections_shared = HiddenField("Collections", validators=None)
+    macros_shared = HiddenField("Macros", validators=None)
+    tables_shared = HiddenField("Tables", validators=None)
+    submit = SubmitField('Share')
