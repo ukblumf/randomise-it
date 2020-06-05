@@ -10,6 +10,7 @@ from .forms import EditProfileForm, EditProfileAdminForm, TableForm, StoryForm, 
 from .. import db
 from ..models import Permission, Role, User, Post, Comment, RandomTable, Macros, ProductPermission, Collection, Tags, \
     MarketPlace, MarketCategory
+from ..public_models import *
 from ..decorators import admin_required, permission_required
 from ..validate import check_table_definition_validity, validate_text, validate_collection
 from ..get_random_value import get_row_from_random_table_definition, process_text
@@ -485,8 +486,7 @@ def create_macro():
                        name=form.macro_name.data,
                        definition=form.macro_body.data,
                        tags=form.macro_tags.data,
-                       author_id=current_user.id,
-                       permissions=form.macro_permissions.data)
+                       author_id=current_user.id)
 
         validate_macro_definition, error_message = validate_text(macro.definition, macro.id)
         if validate_macro_definition:
@@ -795,6 +795,49 @@ def id_exists(type, id):
 def share_public():
     form = Share()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
+        public_collections = form.collections_shared.data.strip().split(' ')
+        public_macros = form.macros_shared.data.strip().split(' ')
+        public_tables = form.tables_shared.data.strip().split(' ')
+        for c_id in public_collections:
+            c = Collection.query.get([c_id[11:], current_user.id])
+            if not c:
+                db.session.rollback()
+                return render_template('error_page.html', description='Error finding Collection ' + c_id)
+            else:
+                pc = PublicCollection(id=c.id,
+                                      name=c.name,
+                                      definition=c.definition,
+                                      tags=c.tags,
+                                      author_id=current_user.id,
+                                      permissions=ProductPermission.PUBLIC)
+                db.session.add(pc)
+        for m_id in public_macros:
+            m = Macros.query.get([m_id[6:], current_user.id])
+            if not m:
+                db.session.rollback()
+                return render_template('error_page.html', description='Error finding Macro ' + m_id)
+            else:
+                pm = PublicMacros(id=m.id,
+                                  name=m.name,
+                                  definition=m.definition,
+                                  tags=m.tags,
+                                  author_id=current_user.id,
+                                  permissions=ProductPermission.PUBLIC)
+                db.session.add(pm)
+        for t_id in public_tables:
+            t = RandomTable.query.get([t_id[6:], current_user.id])
+            if not t:
+                db.session.rollback()
+                return render_template('error_page.html', description='Error finding Random Table ' + t_id)
+            else:
+                pt = PublicRandomTable(id=t.id,
+                                       name=t.name,
+                                       description=t.description,
+                                       definition=t.definition,
+                                       tags=t.tags,
+                                       author_id=current_user.id)
+                db.session.add(pt)
+        db.session.commit()
         flash('Content Shared')
         return redirect(url_for('.share_public'))
 
@@ -827,7 +870,6 @@ def share_public():
 
 
 def build_collection_references(coll_obj):
-    # current_app.logger.warning('process set:' + set_obj.name)
     coll_dict = collections.OrderedDict()
     coll_definition = coll_obj.definition.splitlines()
 

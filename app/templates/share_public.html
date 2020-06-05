@@ -77,9 +77,9 @@
 {% block scripts %}
     {{ super() }}
     <script>
-        var collections = JSON.parse('{{collection_references | tojson}}');
-        var tables = JSON.parse('{{table_references | tojson}}');
-        var macros = JSON.parse('{{macro_references | tojson}}');
+        const collections = JSON.parse('{{collection_references | tojson}}');
+        const tables = JSON.parse('{{table_references | tojson}}');
+        const macros = JSON.parse('{{macro_references | tojson}}');
 
         function addId(id) {
             if (id.startsWith('collection.')) {
