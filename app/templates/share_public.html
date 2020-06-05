@@ -51,17 +51,17 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-4">
-                <ul id="shared-collections">
+            <div class="col-md-4" style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="shared-collections">
                 </ul>
             </div>
-            <div class="col-md-4">
-                <ul id="shared-macros">
+            <div class="col-md-4" style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="shared-macros">
 
                 </ul>
             </div>
-            <div class="col-md-4">
-                <ul id="shared-tables">
+            <div class="col-md-4" style="height: 200px; overflow-y: scroll;">
+                <ul class="list-group" id="shared-tables">
 
                 </ul>
             </div>
@@ -81,71 +81,65 @@
         var tables = JSON.parse('{{table_references | tojson}}');
         var macros = JSON.parse('{{macro_references | tojson}}');
 
-        console.log(macros);
-
         function addId(id) {
-            if (id.startsWith('collection.') && $("#collections_shared").val().indexOf(id) == -1) {
-                $("#shared-collections").append("<li onclick='removeId(this)' id='" + id + "'>" + id + "</button</li>");
+            if (id.startsWith('collection.')) {
+                $("#shared-collections").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + id + "' id='" + id + "'>" + id + "</li>");
                 $("#collections_shared").val($("#collections_shared").val() + id + " ");
-                addDependentReferences(collections[id]);
+                addDependentReferences(collections[id], id);
             } else if (id.startsWith('macro.') && $("#macros_shared").val().indexOf(id) == -1) {
-                addDependentReferences(macros[id]);
+                $("#shared-macros").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + id + "' id='" + id + "'>" + id + "</li>");
+                $("#macros_shared").val($("#macros_shared").val() + id + " ");
+                addDependentReferences(macros[id], id);
             } else if (id.startsWith('table.') && $("#tables_shared").val().indexOf(id) == -1) {
-                addDependentReferences(tables[id]);
+                $("#shared-tables").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + id + "' id='" + id + "'>" + id + "</li>");
+                $("#tables_shared").val($("#tables_shared").val() + id + " ");
+                addDependentReferences(tables[id], id);
             }
         }
 
-        function addDependentReferences(ref) {
-            console.log(typeof ref);
+        function addDependentReferences(ref, parentId) {
             $.each(ref, function (k, v) {
-                console.log(k, typeof k);
-                console.log(v, typeof v);
                 if (typeof k === "number") {
                     const id = v.substr(0, v.indexOf('::'));
                     if (id.startsWith('table.')) {
-                        if ($("#tables_shared").val().indexOf(id) == -1) {
-                            $("#shared-tables").append("<li onclick='removeId(this)' id='" + id + "'>" + id + "</button</li>");
-                            $("#tables_shared").val($("#tables_shared").val() + id + " ");
-                        }
+                        updateLists(id, parentId, $("#shared-tables"), $("#tables_shared"))
                     } else if (id.startsWith('macro.')) {
-                        if ($("#macros_shared").val().indexOf(id) == -1) {
-                            $("#shared-macros").append("<li onclick='removeId(this)' id='" + id + "'>" + id + "</button</li>");
-                            $("#macros_shared").val($("#macros_shared").val() + id + " ");
-                        }
+                        updateLists(id, parentId, $("#shared-macros"), $("#macros_shared"))
                     }
                 } else {
                     if (k.startsWith('collection.')) {
-                        if ($("#collections_shared").val().indexOf(k) == -1) {
-                            $("#shared-collections").append("<li onclick='removeId(this)' id='" + k + "'>" + k + "</button</li>");
-                            $("#collections_shared").val($("#collections_shared").val() + k + " ");
-                        }
-                        addDependentReferences(v);
+                        updateLists(k, parentId, $("#shared-collections"), $("#collections_shared"))
+                        addDependentReferences(v, parentId);
                     } else if (k.startsWith('table.')) {
-                        if ($("#tables_shared").val().indexOf(k) == -1) {
-                            $("#shared-tables").append("<li onclick='removeId(this)' id='" + k + "'>" + k + "</button</li>");
-                            $("#tables_shared").val($("#tables_shared").val() + k + " ");
-                        }
+                        updateLists(k, parentId, $("#shared-tables"), $("#tables_shared"))
                     } else if (k.startsWith('macro.')) {
-                        if ($("#macros_shared").val().indexOf(k) == -1) {
-                            $("#shared-macros").append("<li onclick='removeId(this)' id='" + k + "'>" + k + "</button</li>");
-                            $("#macros_shared").val($("#macros_shared").val() + k + " ");
-                        }
+                        updateLists(k, parentId, $("#shared-macros"), $("#macros_shared"))
                     }
                 }
             });
+
+            function updateLists(id, parentId, displayList, hiddenList) {
+                if (hiddenList.val().indexOf(id) == -1) {
+                    displayList.append("<li class='list-group-item disabled' data-parentid='" + parentId + "' id='" + id + "'>" + id + "</li>");
+                    hiddenList.val(hiddenList.val() + id + " ");
+                }
+            }
         }
 
         function removeId(removeElement) {
-            if (removeElement.id.startsWith('collection.')) {
-                $("#collections_shared").val($("#collections_shared").val().replace(removeElement.id + " ", ''));
-                $(removeElement).remove();
-            } else if (removeElement.id.startsWith('macro.')) {
-                $("#macros_shared").val($("#macros_shared").val().replace(removeElement.id + " ", ''));
-                $(removeElement).remove();
-            } else if (removeElement.id.startsWith('table.')) {
-                $("#tables_shared").val($("#tables_shared").val().replace(removeElement.id + " ", ''));
-                $(removeElement).remove();
-            }
+            $('#shared-collections li').filter(function () {
+                $('#collections_shared').val($('#collections_shared').val().replace(this.id, ''));
+                return $(this).data('parentid') === removeElement.id
+            }).remove();
+            $('#shared-macros li').filter(function () {
+                $('#macros_shared').val($('#macros_shared').val().replace(this.id, ''));
+                return $(this).data('parentid') === removeElement.id
+            }).remove();
+            $('#shared-tables li').filter(function () {
+                $('#tables_shared').val($('#tables_shared').val().replace(this.id, ''));
+                return $(this).data('parentid') === removeElement.id
+            }).remove();
+            $(removeElement).remove();
         }
 
         $(document).ready(function () {
