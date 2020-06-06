@@ -795,51 +795,68 @@ def id_exists(type, id):
 def share_public():
     form = Share()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-        public_collections = form.collections_shared.data.strip().split(' ')
-        public_macros = form.macros_shared.data.strip().split(' ')
-        public_tables = form.tables_shared.data.strip().split(' ')
-        for c_id in public_collections:
-            c = Collection.query.get([c_id[11:], current_user.id])
-            if not c:
-                db.session.rollback()
-                return render_template('error_page.html', description='Error finding Collection ' + c_id)
-            else:
-                pc = PublicCollection(id=c.id,
-                                      name=c.name,
-                                      definition=c.definition,
-                                      tags=c.tags,
-                                      author_id=current_user.id,
-                                      permissions=ProductPermission.PUBLIC)
-                db.session.add(pc)
-        for m_id in public_macros:
-            m = Macros.query.get([m_id[6:], current_user.id])
-            if not m:
-                db.session.rollback()
-                return render_template('error_page.html', description='Error finding Macro ' + m_id)
-            else:
-                pm = PublicMacros(id=m.id,
-                                  name=m.name,
-                                  definition=m.definition,
-                                  tags=m.tags,
-                                  author_id=current_user.id,
-                                  permissions=ProductPermission.PUBLIC)
-                db.session.add(pm)
-        for t_id in public_tables:
-            t = RandomTable.query.get([t_id[6:], current_user.id])
-            if not t:
-                db.session.rollback()
-                return render_template('error_page.html', description='Error finding Random Table ' + t_id)
-            else:
-                pt = PublicRandomTable(id=t.id,
-                                       name=t.name,
-                                       description=t.description,
-                                       definition=t.definition,
-                                       tags=t.tags,
-                                       author_id=current_user.id)
-                db.session.add(pt)
-        db.session.commit()
-        flash('Content Shared')
-        return redirect(url_for('.share_public'))
+        with db.session.no_autoflush:
+            public_collections = form.collections_shared.data.strip().split(' ')
+            public_macros = form.macros_shared.data.strip().split(' ')
+            public_tables = form.tables_shared.data.strip().split(' ')
+            announcement = PublicAnnouncements(title=form.title.data,
+                                               description=form.description.data,
+                                               author_id=current_user.id)
+            db.session.add(announcement)
+            db.session.flush()
+            if public_collections != ['']:
+                for c_id in public_collections:
+                    c = Collection.query.get([c_id[11:], current_user.id])
+                    if not c:
+                        db.session.rollback()
+                        return render_template('error_page.html', description='Error finding Collection ' + c_id)
+                    else:
+                        pc = PublicCollection(id=c.id,
+                                              name=c.name,
+                                              definition=c.definition,
+                                              tags=c.tags,
+                                              author_id=current_user.id,
+                                              permissions=ProductPermission.PUBLIC,
+                                              announcement_id=announcement.id)
+                        db.session.add(pc)
+            if public_macros != ['']:
+                for m_id in public_macros:
+                    m = Macros.query.get([m_id[6:], current_user.id])
+                    if not m:
+                        db.session.rollback()
+                        return render_template('error_page.html', description='Error finding Macro ' + m_id)
+                    else:
+                        pm = PublicMacros(id=m.id,
+                                          name=m.name,
+                                          definition=m.definition,
+                                          tags=m.tags,
+                                          author_id=current_user.id,
+                                          permissions=ProductPermission.PUBLIC,
+                                          announcement_id=announcement.id)
+                        db.session.add(pm)
+            if public_tables != ['']:
+                for t_id in public_tables:
+                    t = RandomTable.query.get([t_id[6:], current_user.id])
+                    if not t:
+                        db.session.rollback()
+                        return render_template('error_page.html', description='Error finding Random Table ' + t_id)
+                    else:
+                        pt = PublicRandomTable(id=t.id,
+                                               name=t.name,
+                                               description=t.description,
+                                               definition=t.definition,
+                                               tags=t.tags,
+                                               author_id=current_user.id,
+                                               min=t.min,
+                                               max=t.max,
+                                               description_html=t.description_html,
+                                               line_type=t.line_type,
+                                               row_count=t.row_count,
+                                               announcement_id=announcement.id)
+                        db.session.add(pt)
+            db.session.commit()
+            flash('Content Shared')
+            return redirect(url_for('.share_public'))
 
     tables = table_query()
     macros = macro_query()

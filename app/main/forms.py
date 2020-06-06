@@ -122,6 +122,8 @@ class BulkTableImportForm(FlaskForm):
 
 
 class Share(FlaskForm):
+    title = StringField('Public Announcement Title', validators=[Length(0, 255), DataRequired()])
+    description = TextAreaField("Description of what is being shared", render_kw={"rows": 5, "cols": 40})
     collections_shared = HiddenField("Collections", validators=None)
     macros_shared = HiddenField("Macros", validators=None)
     tables_shared = HiddenField("Tables", validators=None)

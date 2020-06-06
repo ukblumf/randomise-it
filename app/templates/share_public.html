@@ -16,7 +16,7 @@
             </select>
         </div>
         <div class="row">
-            <h2>Personal</h2>
+            <h2 class="bg-primary">Personal</h2>
             <div class="col-md-4">
                 <h3>Collections</h3>
             </div>
@@ -39,7 +39,7 @@
             </div>
         </div>
         <div class="row">
-            <h2>To be shared free</h2>
+            <h2 class="bg-info">To be shared free</h2>
             <div class="col-md-4">
                 <h3>Collections</h3>
             </div>
@@ -67,9 +67,11 @@
             </div>
         </div>
         <div class="row">
-            {% if current_user.can(Permission.WRITE_ARTICLES) %}
-                {{ wtf.quick_form(form) }}
-            {% endif %}
+            <div class="col-md-4">
+                {% if current_user.can(Permission.WRITE_ARTICLES) %}
+                    {{ wtf.quick_form(form) }}
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}

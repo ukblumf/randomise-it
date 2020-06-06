@@ -17,6 +17,7 @@ class PublicRandomTable(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     tags = db.Column(db.Text, index=True)
     row_count = db.Column(db.Integer)
+    announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
 
 
 class PublicMacros(db.Model):
@@ -29,6 +30,7 @@ class PublicMacros(db.Model):
     permissions = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     tags = db.Column(db.Text, index=True)
+    announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
 
 
 class PublicCollection(db.Model):
@@ -41,6 +43,7 @@ class PublicCollection(db.Model):
     permissions = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     tags = db.Column(db.Text, index=True)
+    announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
 
 
 class PublicLinkedTables(db.Model):
@@ -62,3 +65,13 @@ class PublicLinkedCollections(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     collection_id = db.Column(db.Text, primary_key=True)
     original_author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+
+class PublicAnnouncements(db.Model):
+    __tablename__ = 'public_announcements'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    title = db.Column(db.Text)
+    description = db.Column(db.Text)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
