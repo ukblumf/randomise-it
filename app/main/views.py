@@ -1,7 +1,7 @@
 import collections
 
 from flask import render_template, redirect, url_for, abort, flash, request, \
-    current_app, make_response
+    current_app, make_response, jsonify
 from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
 from . import main
@@ -755,7 +755,8 @@ def edit_market_product(id):
 
 @main.route('/discover', methods=['GET'])
 def discover():
-    free_products = PublicAnnouncements.query.order_by(PublicAnnouncements.timestamp.desc()).limit(100);
+    free_products = PublicAnnouncements.query.filter(PublicAnnouncements.author_id != current_user.id).order_by(
+        PublicAnnouncements.timestamp.desc()).limit(100);
     latest_marketproducts = MarketPlace.query.order_by(MarketPlace.timestamp.desc()).limit(50)
     popular_marketproducts = MarketPlace.query.order_by(MarketPlace.count.desc()).limit(50)
     all_categories = current_app.config['CATEGORIES'][:]
@@ -768,6 +769,21 @@ def discover():
                            latest_marketproducts=latest_marketproducts,
                            popular_marketproducts=popular_marketproducts,
                            free_products=free_products)
+
+
+@main.route('/transfer-public-content/<string:public_id>', methods=['POST'])
+@login_required
+def transfer_public_content(public_id):
+    if db.session.query(PublicAnnouncements)\
+            .filter(PublicAnnouncements.id == public_id)\
+            .filter(PublicAnnouncements.author_id == current_user.id)\
+            .first() is None:
+        new_content = UserPublicContent(announcement_id=public_id,
+                                        author_id=current_user.id)
+        db.session.add(new_content)
+        db.session.commit()
+        return make_response(jsonify({'success': True}))
+    return make_response(jsonify({'success': False}))
 
 
 @main.route('/public-content/<string:public_id>', methods=['GET'])

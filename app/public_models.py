@@ -75,3 +75,9 @@ class PublicAnnouncements(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), index=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
+
+class UserPublicContent(db.Model):
+    __tablename__ = 'user_public_content'
+    announcement_id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)

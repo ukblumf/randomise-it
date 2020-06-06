@@ -17,13 +17,19 @@
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
+                        <th>Select</th>
                     </tr>
                     </thead>
                     <tbody id="freeList" style="height: 400px">
                     {% for p in free_products %}
                         <tr id="free.{{ p.id }}">
-                            <td><span role="button">{{ p.title }}</span></td>
-                            <td><span role="button">{{ p.description }}</span></td>
+                            <td>
+                                <button onclick="previewItem('free.{{ p.id }}');">{{ p.title }}</button>
+                            </td>
+                            <td>{{ p.description }}</td>
+                            <td>
+                                <button onclick='selectItem({{ p.id }});'>Select</button>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -100,29 +106,39 @@
         function selectCategory(catId) {
             // TODO rebuild this functionality with jquery
         }
-        $(document).ready(function () {
-            $("#freeList tr").click(function() {
-                const url = "{{ url_for('.get_public_content', public_id='') }}" + $(this).attr("id");
-                $.ajax({
-                    url: url, success: function (result) {
-                        let colls = '';
-                        for (c in result.collections){
-                            colls += result.collections[c] + '<br/>';
-                        }
-                        let macs = '';
-                        for (m in result.macros){
-                            macs += result.macros[m] + '<br/>';
-                        }
-                        let tabs = '';
-                        for (t in result.tables){
-                            tabs += result.tables[t] + '<br/>';
-                        }
-                        $("#preview-panel-collections").html(colls);
-                        $("#preview-panel-macros").html(macs);
-                        $("#preview-panel-tables").html(tabs);
+
+        function selectItem(publicId) {
+            const url = "{{ url_for('.transfer_public_content', public_id='') }}" + publicId;
+            $.ajax({
+                type: "POST",
+                url: url, success: function (result) {
+                    alert(JSON.stringify(result));
+                }
+            })
+        }
+
+        function previewItem(id) {
+            const url = "{{ url_for('.get_public_content', public_id='') }}" + id;
+            $.ajax({
+                url: url, success: function (result) {
+                    let colls = '';
+                    for (c in result.collections) {
+                        colls += result.collections[c] + '<br/>';
                     }
-                });
+                    let macs = '';
+                    for (m in result.macros) {
+                        macs += result.macros[m] + '<br/>';
+                    }
+                    let tabs = '';
+                    for (t in result.tables) {
+                        tabs += result.tables[t] + '<br/>';
+                    }
+                    $("#preview-panel-collections").html(colls);
+                    $("#preview-panel-macros").html(macs);
+                    $("#preview-panel-tables").html(tabs);
+                }
             });
-        });
+        }
+
     </script>
 {% endblock %}
