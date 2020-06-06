@@ -753,29 +753,38 @@ def edit_market_product(id):
                            collections=collection_list, tags=tags)
 
 
-@main.route('/marketplace', methods=['GET'])
-def view_marketplace():
+@main.route('/discover', methods=['GET'])
+def discover():
+    free_products = PublicAnnouncements.query.order_by(PublicAnnouncements.timestamp.desc()).limit(100);
     latest_marketproducts = MarketPlace.query.order_by(MarketPlace.timestamp.desc()).limit(50)
     popular_marketproducts = MarketPlace.query.order_by(MarketPlace.count.desc()).limit(50)
-
     all_categories = current_app.config['CATEGORIES'][:]
-
     market_categories = [pc[0] for pc in db.session.query(MarketCategory.category_id).distinct()]
-
     used_categories = [cat for cat in all_categories if cat[0] in market_categories]
 
-    return render_template('view_marketplace.html',
+    return render_template('discover.html',
                            all_categories=all_categories,
                            used_categories=used_categories,
                            latest_marketproducts=latest_marketproducts,
-                           popular_marketproducts=popular_marketproducts)
+                           popular_marketproducts=popular_marketproducts,
+                           free_products=free_products)
+
+
+@main.route('/public-content/<string:public_id>', methods=['GET'])
+def get_public_content(public_id):
+    public_id = public_id[5:]
+    public_collections = PublicCollection.query.with_entities(PublicCollection.id).filter_by(announcement_id=public_id)
+    public_macros = PublicMacros.query.with_entities(PublicMacros.id).filter_by(announcement_id=public_id)
+    public_tables = PublicRandomTable.query.with_entities(PublicRandomTable.id).filter_by(announcement_id=public_id)
+    results = {"collections": [i[0] for i in public_collections], "macros": [i[0] for i in public_macros],
+               "tables": [i[0] for i in public_tables]}
+    return results
 
 
 @main.route('/id-check/<string:type>/<string:id>', methods=['GET'])
 @login_required
 def id_exists(type, id):
     check = "0"
-
     if type == 'table':
         check = db.session.query(RandomTable.id).filter_by(id=id).scalar() is not None
     elif type == 'macro':
