@@ -8,6 +8,7 @@ from flask import current_app, request, url_for
 from flask_login import UserMixin, AnonymousUserMixin
 from app.exceptions import ValidationError
 from . import db, login_manager
+from app.public_models import *
 
 
 class Permission:
@@ -88,7 +89,23 @@ class User(UserMixin, db.Model):
     avatar_hash = db.Column(db.String(32))
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     tables = db.relationship('RandomTable', backref='author', lazy='dynamic')
-
+    macros = db.relationship('Macros', backref='author', lazy='dynamic')
+    collections = db.relationship('Collection', backref='author', lazy='dynamic')
+    public_tables = db.relationship('PublicLinkedTables',
+                                    foreign_keys=[PublicLinkedTables.original_author_id],
+                                    backref=db.backref('original_author', lazy='joined'),
+                                    lazy='dynamic',
+                                    cascade='all, delete-orphan')
+    public_macros = db.relationship('PublicLinkedMacros',
+                                    foreign_keys=[PublicLinkedMacros.original_author_id],
+                                    backref=db.backref('original_author', lazy='joined'),
+                                    lazy='dynamic',
+                                    cascade='all, delete-orphan')
+    public_collections = db.relationship('PublicLinkedCollections',
+                                         foreign_keys=[PublicLinkedCollections.original_author_id],
+                                         backref=db.backref('original_author', lazy='joined'),
+                                         lazy='dynamic',
+                                         cascade='all, delete-orphan')
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
                                backref=db.backref('follower', lazy='joined'),
@@ -309,6 +326,7 @@ class Post(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     pins = db.Column(db.Text)
+
     # comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
     @staticmethod
@@ -431,11 +449,11 @@ class RandomTable(db.Model):
 
     @staticmethod
     def from_json(json_post):
-        #check required fields
+        # check required fields
         for field in ('id', 'name', 'definition'):
             value = json_post.get(field)
             if value is None or value == '':
-                raise ValidationError('Missing Field: '+field)
+                raise ValidationError('Missing Field: ' + field)
 
         id = json_post.get('id')
         name = json_post.get('name')
@@ -444,7 +462,7 @@ class RandomTable(db.Model):
         definition = ""
         for idx, line in enumerate(definition_lines):
             definition += line
-            if idx < len(definition_lines)-1:
+            if idx < len(definition_lines) - 1:
                 definition += "\n"
         # permisssions = json_post.get('permissions')
         return RandomTable(id=id, name=name, description=description, definition=definition)
@@ -499,7 +517,7 @@ class Macros(db.Model):
         for field in ('id', 'name', 'definition'):
             value = json_post.get(field)
             if value is None or value == '':
-                raise ValidationError('Missing Field: '+field)
+                raise ValidationError('Missing Field: ' + field)
 
         id = json_post.get('id')
         name = json_post.get('name')
@@ -507,7 +525,7 @@ class Macros(db.Model):
         definition = ""
         for idx, line in enumerate(definition_lines):
             definition += line
-            if idx < len(definition_lines)-1:
+            if idx < len(definition_lines) - 1:
                 definition += "\n"
         # permissions = json_post.get('permissions')
         return Macros(id=id, name=name, definition=definition)
@@ -552,7 +570,7 @@ class Collection(db.Model):
         for field in ('id', 'name', 'definition', 'parent'):
             value = json_post.get(field)
             if value is None or value == '':
-                raise ValidationError('Missing Field: '+field)
+                raise ValidationError('Missing Field: ' + field)
 
         id = json_post.get('id')
         name = json_post.get('name')
@@ -562,8 +580,8 @@ class Collection(db.Model):
         definition = ""
         for idx, line in enumerate(definition_lines):
             definition += line
-            if idx < len(definition_lines)-1:
-                definition+= "\n"
+            if idx < len(definition_lines) - 1:
+                definition += "\n"
         # permissions = json_post.get('permissions')
         return Collection(id=id, name=name, definition=definition, parent=parent, description=description)
 
@@ -590,7 +608,7 @@ class Tags(db.Model):
         for field in ('id'):
             value = json_post.get(field)
             if value is None or value == '':
-                raise ValidationError('Missing Field: '+field)
+                raise ValidationError('Missing Field: ' + field)
 
         id = json_post.get('id')
         return Tags(id=id)
@@ -641,7 +659,7 @@ class MarketPlace(db.Model):
         for field in ('name', 'description', 'product_id'):
             value = json_post.get(field)
             if value is None or value == '':
-                raise ValidationError('Missing Field: '+field)
+                raise ValidationError('Missing Field: ' + field)
 
         name = json_post.get('name')
         description = json_post.get('description')
@@ -676,7 +694,7 @@ class MarketCategory(db.Model):
         for field in ('marketplace_id', 'category_id'):
             value = json_post.get(field)
             if value is None or value == '':
-                raise ValidationError('Missing Field: '+field)
+                raise ValidationError('Missing Field: ' + field)
 
         marketplace_id = json_post.get('marketplace_id')
         category_id = json_post.get('category_id')

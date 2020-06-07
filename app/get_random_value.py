@@ -7,17 +7,18 @@ import re
 
 def get_row_from_external_table(close_angle_brackets, external_id, open_angle_brackets, selected_text):
     external_text = 'Problem with ' + external_id
+    username, id_type, ident = external_id.split('.')
 
-    if external_id.startswith('table.'):
-        external_table = RandomTable.query.get([external_id[6:], current_user.id])
+    if id_type == 'table':
+        external_table = RandomTable.query.get([ident, current_user.id])
         if external_table is not None:
             # current_app.logger.warning('getting random value for ' + external_id)
             external_text = get_row_from_random_table_definition(external_table)
 
-    if external_id.startswith('macro.'):
-        external_macro = Macros.query.get([external_id[6:], current_user.id])
+    if id_type == 'macro':
+        external_macro = Macros.query.get([ident, current_user.id])
         if external_macro is not None:
-            # current_app.logger.warning('prcoessing macro ' + external_id)
+            # current_app.logger.warning('processing macro ' + external_id)
             external_text = process_text(external_macro.definition)
 
     selected_text = selected_text[:open_angle_brackets] + external_text + selected_text[close_angle_brackets + 2:]

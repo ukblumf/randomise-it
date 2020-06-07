@@ -20,11 +20,67 @@
                 <div class="col-md-4">
                     {{ macros.tag_filter(tags) }}
                     <h4>Macros</h4>
-                    {{ macros.list_rows_in_ul_with_pin('macro', macro_list, form.pins.data) }}
+                    <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
+                    <div style="height: 200px; overflow-y: scroll;">
+                        <ul class="list-group" id="macroList">
+                            {{ macros.list_rows_in_ul_with_pin('macro', macro_list, form.pins.data, current_user) }}
+                            {% for m in public_macros %}
+                                <li class="list-group-item">
+                                    {% set icon_pin = 's' %}
+                                    {% if pins %}
+                                        {% if m.original_author.username + '.macro.' + m.macro_id in pins %}
+                                            {% set icon_pin = 'w' %}
+                                        {% endif %}
+                                    {% endif %}
+                                    <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
+                                          onclick="pinItem('{{ m.original_author.username }}.macro.{{ m.macro_id }}', this)"></span>
+                                    <button onclick="addItem('{{ m.original_author.username }}.macro.{{ m.macro_id }}')">{{ m.public_macro.name }}</button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                     <h4>Random Tables</h4>
-                    {{ macros.list_rows_in_ul_with_pin('table', tables, form.pins.data) }}
+                    <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
+                    <div style="height: 200px; overflow-y: scroll;">
+                        <ul class="list-group" id="tableList">
+                            {{ macros.list_rows_in_ul_with_pin('table', tables, form.pins.data, current_user) }}
+                            {% for t in public_tables %}
+                                <li class="list-group-item"
+                                    {% if t.public_table.tags is defined %}data-tag="{{ t.public_table.tags }}{% endif %}">
+                                    {% set icon_pin = 's' %}
+                                    {% if pins %}
+                                        {% if t.original_author.username + '.table.' + t.table_id in pins %}
+                                            {% set icon_pin = 'w' %}
+                                        {% endif %}
+                                    {% endif %}
+                                    <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
+                                          onclick="pinItem('{{ t.original_author.username }}.table.{{ t.table_id }}', this)"></span>
+                                    <button onclick="addItem('{{ t.original_author.username }}.table.{{ t.table_id }}')">{{ t.public_table.name }}</button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                     <h4>Collections</h4>
-                    {{ macros.list_rows_in_ul_with_pin('collection', collections, form.pins.data) }}
+                    <input class="form-control" id="collectionFilter" type="text" placeholder="Search..">
+                    <div style="height: 200px; overflow-y: scroll;">
+                        <ul class="list-group" id="collectionList">
+                            {{ macros.list_rows_in_ul_with_pin('collection', collections, form.pins.data, current_user) }}
+                            {% for c in public_collections %}
+                                <li class="list-group-item"
+                                    {% if c.public_collection.tags is defined %}data-tag="{{ c.public_collection.tags }}{% endif %}">
+                                    {% set icon_pin = 's' %}
+                                    {% if pins %}
+                                        {% if c.original_author.username + '.collection.' + t.table_id in pins %}
+                                            {% set icon_pin = 'w' %}
+                                        {% endif %}
+                                    {% endif %}
+                                    <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
+                                          onclick="pinItem('{{ c.original_author.username }}.collection.{{ c.collection_id }}', this)"></span>
+                                    <button onclick="addItem('{{ c.original_author.username }}.collection.{{ c.collection_id }}')">{{ c.public_collection.name }}</button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,34 +123,40 @@
             pinned_items.empty();
             pinned_items.append('<h4>Pinned items <small>(right-click to remove pinned item)</h4>')
             $.each(pins.val().trim().split(" "), function (i, value) {
-                if (value.startsWith('collection')) {
+                const dotcount = (value.match(/\./g) || []).length;
+                if ( dotcount != 2) {
+                    alert('Malformed id ' + value + ' Incorrect dot count:' + String(dotcount));
+                    return;
+                }
+                const [username, id_type, id] = value.split(".");
+                if (id_type == 'collection') {
                     //create menu
-                    const collection_id = value.substring(11);
                     const dropdown = $(`<div class='dropdown col-md-2'>
-                                    <a id='${collection_id}' role="button" data-toggle="dropdown" class="btn btn-primary"
+                                    <a id='${id}' role="button" data-toggle="dropdown" class="btn btn-primary"
                                     oncontextmenu='pinItem("${value}", ""); return false;'>
-                                        ${collection_id} <span class="caret"></span>
+                                        ${id} <span class="caret"></span>
                                     </a>
                                   </div>`).appendTo('#pinned_items');
                     const menu = $(`<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu"/>`).appendTo(dropdown);
-                    createPinnedCollection(collection_id, menu);
+                    createPinnedCollection(username, id, menu);
                 } else if (value) {
                     pinned_items.append(`<div class='col-md-2'>
-                                        <button onclick="addItem('${value}')" id="${value}" oncontextmenu='pinItem("${value}", ""); return false;'>${value}</button>
+                                        <button onclick="addItem('${value}')" id="${value}" oncontextmenu='pinItem("${value}", ""); return false;'>${id_type}.${id}</button>
                                      </div>`);
                 }
             });
         }
 
-        function createPinnedCollection(collection_id, menu) {
-            const url = "{{ url_for('.get_collection', id='') }}" + collection_id;
+        function createPinnedCollection(username, collection_id, menu) {
+            const url = "{{ url_for('.get_collection', username='', id='') }}" + username + "/" + collection_id;
             $.when($.ajax({url: url}), menu).done(function (result, menu) {
                 $.each(result[0].split("\n"), function (i, item) {
                     item = item.trim();
                     if (item) {
-                        if (item.startsWith('collection')) {
+                        const [username, id_type, id] = item.split(".");
+                        if (id_type == 'collection') {
                             const sub_menu = $(`<ul class="dropdown-menu"/>`);
-                            createPinnedCollection(item.substring(11), sub_menu);
+                            createPinnedCollection(username, id, sub_menu);
                             const dropdown = $(`<li class="dropdown-submenu"><a tabindex="-1">${item}</a></li>`).append(sub_menu);
                             menu.append(dropdown);
                         } else {
@@ -105,20 +167,21 @@
             });
         }
 
-        function addItem(id) {
-            if (id.startsWith("table.")) {
-                addTable(id.substring(6));
+        function addItem(item) {
+            const [username, id_type, id] = item.split(".");
+            if (id_type == 'table') {
+                addTable(username, id);
             } else {
-                addMacro(id.substring(6));
+                addMacro(username, id);
             }
         }
 
-        function addTable(tableId) {
-            const get_random_table_url = "{{ url_for('.get_random_value', id='') }}" + tableId;
+        function addTable(username, tableId) {
+            const get_random_table_url = "{{ url_for('.get_random_value', username='', id='') }}" + username + '/' + tableId;
             $.ajax({
                 url: get_random_table_url, tableId: tableId, success: function (result) {
                     $("#random-output").text(result);
-                    $("#confirm").data('tableId', tableId).dialog({
+                    $("#confirm").data('tableId', tableId).data('username', username).dialog({
                         title: this.tableId,
                         draggable: true,
                         resizable: true,
@@ -130,7 +193,7 @@
                                 text: "Refresh",
                                 click: function () {
                                     $(this).dialog("close");
-                                    addTable(tableId);
+                                    addTable(username, tableId);
                                 }
                             },
                             {
@@ -146,12 +209,12 @@
             });
         }
 
-        function addMacro(macroId) {
-            const get_macro_url = "{{ url_for('.get_macro', id='') }}" + macroId;
+        function addMacro(username, macroId) {
+            const get_macro_url = "{{ url_for('.get_macro', username='', id='') }}" + username + '/' + macroId;
             $.ajax({
                 url: get_macro_url, macroId: macroId, success: function (result) {
                     $("#random-output").text(result);
-                    $("#confirm").data('macroId', macroId).dialog({
+                    $("#confirm").data('macroId', macroId).data('username', username).dialog({
                         title: this.macroId,
                         draggable: true,
                         resizable: true,
@@ -163,7 +226,7 @@
                                 text: "Refresh",
                                 click: function () {
                                     $(this).dialog("close");
-                                    addMacro(macroId);
+                                    addMacro(username, macroId);
                                 }
                             },
                             {

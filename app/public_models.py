@@ -51,6 +51,11 @@ class PublicLinkedTables(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     table_id = db.Column(db.Text, primary_key=True)
     original_author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    public_table = db.relationship('PublicRandomTable',
+                                   backref=db.backref('public_table'),
+                                   foreign_keys=[table_id, original_author_id],
+                                   primaryjoin='and_(PublicRandomTable.id == PublicLinkedTables.table_id,' +
+                                               'PublicRandomTable.author_id == PublicLinkedTables.original_author_id)')
 
 
 class PublicLinkedMacros(db.Model):
@@ -58,6 +63,11 @@ class PublicLinkedMacros(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     macro_id = db.Column(db.Text, primary_key=True)
     original_author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    public_macro = db.relationship('PublicMacros',
+                                   backref=db.backref('public_macro'),
+                                   foreign_keys=[macro_id, original_author_id],
+                                   primaryjoin='and_(PublicMacros.id == PublicLinkedMacros.macro_id,' +
+                                               'PublicMacros.author_id == PublicLinkedMacros.original_author_id)')
 
 
 class PublicLinkedCollections(db.Model):
@@ -65,6 +75,11 @@ class PublicLinkedCollections(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     collection_id = db.Column(db.Text, primary_key=True)
     original_author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    public_collection = db.relationship('PublicCollection',
+                                        backref=db.backref('public_collection'),
+                                        foreign_keys=[collection_id, original_author_id],
+                                        primaryjoin='and_(PublicCollection.id == PublicLinkedCollections.collection_id,' +
+                                                    'PublicCollection.author_id == PublicLinkedCollections.original_author_id)')
 
 
 class PublicAnnouncements(db.Model):

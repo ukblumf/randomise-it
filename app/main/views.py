@@ -297,10 +297,12 @@ def create_table():
     return render_template('table.html', form=form, tables=tables, macro_list=macros, tags=tags)
 
 
-@main.route('/edit-table/<string:id>', methods=['GET', 'POST'])
+@main.route('/edit-table/<string:username>/<string:id>', methods=['GET', 'POST'])
 @login_required
-def edit_table(id):
-    # current_app.logger.warning(current_user._get_current_object().id)
+def edit_table(username, id):
+    if current_user.username != username:
+        abort(400)
+
     table = RandomTable.query.get_or_404([id, current_user.id])
     if current_user != table.author and \
             not current_user.can(Permission.ADMINISTER):
@@ -422,15 +424,22 @@ def create_story():
     macros = macro_query()
     collection_list = collection_query()
     tags = tag_query()
-    # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
+
+    public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
+    public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
+    public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
 
     return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list,
-                           tags=tags)
+                           tags=tags, public_collections=public_collections,
+                           public_macros=public_macros, public_tables=public_tables)
 
 
-@main.route('/edit-story/<int:id>', methods=['GET', 'POST'])
+@main.route('/edit-story/<string:username>/<int:id>', methods=['GET', 'POST'])
 @login_required
-def edit_story(id):
+def edit_story(username, id):
+    if current_user.username != username:
+        abort(400)
+
     story = Post.query.get_or_404(id)
     if current_user != story.author and not current_user.can(Permission.ADMINISTER):
         abort(403)
@@ -459,8 +468,8 @@ def edit_story(id):
                            tags=tags)
 
 
-@main.route('/random-value/<string:id>', methods=['GET'])
-def get_random_value(id):
+@main.route('/random-value/<string:username>/<string:id>', methods=['GET'])
+def get_random_value(username, id):
     if current_user.is_authenticated:
         table = RandomTable.query.get_or_404([id, current_user.id])
     else:
@@ -503,10 +512,12 @@ def create_macro():
     return render_template('macro.html', form=form, macro_list=macros, tables=tables, form_type='macro', tags=tags)
 
 
-@main.route('/edit-macro/<string:id>', methods=['GET', 'POST'])
+@main.route('/edit-macro/<string:username>/<string:id>', methods=['GET', 'POST'])
 @login_required
-def edit_macro(id):
-    # current_app.logger.warning(current_user._get_current_object().id)
+def edit_macro(username, id):
+    if current_user.username != username:
+        abort(400)
+
     macro = Macros.query.get_or_404([id, current_user.id])
     if current_user.id != macro.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
@@ -542,8 +553,8 @@ def edit_macro(id):
                            form_type='macro', tags=tags)
 
 
-@main.route('/macro/<string:id>', methods=['GET'])
-def get_macro(id):
+@main.route('/macro/<string:username>/<string:id>', methods=['GET'])
+def get_macro(username, id):
     macro = Macros.query.get_or_404([id, current_user.id])
 
     text = bleach.linkify(bleach.clean(
@@ -595,10 +606,11 @@ def create_collection():
                            tags=tags)
 
 
-@main.route('/edit-collection/<string:id>', methods=['GET', 'POST'])
+@main.route('/edit-collection/<string:username>/<string:id>', methods=['GET', 'POST'])
 @login_required
-def edit_collection(id):
-    # current_app.logger.warning(current_user._get_current_object().id)
+def edit_collection(username, id):
+    if current_user.username != username:
+        abort(400)
     collection_obj = Collection.query.get_or_404([id, current_user.id])
     if current_user.id != collection_obj.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
@@ -635,8 +647,8 @@ def edit_collection(id):
                            tags=tags)
 
 
-@main.route('/collection/<string:id>', methods=['GET'])
-def get_collection(id):
+@main.route('/collection/<string:username>/<string:id>', methods=['GET'])
+def get_collection(username, id):
     collection_data = Collection.query.get_or_404([id, current_user.id])
     return collection_data.definition
 
@@ -774,13 +786,50 @@ def discover():
 @main.route('/transfer-public-content/<string:public_id>', methods=['POST'])
 @login_required
 def transfer_public_content(public_id):
-    if db.session.query(PublicAnnouncements)\
-            .filter(PublicAnnouncements.id == public_id)\
-            .filter(PublicAnnouncements.author_id == current_user.id)\
+    if db.session.query(PublicAnnouncements) \
+            .filter(PublicAnnouncements.id == public_id) \
+            .filter(PublicAnnouncements.author_id == current_user.id) \
             .first() is None:
         new_content = UserPublicContent(announcement_id=public_id,
                                         author_id=current_user.id)
         db.session.add(new_content)
+
+        public_collections = PublicCollection.query.filter(PublicCollection.announcement_id == public_id)
+        public_macros = PublicMacros.query.filter(PublicMacros.announcement_id == public_id)
+        public_tables = PublicRandomTable.query.filter(PublicRandomTable.announcement_id == public_id)
+
+        for c in public_collections:
+            if db.session.query(PublicLinkedCollections) \
+                    .filter(PublicLinkedCollections.author_id == current_user.id) \
+                    .filter(PublicLinkedCollections.collection_id == c.id) \
+                    .filter(PublicLinkedCollections.original_author_id == c.author_id) \
+                    .first() is None:
+                new_collection = PublicLinkedCollections(author_id=current_user.id,
+                                                         collection_id=c.id,
+                                                         original_author_id=c.author_id)
+                db.session.add(new_collection)
+
+        for m in public_macros:
+            if db.session.query(PublicLinkedMacros) \
+                    .filter(PublicLinkedMacros.author_id == current_user.id) \
+                    .filter(PublicLinkedMacros.macro_id == m.id) \
+                    .filter(PublicLinkedMacros.original_author_id == m.author_id) \
+                    .first() is None:
+                new_macro = PublicLinkedMacros(author_id=current_user.id,
+                                               macro_id=m.id,
+                                               original_author_id=m.author_id)
+                db.session.add(new_macro)
+
+        for t in public_tables:
+            if db.session.query(PublicLinkedTables) \
+                    .filter(PublicLinkedTables.author_id == current_user.id) \
+                    .filter(PublicLinkedTables.table_id == t.id) \
+                    .filter(PublicLinkedTables.original_author_id == t.author_id) \
+                    .first() is None:
+                new_table = PublicLinkedTables(author_id=current_user.id,
+                                               table_id=t.id,
+                                               original_author_id=t.author_id)
+                db.session.add(new_table)
         db.session.commit()
         return make_response(jsonify({'success': True}))
     return make_response(jsonify({'success': False}))

@@ -1,7 +1,11 @@
 {% macro pagination_widget(pagination, endpoint, fragment='') %}
     <ul class="pagination">
         <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
-            <a href="{% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
+            <a href="
+
+
+
+                    {% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
                 &laquo;
             </a>
         </li>
@@ -21,7 +25,11 @@
             {% endif %}
         {% endfor %}
         <li{% if not pagination.has_next %} class="disabled"{% endif %}>
-            <a href="{% if pagination.has_next %}{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
+            <a href="
+
+
+
+                    {% if pagination.has_next %}{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
                 &raquo;
             </a>
         </li>
@@ -44,9 +52,11 @@
             <tr {% if item.tags is defined %}data-tag="{{ item.tags }}"{% endif %}>
                 {% if item.name is defined %}
                     <td>{% if name == 'table' %}
-                        <button id="get-random-value" value="{{ url_for('.get_random_value', id=item.id) }}">
+                        <button id="get-random-value"
+                                value="{{ url_for('.get_random_value', username=current_user.username, id=item.id) }}">
                     {% elif name == 'macro' %}
-                        <button id="get-macro-value" value="{{ url_for('.get_macro', id=item.id) }}">
+                        <button id="get-macro-value"
+                                value="{{ url_for('.get_macro', username=current_user.username, id=item.id) }}">
                     {% endif %}
                         {{ item.name }}{% if item.row_count is defined %}
                             <small class="text-muted">({{ item.row_count }})</small> {% endif %}
@@ -56,14 +66,17 @@
                     </td>
                     {% if current_user.is_authenticated %}
                         <td>
-                            <button onclick="window.location='{{ url_for('.edit_' + name, id=item.id) }}';">Edit
+                            <button onclick="window.location='{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}';">
+                                Edit
                             </button>
                         </td>
                     {% endif %}
                 {% else %}
                     <td>{{ item.title }}</td>
                     <td>
-                        <button onclick="window.location='{{ url_for('.edit_' + name, id=item.id) }}';">Edit</button>
+                        <button onclick="window.location='{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}';">
+                            Edit
+                        </button>
                     </td>
                 {% endif %}
             </tr>
@@ -82,34 +95,29 @@
     </select>
 {% endmacro %}
 
-{% macro list_rows_in_ul_with_pin(name, items, pins) %}
-    <input class="form-control" id="{{ name }}Filter" type="text" placeholder="Search..">
-    <div style="height: 200px; overflow-y: scroll;">
-        <ul class="list-group" id="{{ name }}List">
-            {% for item in items %}
-                <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}{% endif %}">
-                    {% set icon_pin = 's' %}
-                    {% if pins %}
-                        {% if item.id in pins %}
-                            {% set icon_pin = 'w' %}
-                        {% endif %}
-                    {% endif %}
-                    <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
-                          onclick="pinItem('{{ name }}.{{ item.id }}', this)"></span>
-                    <button onclick="addItem('{{ name }}.{{ item.id }}')">{{ item.name }}</button>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+{% macro list_rows_in_ul_with_pin(name, items, pins, current_user) %}
+    {% for item in items %}
+        <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}{% endif %}">
+            {% set icon_pin = 's' %}
+            {% if pins %}
+                {% if current_user.username + '.' + name + '.' + item.id in pins %}
+                    {% set icon_pin = 'w' %}
+                {% endif %}
+            {% endif %}
+            <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
+                  onclick="pinItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', this)"></span>
+            <button onclick="addItem('<<{{ current_user.username }}.{{ name }}.{{ item.id }}>>')">{{ item.name }}</button>
+        </li>
+    {% endfor %}
 {% endmacro %}
 
-{% macro list_rows_in_ul(name, items) %}
+{% macro list_rows_in_ul(name, items, current_user) %}
     <input class="form-control" id="{{ name }}Filter" type="text" placeholder="Search..">
     <div style="height: 200px; overflow-y: scroll;">
         <ul class="list-group" id="{{ name }}List">
             {% for item in items %}
                 <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}{% endif %}">
-                    <button onclick="addId('{{ name }}.{{ item.id }}')">{{ item.name }}</button>
+                    <button onclick="addId('<<{{ current_user.username }}.{{ name }}.{{ item.id }}>>')">{{ item.name }}</button>
                 </li>
             {% endfor %}
         </ul>
