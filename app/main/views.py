@@ -420,14 +420,7 @@ def create_story():
         flash('Story Created')
         return redirect(url_for('.create_story'))
 
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
-    tags = tag_query()
-
-    public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
-    public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
-    public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
+    collection_list, macros, public_collections, public_macros, public_tables, tables, tags = setup_story_data()
 
     return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list,
                            tags=tags, public_collections=public_collections,
@@ -452,35 +445,42 @@ def edit_story(username, id):
         db.session.add(story)
         flash('Story Updated')
 
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
-    tags = tag_query()
-
-    # required in order to talk to API
-    # auth_encoded = base64.b64encode(current_user.generate_auth_token(expiration=86400) + ':')
+    collection_list, macros, public_collections, public_macros, public_tables, tables, tags = setup_story_data()
 
     form.title.data = story.title
     form.story.data = story.body
     form.pins.data = story.pins
 
     return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list,
-                           tags=tags)
+                           tags=tags, public_collections=public_collections,
+                           public_macros=public_macros, public_tables=public_tables)
+
+
+def setup_story_data():
+    tables = table_query()
+    macros = macro_query()
+    collection_list = collection_query()
+    tags = tag_query()
+    public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
+    public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
+    public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
+    return collection_list, macros, public_collections, public_macros, public_tables, tables, tags
 
 
 @main.route('/random-value/<string:username>/<string:id>', methods=['GET'])
 def get_random_value(username, id):
-    if current_user.is_authenticated:
+    if username != current_user.username:
+        external_user = User.query.filter_by(username=username).first()
+        external_public_table = PublicRandomTable.query.get([id, external_user.id])
+        if external_public_table is not None:
+            return get_row_from_random_table_definition(external_public_table)
+    else:
         table = RandomTable.query.get_or_404([id, current_user.id])
-    else:
-        table = RandomTable.query.filter_by(id=id).first()
+        if table is not None:
+            return get_row_from_random_table_definition(table)
 
-    if table is not None:
-        # return render_template('random-value.html', text=get_row_from_random_table_definition(table))
-        return get_row_from_random_table_definition(table)
-    else:
-        flash('Table id ' + id + ' not found')
-        return redirect(url_for('.index'))
+    flash('Table id ' + id + ' not found')
+    return redirect(url_for('.index'))
 
 
 @main.route('/create-macro', methods=['GET', 'POST'])
@@ -555,11 +555,17 @@ def edit_macro(username, id):
 
 @main.route('/macro/<string:username>/<string:id>', methods=['GET'])
 def get_macro(username, id):
-    macro = Macros.query.get_or_404([id, current_user.id])
+    macro_text = "*** problem processing " + username + "." + id + " ***"
+    if username != current_user.username:
+        external_user = User.query.filter_by(username=username).first()
+        external_public_macro = PublicMacros.query.get([id, external_user.id])
+        if external_public_macro is not None:
+            macro_text = process_text(external_public_macro.definition)
+    else:
+        macro = Macros.query.get_or_404([id, current_user.id])
+        macro_text = process_text(macro.definition)
 
-    text = bleach.linkify(bleach.clean(
-        markdown(process_text(macro.definition), output_format='html'),
-        tags=ALLOWED_TAGS, strip=True))
+    text = bleach.linkify(bleach.clean(markdown(macro_text, output_format='html'), tags=ALLOWED_TAGS, strip=True))
 
     return text
 

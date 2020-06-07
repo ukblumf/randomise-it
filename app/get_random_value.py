@@ -1,6 +1,7 @@
 from flask import current_app
 from flask_login import current_user
-from .models import RandomTable, Macros
+from .models import RandomTable, Macros, User
+from .public_models import PublicRandomTable, PublicMacros
 import random
 import re
 
@@ -10,16 +11,28 @@ def get_row_from_external_table(close_angle_brackets, external_id, open_angle_br
     username, id_type, ident = external_id.split('.')
 
     if id_type == 'table':
-        external_table = RandomTable.query.get([ident, current_user.id])
-        if external_table is not None:
-            # current_app.logger.warning('getting random value for ' + external_id)
-            external_text = get_row_from_random_table_definition(external_table)
+        if username != current_user.username:
+            # get user to get user id
+            external_user = User.query.filter_by(username=username).first()
+            # see if table is in public table
+            external_public_table = PublicRandomTable.query.get([ident, external_user.id])
+            if external_public_table is not None:
+                external_text = get_row_from_random_table_definition(external_public_table)
+        else:
+            external_table = RandomTable.query.get([ident, current_user.id])
+            if external_table is not None:
+                external_text = get_row_from_random_table_definition(external_table)
 
     if id_type == 'macro':
-        external_macro = Macros.query.get([ident, current_user.id])
-        if external_macro is not None:
-            # current_app.logger.warning('processing macro ' + external_id)
-            external_text = process_text(external_macro.definition)
+        if username != current_user.username:
+            external_user = User.query.filter_by(username=username).first()
+            external_public_macro = PublicMacros.query.get([ident, external_user.id])
+            if external_public_macro is not None:
+                external_text = process_text(external_public_macro.definition)
+        else:
+            external_macro = Macros.query.get([ident, current_user.id])
+            if external_macro is not None:
+                external_text = process_text(external_macro.definition)
 
     selected_text = selected_text[:open_angle_brackets] + external_text + selected_text[close_angle_brackets + 2:]
     return selected_text

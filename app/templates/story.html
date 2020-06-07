@@ -122,29 +122,31 @@
             const pinned_items = $("#pinned_items");
             pinned_items.empty();
             pinned_items.append('<h4>Pinned items <small>(right-click to remove pinned item)</h4>')
-            $.each(pins.val().trim().split(" "), function (i, value) {
-                const dotcount = (value.match(/\./g) || []).length;
-                if ( dotcount != 2) {
-                    alert('Malformed id ' + value + ' Incorrect dot count:' + String(dotcount));
-                    return;
-                }
-                const [username, id_type, id] = value.split(".");
-                if (id_type == 'collection') {
-                    //create menu
-                    const dropdown = $(`<div class='dropdown col-md-2'>
-                                    <a id='${id}' role="button" data-toggle="dropdown" class="btn btn-primary"
-                                    oncontextmenu='pinItem("${value}", ""); return false;'>
-                                        ${id} <span class="caret"></span>
-                                    </a>
-                                  </div>`).appendTo('#pinned_items');
-                    const menu = $(`<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu"/>`).appendTo(dropdown);
-                    createPinnedCollection(username, id, menu);
-                } else if (value) {
-                    pinned_items.append(`<div class='col-md-2'>
-                                        <button onclick="addItem('${value}')" id="${value}" oncontextmenu='pinItem("${value}", ""); return false;'>${id_type}.${id}</button>
-                                     </div>`);
-                }
-            });
+            if (pins.val()) {
+                $.each(pins.val().trim().split(" "), function (i, value) {
+                    const dotcount = (value.match(/\./g) || []).length;
+                    if (dotcount != 2) {
+                        alert('Malformed id ' + value + ' Incorrect dot count:' + String(dotcount));
+                        return;
+                    }
+                    const [username, id_type, id] = value.split(".");
+                    if (id_type == 'collection') {
+                        //create menu
+                        const dropdown = $(`<div class='dropdown col-md-2'>
+                                        <a id='${id}' role="button" data-toggle="dropdown" class="btn btn-primary"
+                                        oncontextmenu='pinItem("${value}", ""); return false;'>
+                                            ${id} <span class="caret"></span>
+                                        </a>
+                                      </div>`).appendTo('#pinned_items');
+                        const menu = $(`<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu"/>`).appendTo(dropdown);
+                        createPinnedCollection(username, id, menu);
+                    } else if (value) {
+                        pinned_items.append(`<div class='col-md-2'>
+                                            <button onclick="addItem('${value}')" id="${value}" oncontextmenu='pinItem("${value}", ""); return false;'>${id_type}.${id}</button>
+                                         </div>`);
+                    }
+                });
+            }
         }
 
         function createPinnedCollection(username, collection_id, menu) {

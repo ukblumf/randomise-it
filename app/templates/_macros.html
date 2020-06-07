@@ -106,7 +106,7 @@
             {% endif %}
             <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
                   onclick="pinItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', this)"></span>
-            <button onclick="addItem('<<{{ current_user.username }}.{{ name }}.{{ item.id }}>>')">{{ item.name }}</button>
+            <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}')">{{ item.name }}</button>
         </li>
     {% endfor %}
 {% endmacro %}
@@ -117,7 +117,7 @@
         <ul class="list-group" id="{{ name }}List">
             {% for item in items %}
                 <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}{% endif %}">
-                    <button onclick="addId('<<{{ current_user.username }}.{{ name }}.{{ item.id }}>>')">{{ item.name }}</button>
+                    <button onclick="addId('{{ current_user.username }}.{{ name }}.{{ item.id }}')">{{ item.name }}</button>
                 </li>
             {% endfor %}
         </ul>
