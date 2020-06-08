@@ -2,9 +2,6 @@ from flask_login import current_user
 from .models import RandomTable, Macros, User, Collection
 from .public_models import PublicRandomTable, PublicMacros, PublicCollection, PublicLinkedTables, PublicLinkedMacros, \
     PublicLinkedCollections
-import re
-
-regex = r"(\d+%\s)?(.*)\.(.*)\.(.*$)"
 
 
 def get_random_table_record(username, reference_id):
@@ -47,6 +44,6 @@ def get_collection_record(username, reference_id):
 
 def split_id(id):
     username, id_type, reference_id = id.split('.')
-    if '%' in username:  # user contains chance
+    if '%' in username:  # ignore chance percentage
         chance, username = username.split(' ')
     return username, id_type, reference_id
