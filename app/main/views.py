@@ -13,11 +13,10 @@ from ..models import Permission, Role, User, Post, Comment, RandomTable, Macros,
 from ..public_models import *
 from ..decorators import admin_required, permission_required
 from ..validate import check_table_definition_validity, validate_text, validate_collection
+from ..randomise_utils import *
 from ..get_random_value import get_row_from_random_table_definition, process_text
-import base64
 from markdown import markdown
 import bleach
-import re
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
@@ -290,9 +289,7 @@ def create_table():
         else:
             flash(error_message)
 
-    tables = table_query()
-    macros = macro_query()
-    tags = tag_query()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('table.html', form=form, tables=tables, macro_list=macros, tags=tags)
 
@@ -338,9 +335,7 @@ def edit_table(username, id):
     form.table_id.data = table.id
     form.table_id.render_kw = {'readonly': True}
 
-    tables = table_query()
-    macros = macro_query()
-    tags = tag_query()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('table.html', tables=tables, macro_list=macros, form=form, tags=tags)
 
@@ -420,7 +415,7 @@ def create_story():
         flash('Story Created')
         return redirect(url_for('.create_story'))
 
-    collection_list, macros, public_collections, public_macros, public_tables, tables, tags = setup_story_data()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list,
                            tags=tags, public_collections=public_collections,
@@ -445,7 +440,7 @@ def edit_story(username, id):
         db.session.add(story)
         flash('Story Updated')
 
-    collection_list, macros, public_collections, public_macros, public_tables, tables, tags = setup_story_data()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     form.title.data = story.title
     form.story.data = story.body
@@ -456,7 +451,7 @@ def edit_story(username, id):
                            public_macros=public_macros, public_tables=public_tables)
 
 
-def setup_story_data():
+def required_data():
     tables = table_query()
     macros = macro_query()
     collection_list = collection_query()
@@ -464,23 +459,16 @@ def setup_story_data():
     public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
     public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
     public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
-    return collection_list, macros, public_collections, public_macros, public_tables, tables, tags
+    return collection_list, macros, tables, tags, public_collections, public_macros, public_tables
 
 
 @main.route('/random-value/<string:username>/<string:id>', methods=['GET'])
 def get_random_value(username, id):
-    if username != current_user.username:
-        external_user = User.query.filter_by(username=username).first()
-        external_public_table = PublicRandomTable.query.get([id, external_user.id])
-        if external_public_table is not None:
-            return get_row_from_random_table_definition(external_public_table)
-    else:
-        table = RandomTable.query.get_or_404([id, current_user.id])
-        if table is not None:
-            return get_row_from_random_table_definition(table)
+    table = get_random_table_record(username, id)
+    if table is not None:
+        return get_row_from_random_table_definition(table)
 
-    flash('Table id ' + id + ' not found')
-    return redirect(url_for('.index'))
+    return 'Error finding random table id: ' + username + '.table.' + id
 
 
 @main.route('/create-macro', methods=['GET', 'POST'])
@@ -505,9 +493,7 @@ def create_macro():
         else:
             flash(error_message)
 
-    tables = table_query()
-    macros = macro_query()
-    tags = tag_query()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('macro.html', form=form, macro_list=macros, tables=tables, form_type='macro', tags=tags)
 
@@ -545,9 +531,7 @@ def edit_macro(username, id):
     if macro.tags:
         form.macro_tags.data = macro.tags
 
-    tables = table_query()
-    macros = macro_query(id)
-    tags = tag_query()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('macro.html', form=form, macro_list=macros, tables=tables, edit_macro=macro,
                            form_type='macro', tags=tags)
@@ -555,19 +539,12 @@ def edit_macro(username, id):
 
 @main.route('/macro/<string:username>/<string:id>', methods=['GET'])
 def get_macro(username, id):
-    macro_text = "*** problem processing " + username + "." + id + " ***"
-    if username != current_user.username:
-        external_user = User.query.filter_by(username=username).first()
-        external_public_macro = PublicMacros.query.get([id, external_user.id])
-        if external_public_macro is not None:
-            macro_text = process_text(external_public_macro.definition)
-    else:
-        macro = Macros.query.get_or_404([id, current_user.id])
+    macro = get_macro_record(username, id)
+    if macro is not None:
         macro_text = process_text(macro.definition)
-
-    text = bleach.linkify(bleach.clean(markdown(macro_text, output_format='html'), tags=ALLOWED_TAGS, strip=True))
-
-    return text
+        return bleach.linkify(bleach.clean(markdown(macro_text, output_format='html'), tags=ALLOWED_TAGS, strip=True))
+    else:
+        return 'Error finding macro id: ' + username + '.macro.' + id
 
 
 @main.route('/preview-macro', methods=['POST'])
@@ -603,10 +580,7 @@ def create_collection():
         else:
             flash(error_message)
 
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
-    tags = tag_query()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list,
                            tags=tags)
@@ -644,10 +618,7 @@ def edit_collection(username, id):
     form.collection_id.data = collection_obj.id
     form.collection_id.render_kw = {'readonly': True}
 
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
-    tags = tag_query()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list,
                            tags=tags)
@@ -655,8 +626,11 @@ def edit_collection(username, id):
 
 @main.route('/collection/<string:username>/<string:id>', methods=['GET'])
 def get_collection(username, id):
-    collection_data = Collection.query.get_or_404([id, current_user.id])
-    return collection_data.definition
+    collection = get_collection_record(username, id)
+    if collection is not None:
+        return collection.definition
+
+    return 'Error finding collection id: ' + username + '.collection.' + id
 
 
 @main.route('/create-tag', methods=['GET', 'POST'])
@@ -718,10 +692,7 @@ def create_market_product():
         flash('Market Product Created')
         return redirect(url_for('.create_market_product'))
 
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
-    tags = tag_query()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('market_product.html', form=form, macro_list=macros, tables=tables,
                            collections=collection_list, tags=tags)
@@ -762,10 +733,7 @@ def edit_market_product(id):
     form.name.data = market_product.name
     form.description.data = market_product.description
 
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
-    tags = tag_query()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('market_product.html', form=form, macro_list=macros, tables=tables,
                            collections=collection_list, tags=tags)
@@ -938,26 +906,24 @@ def share_public():
             flash('Content Shared')
             return redirect(url_for('.share_public'))
 
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
-    tags = tag_query()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
     collection_references = collections.OrderedDict()
     table_references = collections.OrderedDict()
     macro_references = collections.OrderedDict()
     try:
         if collection_list.count():
             for c in collection_list:
-                collection_references['collection.' + c.id] = build_collection_references(c)
-
+                collection_references[current_user.username + '.collection.' + c.id] = build_collection_references(c)
         if tables.count():
             for t in tables:
-                table_references['table.' + t.id] = find_references('table.' + t.id, t.definition,
-                                                                    ['table.' + t.id + '::0'], 0)
+                table_references[current_user.username + '.table.' + t.id] = find_references(
+                    current_user.username + '.table.' + t.id, t.definition,
+                    [current_user.username + '.table.' + t.id + '::0'], 0)
         if macros.count():
             for m in macros:
-                macro_references['macro.' + m.id] = find_references('macro.' + m.id, m.definition,
-                                                                    ['macro.' + m.id + '::0'], 0)
+                macro_references[current_user.username + '.macro.' + m.id] = find_references(
+                    current_user.username + '.macro.' + m.id, m.definition,
+                    [current_user.username + '.macro.' + m.id + '::0'], 0)
     except Exception as inst:
         return render_template('error_page.html', description=inst)
 
@@ -971,26 +937,27 @@ def build_collection_references(coll_obj):
     coll_definition = coll_obj.definition.splitlines()
 
     for coll_item in coll_definition:
-        if coll_item.startswith('table.'):
-            table = RandomTable.query.get([coll_item[6:], current_user.id])
+        username, id_type, reference_id = split_id(coll_item)
+        if id_type == 'table':
+            table = get_random_table_record(username, reference_id)
             if table is not None:
                 try:
                     coll_dict[coll_item] = find_references(coll_item, table.definition, [coll_item + '::0'], 0)
                 except Exception as inst:
                     raise inst
             else:
-                raise Exception('Table not found', coll_item + ' not found in db for user ' + str(current_user.id))
-        elif coll_item.startswith('macro.'):
-            macro = Macros.query.get([coll_item[6:], current_user.id])
+                raise Exception('Table not found', coll_item + ' not found.')
+        elif id_type == 'macro':
+            macro = get_macro_record(username, reference_id)
             if macro is not None:
                 try:
                     coll_dict[coll_item] = find_references(coll_item, macro.definition, [coll_item + '::0'], 0)
                 except Exception as inst:
                     raise inst
             else:
-                raise Exception('Macro not found', coll_item + ' not found in db for user ' + str(current_user.id))
-        elif coll_item.startswith('collection.'):
-            sub_coll = Collection.query.get([coll_item[11:], current_user.id])
+                raise Exception('Macro not found', coll_item + ' not found')
+        elif id_type == 'collection':
+            sub_coll = get_collection_record(username, reference_id)
             if sub_coll is not None:
                 coll_dict[coll_item] = build_collection_references(sub_coll)
             else:
@@ -1013,15 +980,16 @@ def find_references(obj_id, definition, references, depth):
             if external_id + '::' + str(d) in references:
                 raise Exception('CircularReference',
                                 external_id + ' already used in chain. Found in ' + obj_id + '. Depth = ' + str(depth))
-        if external_id.startswith('table.'):
-            table = RandomTable.query.get([external_id[6:], current_user.id])
+        username, id_type, reference_id = split_id(external_id)
+        if id_type == 'table':
+            table = get_random_table_record(username, reference_id)
             if table is not None:
                 references.append(external_id + '::' + str(depth))
                 find_references(external_id, table.definition, references, depth)
             else:
                 raise Exception('Table not found', external_id + ' not found in db for user:' + str(current_user.id))
-        elif external_id.startswith('macro.'):
-            macro = Macros.query.get([external_id[6:], current_user.id])
+        elif id_type == 'macro':
+            macro = get_macro_record(username, reference_id)
             if macro is not None:
                 references.append(external_id + '::' + str(depth))
                 find_references(external_id, macro.definition, references, depth)
@@ -1032,10 +1000,7 @@ def find_references(obj_id, definition, references, depth):
 
 
 def tag_list():
-    return [(p.id, p.id) for p in Tags
-        .query
-        .filter(Tags.author_id == current_user.id)
-        .order_by(Tags.id)]
+    return [(p.id, p.id) for p in Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.id)]
 
 
 def macro_query(macro_id=None):

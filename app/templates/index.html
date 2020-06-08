@@ -47,18 +47,12 @@
                     <h3>Collections</h3>
                 </div>
                 <div class="col-md-4">
-                    <h3>Products</h3>
-                </div>
-                <div class="col-md-4">
                     <h3>Preview Pane</h3>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-4">
                     {{ macros.list_rows_in_table('collection', collections, current_user) }}
-                </div>
-                <div class="col-md-4">
-                    {{ macros.list_rows_in_table('market_product', market_products, current_user) }}
                 </div>
                 <div class="col-md-4 panel panel-default">
                     <div class="panel-body" id="preview-panel">

@@ -40,11 +40,12 @@
     <script>
         function createCollectionPreview(collection_definition, menu) {
             $.each(collection_definition.split("\n"), function (i, item) {
-                const item_trimmed = item.replace(/[^a-z0-9-_\.]/g, '');
+                const item_trimmed = item.replace(/[^a-zA-Z0-9-_\.]/g, '');
                 if (item_trimmed) {
-                    if (item_trimmed.startsWith('collection')) {
-                        if (item_trimmed.substring(11) != $("#collection_id").val()) {
-                            const url = "{{ url_for('.get_collection', id='') }}" + item_trimmed.substring(11);
+                    const [username, id_type, id] = item_trimmed.split(".");
+                    if (id_type == 'collection') {
+                        if (id != $("#collection_id").val()) {
+                            const url = "{{ url_for('.get_collection', username='', id='') }}" + username + '/' + id;
                             const coll_data = doAjax(url);
                             let sub_menu = $(`<ul class="dropdown-menu"/>`);
                             createCollectionPreview(coll_data, sub_menu);
@@ -137,7 +138,6 @@
                 id_form_field.blur(function () {
                     if (id_form_field.val()) {
                         const id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
-
                         $.ajax({
                             url: id_exists_url, success: function (result) {
                                 if (result == '1') {

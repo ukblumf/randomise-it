@@ -58,42 +58,7 @@
             <h3>Paid for</h3>
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-4">
-                        <h3>Categories</h3>
-                        <div style="height: 500px; overflow-y: scroll;">
-                            <ul class="list-group" id="categoryList">
-                                {% for category in used_categories %}
-                                    <li class="list-group-item">
-                                        <button onclick="selectCategory('{{ category[0] }}');">{{ category[1] }}</button>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <h3>Latest</h3>
-                        <div style="height: 500px; overflow-y: scroll;">
-                            <ul class="list-group" id="latestProducts">
-                                {% for mp in latest_marketproducts %}
-                                    <li class="list-group-item">
-                                        <button onclick="alert('{{ mp.id }}');">{{ mp.name }}</button>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <h3>Most Popular</h3>
-                        <div style="height: 500px; overflow-y: scroll;">
-                            <ul class="list-group" id="popularProducts">
-                                {% for mp in popular_marketproducts %}
-                                    <li class="list-group-item">
-                                        <button onclick="alert('{{ mp.id }}');">{{ mp.name }}</button>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
+                    <h4>Coming soon</h4>
                 </div>
             </div>
         </div>
