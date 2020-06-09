@@ -48,39 +48,17 @@ def after_request(response):
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
-    tables = None
-    macros = None
-    collections = None
-    market_products = None
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
     stories = None
-    tags = None
-    if current_user.is_authenticated:
-        tables = table_query()
-        macros = macro_query()
-        collections = collection_query()
-        market_products = MarketPlace.query.filter(MarketPlace.author_id == current_user.id).order_by(
-            MarketPlace.timestamp.desc())
-        stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
-        tags = tag_query()
+    if current_user.is_anonymous:
+        public_tables = PublicRandomTable.query.order_by(PublicRandomTable.timestamp.desc()).limit(100)
+        public_macros = PublicMacros.query.order_by(PublicMacros.timestamp.desc()).limit(100)
     else:
-        tables = RandomTable.query.filter(
-            RandomTable.permissions.op('&')(ProductPermission.PUBLIC) == ProductPermission.PUBLIC) \
-            .order_by(RandomTable.timestamp.desc())
-        macros = Macros.query.filter(Macros.permissions.op('&')(ProductPermission.PUBLIC) == ProductPermission.PUBLIC) \
-            .order_by(Macros.timestamp.desc())
+        stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
 
-    # Hacky DB update :)
-    # update_row_count = RandomTable.query.filter_by(row_count=None)
-    # if update_row_count.count() >0:
-    #     for t in update_row_count:
-    #         if t.line_type == 0:
-    #             t.row_count = t.max
-    #         else:
-    #             t.row_count = len(t.definition.splitlines())
-    #     db.session.commit()
-
-    return render_template('index.html', tables=tables, macro_list=macros, collections=collections,
-                           market_products=market_products, stories=stories, tags=tags)
+    return render_template('index.html', tables=tables, macro_list=macros, collections=collection_list,
+                           public_collections=public_collections, public_macros=public_macros,
+                           public_tables=public_tables, stories=stories, tags=tags)
 
 
 @main.route('/user/<username>')
@@ -449,17 +427,6 @@ def edit_story(username, id):
     return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list,
                            tags=tags, public_collections=public_collections,
                            public_macros=public_macros, public_tables=public_tables)
-
-
-def required_data():
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
-    tags = tag_query()
-    public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
-    public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
-    public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
-    return collection_list, macros, tables, tags, public_collections, public_macros, public_tables
 
 
 @main.route('/random-value/<string:username>/<string:id>', methods=['GET'])
@@ -1011,7 +978,7 @@ def macro_query(macro_id=None):
 
 
 def table_query():
-    return RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
+   return RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
 
 
 def collection_query():
@@ -1020,3 +987,17 @@ def collection_query():
 
 def tag_query():
     return Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.id.asc())
+
+
+def required_data():
+    if current_user.is_anonymous:
+        return None, None, None, None, None, None, None
+
+    tables = table_query()
+    macros = macro_query()
+    collection_list = collection_query()
+    tags = tag_query()
+    public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
+    public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
+    public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
+    return collection_list, macros, tables, tags, public_collections, public_macros, public_tables

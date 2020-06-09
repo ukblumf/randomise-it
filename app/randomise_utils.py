@@ -5,41 +5,30 @@ from .public_models import PublicRandomTable, PublicMacros, PublicCollection, Pu
 
 
 def get_random_table_record(username, reference_id):
-    if username != current_user.username:
-        # get user to get user id
-        external_user = User.query.filter_by(username=username).first()
-        # see if table is in public linked table
-        public_link_table = PublicLinkedTables.query.get([current_user.id, reference_id, external_user.id])
-        if public_link_table is not None:
-            return PublicRandomTable.query.get([reference_id, external_user.id])
-        else:
-            return None
-    else:
-        return RandomTable.query.get([reference_id, current_user.id])
+    return retrieve_data(username, reference_id, RandomTable, PublicLinkedTables, PublicRandomTable)
 
 
 def get_macro_record(username, reference_id):
-    if username != current_user.username:
-        external_user = User.query.filter_by(username=username).first()
-        public_link_macro = PublicLinkedMacros.query.get([current_user.id, reference_id, external_user.id])
-        if public_link_macro is not None:
-            return PublicMacros.query.get([reference_id, external_user.id])
-        else:
-            return None
-    else:
-        return Macros.query.get([reference_id, current_user.id])
+    return retrieve_data(username, reference_id, Macros, PublicLinkedMacros, PublicMacros)
 
 
 def get_collection_record(username, reference_id):
-    if username != current_user.username:
+    return retrieve_data(username, reference_id, Collection, PublicLinkedCollections, PublicCollection)
+
+
+def retrieve_data(username, reference_id, private_table, link_table, public_table):
+    if current_user.is_anonymous:
         external_user = User.query.filter_by(username=username).first()
-        public_link_collection = PublicLinkedCollections.query.get([current_user.id, reference_id, external_user.id])
+        return public_table.query.get([reference_id, external_user.id])
+    elif username != current_user.username:
+        external_user = User.query.filter_by(username=username).first()
+        public_link_collection = link_table.query.get([current_user.id, reference_id, external_user.id])
         if public_link_collection is not None:
-            return PublicCollection.query.get([reference_id, external_user.id])
+            return public_table.query.get([reference_id, external_user.id])
         else:
             return None
     else:
-        return Collection.query.get([reference_id, current_user.id])
+        return private_table.query.get([reference_id, current_user.id])
 
 
 def split_id(id):

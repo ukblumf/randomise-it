@@ -91,21 +91,24 @@ class User(UserMixin, db.Model):
     tables = db.relationship('RandomTable', backref='author', lazy='dynamic')
     macros = db.relationship('Macros', backref='author', lazy='dynamic')
     collections = db.relationship('Collection', backref='author', lazy='dynamic')
-    public_tables = db.relationship('PublicLinkedTables',
-                                    foreign_keys=[PublicLinkedTables.original_author_id],
-                                    backref=db.backref('original_author', lazy='joined'),
-                                    lazy='dynamic',
-                                    cascade='all, delete-orphan')
-    public_macros = db.relationship('PublicLinkedMacros',
-                                    foreign_keys=[PublicLinkedMacros.original_author_id],
-                                    backref=db.backref('original_author', lazy='joined'),
-                                    lazy='dynamic',
-                                    cascade='all, delete-orphan')
-    public_collections = db.relationship('PublicLinkedCollections',
-                                         foreign_keys=[PublicLinkedCollections.original_author_id],
-                                         backref=db.backref('original_author', lazy='joined'),
-                                         lazy='dynamic',
-                                         cascade='all, delete-orphan')
+    public_tables = db.relationship('PublicRandomTable', backref='author', lazy='dynamic')
+    public_macros = db.relationship('PublicMacros', backref='author', lazy='dynamic')
+    public_collections = db.relationship('PublicCollection', backref='author', lazy='dynamic')
+    public_linked_tables = db.relationship('PublicLinkedTables',
+                                           foreign_keys=[PublicLinkedTables.original_author_id],
+                                           backref=db.backref('original_author', lazy='joined'),
+                                           lazy='dynamic',
+                                           cascade='all, delete-orphan')
+    public_linked_macros = db.relationship('PublicLinkedMacros',
+                                           foreign_keys=[PublicLinkedMacros.original_author_id],
+                                           backref=db.backref('original_author', lazy='joined'),
+                                           lazy='dynamic',
+                                           cascade='all, delete-orphan')
+    public_linked_collections = db.relationship('PublicLinkedCollections',
+                                                foreign_keys=[PublicLinkedCollections.original_author_id],
+                                                backref=db.backref('original_author', lazy='joined'),
+                                                lazy='dynamic',
+                                                cascade='all, delete-orphan')
     followed = db.relationship('Follow',
                                foreign_keys=[Follow.follower_id],
                                backref=db.backref('follower', lazy='joined'),
