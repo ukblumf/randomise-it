@@ -2,6 +2,7 @@ from flask import g
 from flask_login import current_user
 import re
 from .models import RandomTable, Macros
+from .randomise_utils import split_id, get_random_table_record, get_macro_record
 
 
 def check_table_definition_validity(table):
@@ -47,13 +48,14 @@ def check_table_definition_validity(table):
             if not bool(re.search(r'^\d+-\d+$', line_def[0])):
                 if not bool(re.search(r'^\d+$', line_def[0])):
                     validate_table_definition = False
-                    error_message = 'Invalid number/number range on line ' + i+ ", line number: " + str(line_number)
+                    error_message = 'Invalid number/number range on line ' + i + ", line number: " + str(line_number)
                     break
             if bool(re.search(r'^\d+-\d+$', line_def[0])):
                 match_values = re.search(r'^(\d+)-(\d+)$', line_def[0])
                 if int(match_values.group(1)) > int(match_values.group(2)):
                     validate_table_definition = False
-                    error_message = 'Invalid range, first number greater than second on line ' + i+ ", line number: " + str(line_number)
+                    error_message = 'Invalid range, first number greater than second on line ' + i + ", line number: " + str(
+                        line_number)
                     break
                 else:
                     if int(match_values.group(1)) < min_rng:
@@ -78,7 +80,7 @@ def check_table_definition_validity(table):
 def validate_text(definition, id):
     error_message = ''
     validate_definition = True
-    if definition.find("macro." + id)>=0:
+    if definition.find("macro." + id) >= 0:
         validate_definition = False
         error_message = "Macro referencing self"
     elif definition.count('<<') != definition.count('>>'):
@@ -91,23 +93,12 @@ def validate_text(definition, id):
 
             external_id = definition[open_angle_brackets + 2:close_angle_brackets]
             external_data = None
+            username, id_type, reference_id = split_id(external_id)
 
-            # check if table ref starts with % chance
-            # e.g <<25% table.monster-level1-encounter>>
-            if bool(re.search(r'^\d+%\s', external_id)):
-                strip_chance = re.search(r'^(^\d+%\s)(.*)$', external_id)
-                external_id = strip_chance.group(2)
-
-            user_id = 0
-            if hasattr(g, 'current_user'):
-                user_id = g.current_user.id
-            else:
-                user_id = current_user.id
-
-            if external_id.startswith('table.'):
-                external_data = RandomTable.query.get([external_id[6:], user_id])
-            elif external_id.startswith('macro.'):
-                external_data = Macros.query.get([external_id[6:], user_id])
+            if id_type == 'table':
+                external_data = get_random_table_record(username, reference_id)
+            elif id_type == 'macro':
+                external_data = get_macro_record(username, reference_id)
 
             if external_data is None:
                 error_message += '\nExternal reference <<' + external_id + '>> not found'

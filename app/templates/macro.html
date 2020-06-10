@@ -36,7 +36,7 @@
     {{ super() }}
     <script>
         function addId(id) {
-            const insert_text = '<<' + id + '>>';
+            const insert_text = id;
             $("#macro_body").focus();
             const macro_text_val = $("#macro_body").val();
             const cursor_pos = $("#macro_body").prop("selectionStart");

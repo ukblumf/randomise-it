@@ -5,6 +5,7 @@
 
 
 
+
                     {% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
                 &laquo;
             </a>
@@ -26,6 +27,7 @@
         {% endfor %}
         <li{% if not pagination.has_next %} class="disabled"{% endif %}>
             <a href="
+
 
 
 
@@ -106,7 +108,11 @@
             {% endif %}
             <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
                   onclick="pinItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', this)"></span>
-            <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}')">{{ item.name }}</button>
+            {% if name == 'collection' %}
+                <button onclick="pinItem('{{ current_user.username }}.{{ name }}.{{ item.id }}')">{{ item.name }}</button>
+            {% else %}
+                <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}')">{{ item.name }}</button>
+            {% endif %}
         </li>
     {% endfor %}
 {% endmacro %}
@@ -117,31 +123,9 @@
         <ul class="list-group" id="{{ name }}List">
             {% for item in items %}
                 <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}{% endif %}">
-                    <button onclick="addId('{{ current_user.username }}.{{ name }}.{{ item.id }}')">{{ item.name }}</button>
+                    <button onclick="addId('<<{{ current_user.username }}.{{ name }}.{{ item.id }}>>')">{{ item.name }}</button>
                 </li>
             {% endfor %}
         </ul>
     </div>
 {% endmacro %}
-
-{% macro create_pinned_collection() %}
-        function createPinnedCollection(username, collection_id, menu) {
-            const url = "{{ url_for('.get_collection', username='', id='') }}" + username + "/" + collection_id;
-            $.when($.ajax({url: url}), menu).done(function (result, menu) {
-                $.each(result[0].split("\n"), function (i, item) {
-                    item = item.trim();
-                    if (item) {
-                        const [username, id_type, id] = item.split(".");
-                        if (id_type == 'collection') {
-                            const sub_menu = $(`<ul class="dropdown-menu"/>`);
-                            createPinnedCollection(username, id, sub_menu);
-                            const dropdown = $(`<li class="dropdown-submenu"><a tabindex="-1">${item}</a></li>`).append(sub_menu);
-                            menu.append(dropdown);
-                        } else {
-                            menu.append(`<li><a onclick="addItem('${item}')">${item}</a></li>`)
-                        }
-                    }
-                });
-            });
-        }
-{%  endmacro %}

@@ -149,7 +149,26 @@
             }
         }
 
-        {{ macros.create_pinned_collection() }}
+        function createPinnedCollection(username, collection_id, menu) {
+            const url = "{{ url_for('.get_collection', username='', id='') }}" + username + "/" + collection_id;
+            $.when($.ajax({url: url}), menu).done(function (result, menu) {
+                $.each(result[0].split("\n"), function (i, item) {
+                    item = item.trim();
+                    if (item) {
+                        const ref_id = item.substring(item.indexOf('<<')+2, item.indexOf('>>'));
+                        const [username, id_type, id] = ref_id.split(".");
+                        if (id_type == 'collection') {
+                            const sub_menu = $(`<ul class="dropdown-menu"/>`);
+                            createPinnedCollection(username, id, sub_menu);
+                            const dropdown = $(`<li class="dropdown-submenu"><a tabindex="-1">${id}</a></li>`).append(sub_menu);
+                            menu.append(dropdown);
+                        } else {
+                            menu.append(`<li><a onclick="addItem('${ref_id}')">${id}</a></li>`)
+                        }
+                    }
+                });
+            });
+        }
 
         function addItem(item) {
             const [username, id_type, id] = item.split(".");

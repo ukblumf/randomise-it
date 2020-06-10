@@ -83,47 +83,58 @@
         const tables = JSON.parse('{{table_references | tojson}}');
         const macros = JSON.parse('{{macro_references | tojson}}');
 
-        function addId(id) {
-            if (id.startsWith('collection.')) {
-                $("#shared-collections").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + id + "' id='" + id + "'>" + id + "</li>");
-                $("#collections_shared").val($("#collections_shared").val() + id + " ");
-                addDependentReferences(collections[id], id);
-            } else if (id.startsWith('macro.') && $("#macros_shared").val().indexOf(id) == -1) {
-                $("#shared-macros").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + id + "' id='" + id + "'>" + id + "</li>");
-                $("#macros_shared").val($("#macros_shared").val() + id + " ");
-                addDependentReferences(macros[id], id);
-            } else if (id.startsWith('table.') && $("#tables_shared").val().indexOf(id) == -1) {
-                $("#shared-tables").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + id + "' id='" + id + "'>" + id + "</li>");
-                $("#tables_shared").val($("#tables_shared").val() + id + " ");
-                addDependentReferences(tables[id], id);
+        function addId(ref_id) {
+            let id_type = '';
+            let reference_id = '';
+            if (ref_id.indexOf('<<') != -1) {
+                ref_id = ref_id.substring(ref_id.indexOf('<<') + 2, ref_id.indexOf('>>'));
+                [, id_type, reference_id] = ref_id.split(".");
+            } else {
+                [, id_type, reference_id] = ref_id.split(".");
+            }
+
+            if (id_type == 'collection' && $("#collections_shared").val().indexOf(reference_id) == -1) {
+                $("#shared-collections").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + ref_id + "' id='" + ref_id + "'>" + ref_id + "</li>");
+                $("#collections_shared").val($("#collections_shared").val() + reference_id + " ");
+                addDependentReferences(collections[ref_id], ref_id);
+            } else if (id_type == 'macro' && $("#macros_shared").val().indexOf(reference_id) == -1) {
+                $("#shared-macros").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + ref_id + "' id='" + ref_id + "'>" + ref_id + "</li>");
+                $("#macros_shared").val($("#macros_shared").val() + reference_id + " ");
+                addDependentReferences(macros[ref_id], ref_id);
+            } else if (id_type == 'table' && $("#tables_shared").val().indexOf(reference_id) == -1) {
+                $("#shared-tables").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + ref_id + "' id='" + ref_id + "'>" + ref_id + "</li>");
+                $("#tables_shared").val($("#tables_shared").val() + reference_id + " ");
+                addDependentReferences(tables[ref_id], ref_id);
             }
         }
 
         function addDependentReferences(ref, parentId) {
             $.each(ref, function (k, v) {
                 if (typeof k === "number") {
-                    const id = v.substr(0, v.indexOf('::'));
-                    if (id.startsWith('table.')) {
-                        updateLists(id, parentId, $("#shared-tables"), $("#tables_shared"))
-                    } else if (id.startsWith('macro.')) {
-                        updateLists(id, parentId, $("#shared-macros"), $("#macros_shared"))
+                    const full_id = v.substr(0, v.indexOf('::'));
+                    const [, id_type, reference_id] = full_id.split(".");
+                    if (id_type == 'table') {
+                        updateLists(full_id, reference_id, parentId, $("#shared-tables"), $("#tables_shared"))
+                    } else if (id_type == 'macro') {
+                        updateLists(full_id, reference_id, parentId, $("#shared-macros"), $("#macros_shared"))
                     }
                 } else {
-                    if (k.startsWith('collection.')) {
-                        updateLists(k, parentId, $("#shared-collections"), $("#collections_shared"))
+                    const [, id_type, reference_id] = k.split(".");
+                    if (id_type == 'collection') {
+                        updateLists(k, reference_id, parentId, $("#shared-collections"), $("#collections_shared"))
                         addDependentReferences(v, parentId);
-                    } else if (k.startsWith('table.')) {
-                        updateLists(k, parentId, $("#shared-tables"), $("#tables_shared"))
-                    } else if (k.startsWith('macro.')) {
-                        updateLists(k, parentId, $("#shared-macros"), $("#macros_shared"))
+                    } else if (id_type == 'table') {
+                        updateLists(k, reference_id, parentId, $("#shared-tables"), $("#tables_shared"))
+                    } else if (id_type == 'macro') {
+                        updateLists(k, reference_id, parentId, $("#shared-macros"), $("#macros_shared"))
                     }
                 }
             });
 
-            function updateLists(id, parentId, displayList, hiddenList) {
-                if (hiddenList.val().indexOf(id) == -1) {
-                    displayList.append("<li class='list-group-item disabled' data-parentid='" + parentId + "' id='" + id + "'>" + id + "</li>");
-                    hiddenList.val(hiddenList.val() + id + " ");
+            function updateLists(full_id, reference_id, parentId, displayList, hiddenList) {
+                if (hiddenList.val().indexOf(full_id) == -1) {
+                    displayList.append("<li class='list-group-item disabled' data-parentid='" + parentId + "' id='" + full_id + "'>" + reference_id + "</li>");
+                    hiddenList.val(hiddenList.val() + reference_id + " ");
                 }
             }
         }

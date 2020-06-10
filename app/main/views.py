@@ -302,7 +302,7 @@ def edit_table(username, id):
             table.row_count = row_count
             db.session.add(table)
             flash('Your table has been updated.')
-            return redirect(url_for('.edit_table', id=table.id, page=-1))
+            return redirect(url_for('.edit_table', username=username, id=id))
         else:
             flash(error_message)
 
@@ -417,6 +417,7 @@ def edit_story(username, id):
         story.pins = form.pins.data
         db.session.add(story)
         flash('Story Updated')
+        return redirect(url_for('.edit_story', username=username, id=id))
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
@@ -487,7 +488,7 @@ def edit_macro(username, id):
         if validate_macro_definition:
             db.session.add(macro)
             flash('Your macro has been updated.')
-            return redirect(url_for('.edit_macro', id=macro.id, page=-1))
+            return redirect(url_for('.edit_macro', username=username, id=id))
         else:
             flash(error_message)
 
@@ -575,6 +576,7 @@ def edit_collection(username, id):
         if validate:
             db.session.add(collection_obj)
             flash('Your collection has been updated.')
+            return redirect(url_for('.edit_collection', username=username, id=id))
         else:
             flash(error_message)
 
@@ -821,7 +823,7 @@ def share_public():
             db.session.flush()
             if public_collections != ['']:
                 for c_id in public_collections:
-                    c = Collection.query.get([c_id[11:], current_user.id])
+                    c = Collection.query.get([c_id, current_user.id])
                     if not c:
                         db.session.rollback()
                         return render_template('error_page.html', description='Error finding Collection ' + c_id)
@@ -836,7 +838,7 @@ def share_public():
                         db.session.add(pc)
             if public_macros != ['']:
                 for m_id in public_macros:
-                    m = Macros.query.get([m_id[6:], current_user.id])
+                    m = Macros.query.get([m_id, current_user.id])
                     if not m:
                         db.session.rollback()
                         return render_template('error_page.html', description='Error finding Macro ' + m_id)
@@ -851,7 +853,7 @@ def share_public():
                         db.session.add(pm)
             if public_tables != ['']:
                 for t_id in public_tables:
-                    t = RandomTable.query.get([t_id[6:], current_user.id])
+                    t = RandomTable.query.get([t_id, current_user.id])
                     if not t:
                         db.session.rollback()
                         return render_template('error_page.html', description='Error finding Random Table ' + t_id)
@@ -904,6 +906,7 @@ def build_collection_references(coll_obj):
     coll_definition = coll_obj.definition.splitlines()
 
     for coll_item in coll_definition:
+        coll_item = coll_item[2:len(coll_item)-2]
         username, id_type, reference_id = split_id(coll_item)
         if id_type == 'table':
             table = get_random_table_record(username, reference_id)
