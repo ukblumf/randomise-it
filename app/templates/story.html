@@ -76,7 +76,7 @@
                                     {% endif %}
                                     <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
                                           onclick="pinItem('{{ c.original_author.username }}.collection.{{ c.collection_id }}', this)"></span>
-                                    <button onclick="addItem('{{ c.original_author.username }}.collection.{{ c.collection_id }}')">{{ c.public_collection.name }}</button>
+                                    <button onclick="pinItem('{{ c.original_author.username }}.collection.{{ c.collection_id }}')">{{ c.public_collection.name }}</button>
                                 </li>
                             {% endfor %}
                         </ul>

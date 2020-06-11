@@ -21,11 +21,20 @@
             <div class="col-md-4">
                 {{ macros.tag_filter(tags) }}
                 <h4>Macros</h4>
+                {{ macros.list_rows_in_ul_header('macro') }}
                 {{ macros.list_rows_in_ul('macro', macro_list, current_user) }}
+                {{ macros.list_public_rows_in_ul('macro', public_macros) }}
+                {{ macros.list_rows_in_ul_footer() }}
                 <h4>Random Tables</h4>
+                {{ macros.list_rows_in_ul_header('table') }}
                 {{ macros.list_rows_in_ul('table', tables, current_user) }}
+                {{ macros.list_public_rows_in_ul('table', public_tables) }}
+                {{ macros.list_rows_in_ul_footer() }}
                 <h4>Collections</h4>
+                {{ macros.list_rows_in_ul_header('collection') }}
                 {{ macros.list_rows_in_ul('collection', collections, current_user) }}
+                {{ macros.list_public_rows_in_ul('collection', public_collections) }}
+                {{ macros.list_rows_in_ul_footer() }}
             </div>
         </div>
     </div>

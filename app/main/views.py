@@ -269,7 +269,9 @@ def create_table():
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
-    return render_template('table.html', form=form, tables=tables, macro_list=macros, tags=tags)
+    return render_template('table.html', form=form, tables=tables, macro_list=macros, tags=tags,
+                           public_tables=public_tables, public_macros=public_macros,
+                           public_collections=public_collections)
 
 
 @main.route('/edit-table/<string:username>/<string:id>', methods=['GET', 'POST'])
@@ -315,7 +317,9 @@ def edit_table(username, id):
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
-    return render_template('table.html', tables=tables, macro_list=macros, form=form, tags=tags)
+    return render_template('table.html', tables=tables, macro_list=macros, form=form, tags=tags,
+                           public_tables=public_tables, public_macros=public_macros,
+                           public_collections=public_collections)
 
 
 @main.route('/bulk-table-import', methods=['GET', 'POST'])
@@ -463,7 +467,9 @@ def create_macro():
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
-    return render_template('macro.html', form=form, macro_list=macros, tables=tables, form_type='macro', tags=tags)
+    return render_template('macro.html', form=form, macro_list=macros, tables=tables, form_type='macro', tags=tags,
+                           public_tables=public_tables, public_macros=public_macros,
+                           public_collections=public_collections)
 
 
 @main.route('/edit-macro/<string:username>/<string:id>', methods=['GET', 'POST'])
@@ -502,7 +508,9 @@ def edit_macro(username, id):
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('macro.html', form=form, macro_list=macros, tables=tables, edit_macro=macro,
-                           form_type='macro', tags=tags)
+                           form_type='macro', tags=tags,
+                           public_tables=public_tables, public_macros=public_macros,
+                           public_collections=public_collections)
 
 
 @main.route('/macro/<string:username>/<string:id>', methods=['GET'])
@@ -551,7 +559,9 @@ def create_collection():
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list,
-                           tags=tags)
+                           tags=tags,
+                           public_tables=public_tables, public_macros=public_macros,
+                           public_collections=public_collections)
 
 
 @main.route('/edit-collection/<string:username>/<string:id>', methods=['GET', 'POST'])
@@ -590,7 +600,9 @@ def edit_collection(username, id):
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
     return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list,
-                           tags=tags)
+                           tags=tags,
+                           public_tables=public_tables, public_macros=public_macros,
+                           public_collections=public_collections)
 
 
 @main.route('/collection/<string:username>/<string:id>', methods=['GET'])

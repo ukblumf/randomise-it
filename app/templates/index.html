@@ -6,12 +6,14 @@
 
 {% block page_content %}
     <div class="page-header">
-        <h3>Hello{% if current_user.is_authenticated %}, {{ current_user.username }}{% else %}. Please create an account to harness the full power of Randomise-It{% endif %}</h3>
+        <h3>Hello{% if current_user.is_authenticated %}, {{ current_user.username }}{% else %}. Please create an account
+            to harness the full power of Randomise-It{% endif %}</h3>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading">The wonderful world of Imagination driven by Randomness</div>
         <div class="panel-body">At Randomise-It we want to harness the power of randomness to drive creativity, that
-            weird juxtaposition of concepts that spark an idea. That helpful hint that gets you to the next level in your story, scenario or idea.
+            weird juxtaposition of concepts that spark an idea. That helpful hint that gets you to the next level in
+            your story, scenario or idea.
             Or just randomly create a plot that your imagination has to explain.
         </div>
     </div>
@@ -39,13 +41,22 @@
             </div>
             <div class="row">
                 <div class="col-md-4">
+                    {{ macros.list_rows_in_table_header('story', current_user) }}
                     {{ macros.list_rows_in_table('story', stories, current_user) }}
+                    {{ macros.list_rows_in_table_footer() }}
                 </div>
                 <div class="col-md-4">
+                    {{ macros.list_rows_in_table_header('table', current_user) }}
                     {{ macros.list_rows_in_table('table', tables, current_user) }}
+                    {{ macros.list_public_rows_in_table('table', public_tables) }}
+                    {{ macros.list_rows_in_table_footer() }}
+
                 </div>
                 <div class="col-md-4">
+                    {{ macros.list_rows_in_table_header('macro', current_user) }}
                     {{ macros.list_rows_in_table('macro', macro_list, current_user) }}
+                    {{ macros.list_public_rows_in_table('macro', public_macros) }}
+                    {{ macros.list_rows_in_table_footer() }}
                 </div>
             </div>
             <div class="row">
@@ -58,7 +69,9 @@
             </div>
             <div class="row">
                 <div class="col-md-4">
+                    {{ macros.list_rows_in_table_header('macro', current_user) }}
                     {{ macros.list_rows_in_table('collection', collections, current_user) }}
+                    {{ macros.list_rows_in_table_footer() }}
                 </div>
                 <div class="col-md-4 panel panel-default">
                     <div class="panel-body" id="preview-panel">

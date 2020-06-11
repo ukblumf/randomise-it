@@ -18,6 +18,8 @@
             return string.toString().toLowerCase()
                 .replace(/\s+/g, '-') // Replace spaces with -
                 .replace(/\./g, '') // Remove fullstops '.'
+                .replace(/\(/g, '') // Remove opening brackets '.'
+                .replace(/\)/g, '') // Remove closing brackets '.'
                 .replace(p, c => b.charAt(a.indexOf(c))) // Replace special characters
                 .replace(/&/g, '-and-') // Replace & with 'and'
                 .replace(/[^\w\-]+/g, '') // Remove all non-word characters
