@@ -27,6 +27,17 @@ DESCRIPTION: some optional description
 ```
 The import of the random table list will work out the upper and lower range of values that need to be generated, in the case above. This will be a random value between 1 and 6.
 
+You can also leave numbers out entirely and get the random selection to pick just from the rows in the table
+
+TITLE: What Happens When no Numbers.  
+ID: what-happens-when-no-numbers
+```
+This could happen
+But also this could happen
+I could happen
+```
+
+You can't mix rows with or without numbers, rows either have no numbers or all numbers.
 
 ### Referencing other lists
 Often random lists need to refer to other lists, this is down via surrounding the list identifier with << and >>
