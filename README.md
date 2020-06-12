@@ -72,7 +72,7 @@ keeps-happening::Keeps Happening
 ```
 
 
-###List Types
+### List Types
 Lists can be private, public or commercial.
 
 **Private**, only can be seen by yourself.
@@ -81,7 +81,7 @@ Lists can be private, public or commercial.
 
 
 
-###Macros
+### Macros
 Macros produce a paragraph or sentence based upon connecting multiple random tables (or even other macros) together.
 They have a unique identifier (same as lists), a display title, and optional description and a single markdown block, as the markdown syntax does not use << >> this enables the referencing of the lists.
 To reference a public or commercial list, the referencing syntax is <<user-id.listid>> where user-id is the userid of the source originating account.
