@@ -36,9 +36,9 @@ Often random lists need to refer to other lists, this is down via surrounding th
 Here is an example of random table referring to table defined above.
 ```
 more-happenings::More Happenings
-1::<<what-happens>> followed by <<what-happens>>
+1::<<username.table.what-happens>> followed by <<username.table.what-happens>>
 2::Happy happenstance
-3::Whilst you sleep <<what-happens>>
+3::Whilst you sleep <<username.macro.what-happens>>
 ```
 Of course, this could quite easily cause a circular dependencies if the references were drilled down, so for the initial version a reference only works down one level.
 
@@ -51,9 +51,24 @@ E.g.
 keeps-happening::Keeps Happening
 1::Something keeps happening ((1-10)) times during night
 2::You find ((3d6)) things
-3::The next day ((1d20)) <<what-happens>>  occur.
+3::The next day ((1d20)) <<username.table.what-happens>>  occur.
 4::((1-100)) kobolds carrying ((1d8))) copper pieces each, appear!
 5::You find ((3d6x100)) gold pieces, you lucky thing.
+```
+
+### Generator types
+```
+((<number of dice>d<die type>)), e.g. 2d4, 3d6, 1d20
+((<low range>-<high range>)), e.g 1-10, 13-24, 1-100
+((<number of dice>d<die type>x<multiplier>)), e.g. 3d6x10, 1d12x100
+((<number of dice>d<die type>+<add>)), e.g. 2d4+2, 3d6+4
+((<number of dice>d<die type>-<subtract>)), e.g. 4d4-1, 3d6-2
+((<low range>-<high range>x<multiplier>)), e.g. 1-10x100, 3-18x10
+((<number of dice>d<die type>x<<external table/macro>>)), e.g   2d4x<<user.table.randomtable>>
+                                                                3d6x<<user.macro.randommacro>>
+((<low range>-<high range>x<<external table/macro>>)), e.g      1-10x<<user.table.randomtable>>
+                                                                2-4x<<user.macro.randommacro>>
+((dice chain)), e.g 1d6+1d4+1, 3d6+2d8-2, 6+1d6+1d8-2
 ```
 
 
@@ -61,12 +76,8 @@ keeps-happening::Keeps Happening
 Lists can be private, public or commercial.
 
 **Private**, only can be seen by yourself.
-**Public Open**, allows anyone to use your list and see contents of list
-	• Possible new property - Editable Yes/No
-**Public Closed**, allows anyone to use your list but can only use resulting values they cannot see whole list.
-**Commercial Open**, allows other users to purchase your list and then see entire contents.
-	• Possible new property - Editable Yes/No
-**Commercial Closed**, allows other users to purchase your list but only use resulting values cannot see whole list.
+**Public**, allows anyone to use your list but can only use resulting values they cannot see whole list.
+**Commercial**, allows other users to purchase your list but only use resulting values cannot see whole list.
 
 
 

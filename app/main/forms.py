@@ -63,7 +63,7 @@ class TableForm(FlaskForm):
     table_name = StringField('Table name', validators=[Length(0, 255)])
     table_id = StringField('Identifier', validators=[Length(0, 255)])
     table_description = TextAreaField('Description')
-    table_definition = TextAreaField('Random Table Definition', render_kw={"rows": 10, "cols": 70})
+    table_definition = TextAreaField('Random Table Definition', render_kw={"rows": 20, "cols": 70})
     table_tags = SelectField('Tags')
     submit = SubmitField('Save')
 

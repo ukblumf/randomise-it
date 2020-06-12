@@ -80,6 +80,30 @@ def process_text(text):
             value *= int(multiplier.group(1))
             generated_text = str(value)
 
+        elif bool(re.search(r'^\d+d\d+\+\d+$', generator, re.IGNORECASE)):
+            # Found dice type random number with addition
+            dice = re.search(r'^(\d+)d(\d+)', generator, re.IGNORECASE)
+            addend = re.search(r'\+(\d+)$', generator, re.IGNORECASE)
+            # Number of dice in dice.group(1))
+            # Dice size in dice.group(2))
+            # Added number in multiplier.group(1))
+            for d in range(int(dice.group(1))):
+                value += random.randint(1, int(dice.group(2)))
+            value += int(addend.group(1))
+            generated_text = str(value)
+
+        elif bool(re.search(r'^\d+d\d+\-\d+$', generator, re.IGNORECASE)):
+            # Found dice type random number with subtraction
+            dice = re.search(r'^(\d+)d(\d+)', generator, re.IGNORECASE)
+            subtraend = re.search(r'\-(\d+)$', generator, re.IGNORECASE)
+            # Number of dice in dice.group(1))
+            # Dice size in dice.group(2))
+            # Added number in multiplier.group(1))
+            for d in range(int(dice.group(1))):
+                value += random.randint(1, int(dice.group(2)))
+            value += int(subtraend.group(1))
+            generated_text = str(value)
+
         elif bool(re.search(r'^\d+-\d+$', generator, re.IGNORECASE)):
             # Found range type random number
             rng = re.search(r'^(\d+)-(\d+)$', generator, re.IGNORECASE)
@@ -87,6 +111,7 @@ def process_text(text):
             # Max range in rng.group(2))
             value = random.randint(int(rng.group(1)), int(rng.group(2)))
             generated_text = str(value)
+
         elif bool(re.search(r'^\d+-\d+x\d+$', generator, re.IGNORECASE)):
             # Found range type random number with multiplier
             rng = re.search(r'^(\d+)-(\d+)', generator, re.IGNORECASE)
@@ -99,12 +124,12 @@ def process_text(text):
             generated_text = str(value)
 
         elif bool(re.search(r'^\d+d\d+x<<.*?>>$', generator, re.IGNORECASE)):
-            # current_app.logger.warning('found dice type random number with external reference')
+            # found dice type random number with external reference
             dice = re.search(r'^(\d+)d(\d+)', generator, re.IGNORECASE)
             external_table = re.search(r'x<<(.*?)>>$', generator, re.IGNORECASE)
-            # current_app.logger.warning('number of dice ' + dice.group(1))
-            # current_app.logger.warning('dice size ' + dice.group(2))
-            # current_app.logger.warning('external table ' + external_table.group(1))
+            # number of dice IN dice.group(1)
+            # dice size IN dice.group(2)
+            # external table in external_table.group(1)
             for d in range(int(dice.group(1))):
                 roll = random.randint(1, int(dice.group(2)))
                 for n in range(roll):
@@ -121,8 +146,33 @@ def process_text(text):
             for n in range(roll):
                 generated_text += get_row_from_external_table(0, external_table.group(1), 0, "") + ","
 
-        text = text[:open_brackets] + generated_text.rstrip(' ').rstrip(',') + text[
-                                                                               close_brackets + 2:]
+        elif bool(re.search(r'(\d+d\d+|\d+|[\+|\-])', generator, re.IGNORECASE)):
+            # found chained dice and static numbers to produce sum
+            components = re.finditer(r'(\d+d\d+|\d+|[\+|\-])', generator, re.IGNORECASE)
+            result = 0
+            expect_value = True
+            operand = 1
+            for component in components:
+                if expect_value:
+                    expect_value = False
+                    if re.search(r'd', component.group(1), re.IGNORECASE):
+                        # dice notation
+                        dice = re.search(r'^(\d+)d(\d+)', component.group(1), re.IGNORECASE)
+                        for d in range(int(dice.group(1))):
+                            result += (random.randint(1, int(dice.group(2))) * operand)
+                    elif re.search(r'\d+', component.group(1), re.IGNORECASE):
+                        # static number
+                        result += (int(component.group(1)) * operand)
+                else:
+                    expect_value = True
+                    if component.group(1) == '+':
+                        operand = 1
+                    elif component.group(1) == '-':
+                        operand = -1
+
+            generated_text = str(result)
+
+        text = text[:open_brackets] + generated_text.rstrip(' ').rstrip(',') + text[close_brackets + 2:]
         open_brackets = text.find("((", open_brackets)
 
     open_angle_brackets = text.find("<<")

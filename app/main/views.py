@@ -21,7 +21,6 @@ import bleach
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                 'h1', 'h2', 'h3', 'br']
-
 non_url_safe = ['"', '#', '$', '%', '&', '+',
                 ',', '/', ':', ';', '=', '?',
                 '@', '[', '\\', ']', '^', '`',
@@ -289,14 +288,13 @@ def edit_table(username, id):
     form.table_tags.choices.insert(0, (' ', ''))
 
     if form.validate_on_submit():
-        # table.id = form.table_id.data
         table.name = form.table_name.data
         table.description = form.table_description.data
         table.definition = form.table_definition.data
         table.tags = form.table_tags.data
 
-        max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
-            table)
+        max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = \
+            check_table_definition_validity(table)
         if validate_table_definition:
             table.min = min_rng
             table.max = max_rng
@@ -527,9 +525,8 @@ def get_macro(username, id):
 def preview_macro():
     macro = request.form['macro'].replace('\n', '<br/>')
     if macro:
-        return bleach.linkify(bleach.clean(
-            markdown(process_text(macro), output_format='html'),
-            tags=ALLOWED_TAGS, strip=True))
+        return bleach.linkify(
+            bleach.clean(markdown(process_text(macro), output_format='html'), tags=ALLOWED_TAGS, strip=True))
     else:
         abort(400)
 
@@ -918,7 +915,7 @@ def build_collection_references(coll_obj):
     coll_definition = coll_obj.definition.splitlines()
 
     for coll_item in coll_definition:
-        coll_item = coll_item[2:len(coll_item)-2]
+        coll_item = coll_item[2:len(coll_item) - 2]
         username, id_type, reference_id = split_id(coll_item)
         if id_type == 'table':
             table = get_random_table_record(username, reference_id)
@@ -993,7 +990,7 @@ def macro_query(macro_id=None):
 
 
 def table_query():
-   return RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
+    return RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
 
 
 def collection_query():

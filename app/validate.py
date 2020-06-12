@@ -72,7 +72,7 @@ def check_table_definition_validity(table):
 
         if validate_table_definition:
             validate_table_definition, error_message = validate_text(row_text, table.id)
-            error_message += ", line number: " + str(line_number)
+            error_message += ", line number: " + str(line_number + 1)
 
     return max_rng, min_rng, validate_table_definition, table_line_type, error_message, number_of_rows
 
@@ -116,15 +116,36 @@ def validate_text(definition, id):
             generator = definition[open_brackets + 2:close_brackets]
             # check type of generator
             if not bool(re.search(r'^\d+d\d+$', generator, re.IGNORECASE)):  # e.g 1d6
-                if not bool(re.search(r'^\d+-\d+$', generator, re.IGNORECASE)):  # e.g. 1-100
-                    if not bool(re.search(r'^\d+d\d+x\d+$', generator, re.IGNORECASE)):  # e.g. 1d6x10
-                        if not bool(re.search(r'^\d+-\d+x\d+$', generator, re.IGNORECASE)):  # e.g. 1-100x10
-                            if not bool(re.search(r'^\d+d\d+x<<table\..*?>>$', generator,
-                                                  re.IGNORECASE)):  # e.g. 1d6x<<table.magic-item-table-a>>
-                                if not bool(re.search(r'^\d+-\d+x<<table\..*?>>$', generator,
-                                                      re.IGNORECASE)):  # e.g. 1-10x<<table.magic-item-table-a>>
-                                    error_message += '\nRandom number in ((' + generator + ')) not recognised'
-                                    validate_definition = False
+                if not bool(re.search(r'^\d+d\d+x\d+$', generator, re.IGNORECASE)):  # e.g. 1d6x10
+                    if not bool(re.search(r'^\d+d\d+\+\d+$', generator, re.IGNORECASE)):  # e.g. 2d4+2
+                        if not bool(re.search(r'^\d+d\d+\-\d+$', generator, re.IGNORECASE)):  # e.g. 4d4-1
+                            if not bool(re.search(r'^\d+-\d+$', generator, re.IGNORECASE)):  # e.g. 1-100
+                                if not bool(re.search(r'^\d+-\d+x\d+$', generator, re.IGNORECASE)):  # e.g. 1-100x10
+                                    if not bool(re.search(r'^\d+d\d+x<<table\..*?>>$', generator,
+                                                          re.IGNORECASE)):  # e.g. 1d6x<<table.magic-item-table-a>>
+                                        if not bool(re.search(r'^\d+-\d+x<<table\..*?>>$', generator,
+                                                              re.IGNORECASE)):  # e.g. 1-10x<<table.magic-item-table-a>>
+                                            if bool(re.search(r'(\d+d\d+|\d+|[\+|\-])', generator, re.IGNORECASE)):
+                                                components = re.finditer(r'(\d+d\d+|\d+|[\+|\-])', generator, re.IGNORECASE)
+                                                valid_generator = True
+                                                expect_value = True
+                                                operand = 1
+                                                for component in components:
+                                                    if expect_value:
+                                                        expect_value = False
+                                                        if re.search(r'd', component.group(1), re.IGNORECASE):
+                                                            # dice notation
+                                                            if not bool(re.search(r'^(\d+)d(\d+)', component.group(1), re.IGNORECASE)) and not bool(re.search(r'\d+', component.group(1), re.IGNORECASE)):
+                                                                valid_generator = False
+                                                                break
+                                                    else:
+                                                        expect_value = True
+                                                        if component.group(1) != '+' and component.group(1) != '-':
+                                                            valid_generator = False
+                                                            break
+                                                if not valid_generator:
+                                                    error_message += '\nRandom number in ((' + generator + ')) not recognised'
+                                                    validate_definition = False
             open_brackets = definition.find("((", close_brackets)
 
     return validate_definition, error_message
