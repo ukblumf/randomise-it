@@ -76,7 +76,9 @@ keeps-happening::Keeps Happening
 Lists can be private, public or commercial.
 
 **Private**, only can be seen by yourself.
+
 **Public**, allows anyone to use your list but can only use resulting values they cannot see whole list.
+
 **Commercial**, allows other users to purchase your list but only use resulting values cannot see whole list.
 
 
