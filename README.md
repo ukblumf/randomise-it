@@ -1,7 +1,7 @@
 RANDOMISE-IT
 ============
 
-The ability to create, store, edit and share random tables.
+The ability to create, store, edit and share random tables, macros and collections
 
 Develop a standard way to create random tables and reference other random tables that is easy to use.
 
@@ -9,46 +9,49 @@ Provide an easy scripting language to tie together multiple random tables to pro
 
 ## Defining a Random Table
 
-Random tables will be defined by a header/title line, optional description and followed by rows.
+Random tables will be defined by a header/title line, optional description a unique (to the user) identifier  
+The unique identifier can only comprise of lowercase letters, numbers and '_', '-'
 
-The rows are split into two columns, the first column represents the value(s) needed to select that particular row, the second column is the text, It will be separated by double colon, i.e. `~::
+The rows of the table are split into two columns, the first column represents the value(s) needed to select that particular row, the second column is the text, It will be separated by double colon, i.e. `~::
 
-The title line will also comprise of two elements, a unique identifier and a display title, separated by ::
-The unique identifier can only comprise of lowercase letters, numbers and '_', '-', '.'
 
-Optional description of list, this appears below identifier/title line and is surrounded by double colons. This can contain markdown to allow highlighting and formatting.
 
 ### Example random table
+TITLE: What Happens  
+ID: what-happens  
+DESCRIPTION: some optional description
 ```
-what-happens::What Happens
-::Optional description of the list::
 1::Something bad happens
 2-5::Nothing happens
 6::Something good happens
 ```
 The import of the random table list will work out the upper and lower range of values that need to be generated, in the case above. This will be a random value between 1 and 6.
 
-If the unique identifier already exists in your local lists then it will overwrite, a warning will be displayed before this happens.
-
 
 ### Referencing other lists
 Often random lists need to refer to other lists, this is down via surrounding the list identifier with << and >>
 Here is an example of random table referring to table defined above.
+
+#### Example
+TITLE: More Happens  
+ID: more-happens  
+DESCRIPTION: some optional description
 ```
-more-happenings::More Happenings
 1::<<username.table.what-happens>> followed by <<username.table.what-happens>>
 2::Happy happenstance
 3::Whilst you sleep <<username.macro.what-happens>>
 ```
-Of course, this could quite easily cause a circular dependencies if the references were drilled down, so for the initial version a reference only works down one level.
+In the above example the more-happens table is referencing the what-happens table.
+Note that the reference id between << >> follows the form username.type.id  
 
 
 ### Generating random numbers
 To generate a random number to include in text surround range with double brackets, a range can be specified with a dash or in dice notation. Multiplications are possible in initial version.
 
+TITLE: Keeps Happening
+ID: keeps-happening
 E.g.
 ```
-keeps-happening::Keeps Happening
 1::Something keeps happening ((1-10)) times during night
 2::You find ((3d6)) things
 3::The next day ((1d20)) <<username.table.what-happens>>  occur.
@@ -57,6 +60,7 @@ keeps-happening::Keeps Happening
 ```
 
 ### Generator types
+There are many types of number generators, here is current complete list.
 ```
 ((<number of dice>d<die type>)), e.g. 2d4, 3d6, 1d20
 ((<low range>-<high range>)), e.g 1-10, 13-24, 1-100
@@ -72,35 +76,40 @@ keeps-happening::Keeps Happening
 ```
 
 
-### List Types
+### Sharing
 Lists can be private, public or commercial.
 
 **Private**, only can be seen by yourself.
 
-**Public**, allows anyone to use your list but can only use resulting values they cannot see whole list.
+**Public**, allows anyone to use your list but can only use resulting values they cannot see list.
 
-**Commercial**, allows other users to purchase your list but only use resulting values cannot see whole list.
+**Commercial** - COMING SOON - allows other users to purchase your list but only use resulting values cannot see list.
 
-
+Other sharing options will be Viewable data, allowing other users to see contents of list and Editable lists to allow other 
+users to edit their own copy of table, macro or collection.
 
 ### Macros
 Macros produce a paragraph or sentence based upon connecting multiple random tables (or even other macros) together.
-They have a unique identifier (same as lists), a display title, and optional description and a single markdown block, as the markdown syntax does not use << >> this enables the referencing of the lists.
-To reference a public or commercial list, the referencing syntax is <<user-id.listid>> where user-id is the userid of the source originating account.
+
 ```
 ##Introduction
 <<table.introduction>>
-Along the way <<table.1372-roadside-encounters>> 
-The dungeon is located <<table.dungeon-location>> 
-It was created by <<table.dungeon-creator>> 
-The party goal is <<table.dungeon-goals>>
-The adventure ends with <<table.climax>>
+Along the way <<myuser.table.1372-roadside-encounters>> 
+The dungeon is located <<myuser.table.dungeon-location>> 
+It was created by <<myuser.table.dungeon-creator>> 
+The party goal is <<myuser.table.dungeon-goals>>
+The adventure ends with <<myuser.table.climax>>
 ```
 
-###Story creator
-This is where the power of the lists come into action, a markdown compatible textbox which allows inserting items from any accessible random list, either by a single click or  hot-key for commonly used random items.
+### Collections
+Collated list of tables and macros to form a menu, other collections can be added which form a sub-menu.
+The collection is primarily used in creating stories, they can be pinned to form drop-down menus which enable quick
+selection of items.
 
-Ramble macros can be fired to insert into story at any point, just like a single item from a list. All fully editable if a better idea springs to mind.
+### Story creator
+This is where the power of the random tables, macros and collections come into action, a markdown compatible textbox which allows inserting items from any accessible random list, either by a single click or  hot-key for commonly used random items.
+
+Macros can be fired to insert into story at any point, just like a single item from a list. All fully editable if a better idea springs to mind.
 
 Never get stuck whilst writing an idea, using random lists to generate anything from names, places, locations, encounters, anything. Kick starting whole new wholly original ideas from the seeds provided.
 
