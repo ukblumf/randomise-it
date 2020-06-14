@@ -719,8 +719,11 @@ def edit_market_product(id):
 
 @main.route('/discover', methods=['GET'])
 def discover():
-    free_products = PublicAnnouncements.query.filter(PublicAnnouncements.author_id != current_user.id).order_by(
-        PublicAnnouncements.timestamp.desc()).limit(100);
+    users_selected_products = db.session.query(UserPublicContent.announcement_id).filter(UserPublicContent.author_id == current_user.id)
+    free_products = PublicAnnouncements.query\
+        .filter(PublicAnnouncements.author_id != current_user.id)\
+        .filter(PublicAnnouncements.id.notin_(users_selected_products))\
+        .order_by(PublicAnnouncements.timestamp.desc()).limit(100);
     latest_marketproducts = MarketPlace.query.order_by(MarketPlace.timestamp.desc()).limit(50)
     popular_marketproducts = MarketPlace.query.order_by(MarketPlace.count.desc()).limit(50)
     all_categories = current_app.config['CATEGORIES'][:]
