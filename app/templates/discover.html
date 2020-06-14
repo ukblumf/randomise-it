@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% import "_macros.html" as macros %}
 
-{% block title %}Randomise iT- View Marketplace{% endblock %}
+{% block title %}Randomise iT- Discover{% endblock %}
 
 {% block page_content %}
     <ul class="nav nav-tabs">
@@ -28,7 +28,9 @@
                             </td>
                             <td>{{ p.description }}</td>
                             <td>
-                                <button onclick='selectItem({{ p.id }});'>Select</button>
+                                <button onclick='selectItem($(this));' id='{{ p.id }}' data-title='{{ p.title }}'>
+                                    Select
+                                </button>
                             </td>
                         </tr>
                     {% endfor %}
@@ -63,23 +65,40 @@
             </div>
         </div>
     </div>
-
 {% endblock %}
 {% block scripts %}
     {{ super() }}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous">
+    </script>
     <script>
-        function selectCategory(catId) {
-            // TODO rebuild this functionality with jquery
-        }
-
-        function selectItem(publicId) {
-            const url = "{{ url_for('.transfer_public_content', public_id='') }}" + publicId;
-            $.ajax({
-                type: "POST",
-                url: url, success: function (result) {
-                    alert(JSON.stringify(result));
-                }
-            })
+        function selectItem(selectedElement) {
+            if (confirm('Please confirm you want ' + selectedElement.data('title'))) {
+                const url = "{{ url_for('.transfer_public_content', public_id='') }}" + selectedElement.attr('id');
+                $.ajax({
+                    type: "POST",
+                    url: url, title: selectedElement, success: function (result) {
+                        $('<div></div>')
+                            .html("<h4>Content Transferred</h4>" +
+                                "Collections: " + result.collection_count + "<br/>" +
+                                "Macros : " + result.macro_count + "<br/>" +
+                                "Tables : " + result.table_count)
+                            .dialog({
+                                modal: true,
+                                title: selectedElement.data('title'),
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("destroy").remove();
+                                    }
+                                }
+                            });
+                    },
+                    error: function(result) {
+                        alert(JSON.stringify(result));
+                    }
+                });
+            }
         }
 
         function previewItem(id) {
@@ -104,6 +123,5 @@
                 }
             });
         }
-
     </script>
 {% endblock %}

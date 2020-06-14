@@ -749,7 +749,7 @@ def transfer_public_content(public_id):
         public_collections = PublicCollection.query.filter(PublicCollection.announcement_id == public_id)
         public_macros = PublicMacros.query.filter(PublicMacros.announcement_id == public_id)
         public_tables = PublicRandomTable.query.filter(PublicRandomTable.announcement_id == public_id)
-
+        collection_count = macro_count = table_count = 0
         for c in public_collections:
             if db.session.query(PublicLinkedCollections) \
                     .filter(PublicLinkedCollections.author_id == current_user.id) \
@@ -760,6 +760,7 @@ def transfer_public_content(public_id):
                                                          collection_id=c.id,
                                                          original_author_id=c.author_id)
                 db.session.add(new_collection)
+                collection_count += 1
 
         for m in public_macros:
             if db.session.query(PublicLinkedMacros) \
@@ -771,6 +772,7 @@ def transfer_public_content(public_id):
                                                macro_id=m.id,
                                                original_author_id=m.author_id)
                 db.session.add(new_macro)
+                macro_count += 1
 
         for t in public_tables:
             if db.session.query(PublicLinkedTables) \
@@ -782,8 +784,14 @@ def transfer_public_content(public_id):
                                                table_id=t.id,
                                                original_author_id=t.author_id)
                 db.session.add(new_table)
+                table_count += 1
+
         db.session.commit()
-        return make_response(jsonify({'success': True}))
+        return make_response(jsonify({'success': True,
+                                      'collection_count': str(collection_count),
+                                      'macro_count': str(macro_count),
+                                      'table_count': str(table_count)
+                                      }))
     return make_response(jsonify({'success': False}))
 
 
