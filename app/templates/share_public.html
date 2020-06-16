@@ -14,6 +14,11 @@
                     <option label="{{ tag.id }}">{{ tag.id }}</option>
                 {% endfor %}
             </select>
+            <label for="sharedFilter">Show Content:</label>
+            <select id="sharedFilter">
+                <option value="all" selected>All Content</option>
+                <option value="unshared">Unshared Content</option>
+            </select>
         </div>
         <div class="row">
             <h2 class="bg-primary">Personal</h2>
@@ -29,13 +34,43 @@
         </div>
         <div class="row">
             <div class="col-md-4">
-                {{ macros.list_rows_in_ul('collection', collections, current_user) }}
+                {{ macros.list_rows_in_ul_header('collection') }}
+                {% for item in collections %}
+                    {% set item_shared = 'n' %}
+                    {% if item.id in shared_collections %}{% set item_shared = 'y'%}{% endif %}
+                    <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}"{% endif %}
+                        data-shared="{{ item_shared }}">
+                        <button onclick="addId('<<{{ current_user.username }}.collection.{{ item.id }}>>')">{{ item.name }}</button>
+                        {% if item_shared == 'y' %}<span class="ui-icon ui-icon-circle-check"></span>{% endif %}
+                    </li>
+                {% endfor %}
+                {{ macros.list_rows_in_ul_footer() }}
             </div>
             <div class="col-md-4">
-                {{ macros.list_rows_in_ul('macro', macro_list, current_user) }}
+                {{ macros.list_rows_in_ul_header('macro') }}
+                {% for item in macro_list %}
+                    {% set item_shared = 'n' %}
+                    {% if item.id in shared_macros %}{% set item_shared = 'y'%}{% endif %}
+                    <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}"{% endif %}
+                        data-shared="{{ item_shared }}">
+                        <button onclick="addId('<<{{ current_user.username }}.macro.{{ item.id }}>>')">{{ item.name }}</button>
+                        {% if item_shared == 'y' %}<span class="ui-icon ui-icon-circle-check"></span>{% endif %}
+                    </li>
+                {% endfor %}
+                {{ macros.list_rows_in_ul_footer() }}
             </div>
             <div class="col-md-4">
-                {{ macros.list_rows_in_ul('table', tables, current_user) }}
+                {{ macros.list_rows_in_ul_header('table') }}
+                {% for item in tables %}
+                    {% set item_shared = 'n' %}
+                    {% if item.id in shared_tables %}{% set item_shared = 'y'%}{% endif %}
+                    <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}"{% endif %}
+                        data-shared="{{ item_shared }}">
+                        <button onclick="addId('<<{{ current_user.username }}.table.{{ item.id }}>>')">{{ item.name }}</button>
+                        {% if item_shared == 'y' %}<span class="ui-icon ui-icon-circle-check"></span>{% endif %}
+                    </li>
+                {% endfor %}
+                {{ macros.list_rows_in_ul_footer() }}
             </div>
         </div>
         <div class="row">
@@ -160,29 +195,47 @@
         }
 
         $(document).ready(function () {
-            function filterList(list, filter, tag) {
+            function filterList(list, filter, tag, shareFilter) {
                 $("#" + list + " li").filter(function () {
-                    $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
+                    $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '')
+                        && (tag == "" || $(this).data('tag') == tag)
+                        && (shareFilter == "all" || $(this).data('shared') == "n"));
                 });
             }
 
             $("#tagFilter").change(function () {
-                let tag = $(this).children("option:selected").val();
-                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
-                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
-                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag);
+                const tag = $(this).children("option:selected").val();
+                const share = $("#sharedFilter").children("option:selected").val();
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag, share);
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag, share);
+                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag, share);
             });
             $("#tableFilter").on("keyup", function () {
-                filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+                filterList('tableList',
+                    $("#tableFilter").val().toLowerCase(),
+                    $("#tagFilter").children("option:selected").val(),
+                    $("#sharedFilter").children("option:selected").val());
             });
             $("#macroFilter").on("keyup", function () {
-                filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+                filterList('macroList',
+                    $("#macroFilter").val().toLowerCase(),
+                    $("#tagFilter").children("option:selected").val(),
+                    $("#sharedFilter").children("option:selected").val());
             });
             $("#collectionFilter").on("keyup", function () {
-                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+                filterList('collectionList',
+                    $("#collectionFilter").val().toLowerCase(),
+                    $("#tagFilter").children("option:selected").val(),
+                    $("#sharedFilter").children("option:selected").val());
             });
 
-
+            $("#sharedFilter").change(function () {
+                const tag = $("#tagFilter").children("option:selected").val();
+                const share = $(this).children("option:selected").val();
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag, share);
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag, share);
+                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag, share);
+            });
         });
     </script>
 {% endblock %}

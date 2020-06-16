@@ -719,10 +719,11 @@ def edit_market_product(id):
 
 @main.route('/discover', methods=['GET'])
 def discover():
-    users_selected_products = db.session.query(UserPublicContent.announcement_id).filter(UserPublicContent.author_id == current_user.id)
-    free_products = PublicAnnouncements.query\
-        .filter(PublicAnnouncements.author_id != current_user.id)\
-        .filter(PublicAnnouncements.id.notin_(users_selected_products))\
+    users_selected_products = db.session.query(UserPublicContent.announcement_id).filter(
+        UserPublicContent.author_id == current_user.id)
+    free_products = PublicAnnouncements.query \
+        .filter(PublicAnnouncements.author_id != current_user.id) \
+        .filter(PublicAnnouncements.id.notin_(users_selected_products)) \
         .order_by(PublicAnnouncements.timestamp.desc()).limit(100);
     latest_marketproducts = MarketPlace.query.order_by(MarketPlace.timestamp.desc()).limit(50)
     popular_marketproducts = MarketPlace.query.order_by(MarketPlace.count.desc()).limit(50)
@@ -895,7 +896,17 @@ def share_public():
             flash('Content Shared')
             return redirect(url_for('.share_public'))
 
-    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
+    collection_list = collection_query()
+    macros = macro_query()
+    tables = table_query()
+    tags = tag_query()
+    shared_public_tables = db.session.query(PublicLinkedTables.table_id).filter(PublicLinkedTables.original_author_id == current_user.id)
+    shared_tables=[i.table_id for i in shared_public_tables]
+    shared_public_macros = db.session.query(PublicLinkedMacros.macro_id).filter(PublicLinkedMacros.original_author_id == current_user.id)
+    shared_macros=[i.macro_id for i in shared_public_macros]
+    shared_public_collections = db.session.query(PublicLinkedCollections.collection_id).filter(
+        PublicLinkedCollections.original_author_id == current_user.id)
+    shared_collections=[i.collection_id for i in shared_public_collections]
     collection_references = collections.OrderedDict()
     table_references = collections.OrderedDict()
     macro_references = collections.OrderedDict()
@@ -918,7 +929,10 @@ def share_public():
 
     return render_template('share_public.html', form=form, tables=tables, macro_list=macros,
                            collections=collection_list, tags=tags, collection_references=collection_references,
-                           table_references=table_references, macro_references=macro_references)
+                           table_references=table_references, macro_references=macro_references,
+                           shared_collections=shared_collections,
+                           shared_macros=shared_macros,
+                           shared_tables=shared_tables)
 
 
 def build_collection_references(coll_obj):
