@@ -4,96 +4,144 @@
 {% block title %}Randomise iT- {{ user.username }}{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
-    <div class="profile-header">
-        <h1>{{ user.username }}</h1>
-        {% if user.name or user.location %}
-        <p>
-            {% if user.name %}{{ user.name }}<br>{% endif %}
-            {% if user.location %}
-                From <a href="http://maps.google.com/?q={{ user.location }}">{{ user.location }}</a><br>
-            {% endif %}
-        </p>
-        {% endif %}
-        {% if current_user.is_administrator() %}
-        <p><a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
-        {% endif %}
-        {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-        <p>Member since {{ moment(user.member_since).format('L') }}. Last seen {{ moment(user.last_seen).fromNow() }}.</p>
-        <p>{{ user.posts.count() }} blog posts. {{ user.comments.count() }} comments.</p>
-        <p>
-            {% if current_user.can(Permission.FOLLOW) and user != current_user %}
-                {% if not current_user.is_following(user) %}
-                <a href="{{ url_for('.follow', username=user.username) }}" class="btn btn-primary">Follow</a>
-                {% else %}
-                <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-default">Unfollow</a>
-                {% endif %}
-            {% endif %}
-            <a href="{{ url_for('.followers', username=user.username) }}">Followers: <span class="badge">{{ user.followers.count() - 1 }}</span></a>
-            <a href="{{ url_for('.followed_by', username=user.username) }}">Following: <span class="badge">{{ user.followed.count() - 1 }}</span></a>
-            {% if current_user.is_authenticated and user != current_user and user.is_following(current_user) %}
-            | <span class="label label-default">Follows you</span>
-            {% endif %}
-        </p>
-        <p>
-            {% if user == current_user %}
-            <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">Edit Profile</a>
+    <div class="page-header">
+        <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
+        <div class="profile-header">
+            <h1>{{ user.username }}</h1>
+            {% if user.name or user.location %}
+                <p>
+                    {% if user.name %}{{ user.name }}<br>{% endif %}
+                </p>
             {% endif %}
             {% if current_user.is_administrator() %}
-            <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">Edit Profile [Admin]</a>
+                <p><a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
             {% endif %}
-        </p>
-    </div>
-</div>
-<div class="container-fluid">
-    <div class="row">
-		<div class="col-md-4">
-            <h2>Sets</h2>
-        </div>
-		<div class="col-md-4">
-            <h2>Macros</h2>
-        </div>
-		<div class="col-md-4">
-            <h2>Tables</h2>
-        </div>
-    </div>
-    <div class="row">
-		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
-            <ul class="list-group row">
-                {% for set in sets %}
-                <li class="list-group-item">
-                    {{ set.name }}
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
-            <ul class="list-group row">
-                {% for macro in macro_list %}
-                <li class="list-group-item">
-                    {{ macro.name }}
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-		<div class="col-md-4" style="height: 250px; overflow-y: scroll;">
-            <ul class="list-group row">
-                {% for table in tables %}
-                <li class="list-group-item">
-                    {{ table.name }}
-                </li>
-                {% endfor %}
-            </ul>
+            {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+            <p>Member since {{ moment(user.member_since).format('L') }}. Last
+                seen {{ moment(user.last_seen).fromNow() }}.</p>
+            <p>
+                {% if user == current_user %}
+                    <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">Edit Profile</a>
+                {% endif %}
+                {% if current_user.is_administrator() %}
+                    <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">Edit Profile
+                        [Admin]</a>
+                {% endif %}
+            </p>
         </div>
     </div>
-</div>
+    <div class="container-fluid">
+        <div class="row">
+            <h2>Your Content</h2>
+            <div class="col-md-4">
+                <h4>Collections count: {{ stats["collection_count"] }}</h4>
+                <h4>Macros count: {{ stats["macro_count"] }}</h4>
+                <h4>Tables count: {{ stats["table_count"] }}</h4>
+                <h4>Story count: {{ stats["story_count"] }}</h4>
+            </div>
+        </div>
+        <div class="row">
+            <h2>Library</h2>
+            <div class="col-md-4">
+                <h4>Announcements</h4>
+            </div>
+            <div class="col-md-4">
+                <h4>Discovered</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div style="height: 200px; overflow-y: scroll;">
+                    <ul class="list-group" id="announcementList">
+                        {% for item in shared_content %}
+                            <li class="list-group-item">
+                                {{ item.title }}
+                                <button onclick="deleteAnnouncement($(this));" id="{{ item.id }}"
+                                        data-title="{{ item.title }}" class="pull-right">DELETE
+                                </button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div style="height: 200px; overflow-y: scroll;">
+                    <ul class="list-group" id="ownedSharedList">
+                        {% for item in shared_content_owned %}
+                            <li class="list-group-item">
+                                {{ item.public_announcement.title }}
+                                <button onclick="deleteSharedPublicOwned($(this));" id="{{ item.announcement_id }}"
+                                        data-title="{{ item.public_announcement.title }}" class="pull-right">
+                                    DELETE
+                                </button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous">
+    </script>
+    <script>
+        function deleteAnnouncement(selectedElement) {
+            if (confirm('Please confirm you want to delete ' + selectedElement.data('title'))) {
+                const url = "{{ url_for('.delete_public_announcement', public_id='') }}" + selectedElement.attr('id');
+                $.ajax({
+                    type: "DELETE",
+                    url: url, title: selectedElement, success: function (result) {
+                        $('<div></div>')
+                            .html("<h4>Shared Content Deleted</h4>" +
+                                "Collections removed: " + result.collection_count + "<br/>" +
+                                "Macros removed: " + result.macro_count + "<br/>" +
+                                "Tables removed : " + result.table_count)
+                            .dialog({
+                                modal: true,
+                                title: selectedElement.data('title'),
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("destroy").remove();
+                                    }
+                                }
+                            });
+                        selectedElement.prop('disabled', true);
+                    },
+                    error: function (result) {
+                        alert(JSON.stringify(result));
+                    }
+                });
+            }
+        }
 
-<h3>Stories by {{ user.username }}</h3>
-{% include '_stories.html' %}
-{% if pagination %}
-<div class="pagination">
-    {{ macros.pagination_widget(pagination, '.user', username=user.username) }}
-</div>
-{% endif %}
+        function deleteSharedPublicOwned(selectedElement) {
+            if (confirm('Please confirm you want to delete ' + selectedElement.data('title'))) {
+                const url = "{{ url_for('.delete_shared_content', public_id='') }}" + selectedElement.attr('id');
+                $.ajax({
+                    type: "DELETE",
+                    url: url, title: selectedElement, success: function (result) {
+                        $('<div></div>')
+                            .html("<h4>Removed content from your library</h4>")
+                            .dialog({
+                                modal: true,
+                                title: selectedElement.data('title'),
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("destroy").remove();
+                                    }
+                                }
+                            });
+                        selectedElement.prop('disabled', true);
+                    },
+                    error: function (result) {
+                        alert(JSON.stringify(result));
+                    }
+                });
+            }
+        }
+    </script>
 {% endblock %}

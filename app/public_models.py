@@ -51,6 +51,7 @@ class PublicLinkedTables(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     table_id = db.Column(db.Text, primary_key=True)
     original_author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
     public_table = db.relationship('PublicRandomTable',
                                    backref=db.backref('public_table'),
                                    foreign_keys=[table_id, original_author_id],
@@ -63,6 +64,7 @@ class PublicLinkedMacros(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     macro_id = db.Column(db.Text, primary_key=True)
     original_author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
     public_macro = db.relationship('PublicMacros',
                                    backref=db.backref('public_macro'),
                                    foreign_keys=[macro_id, original_author_id],
@@ -75,6 +77,7 @@ class PublicLinkedCollections(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     collection_id = db.Column(db.Text, primary_key=True)
     original_author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
     public_collection = db.relationship('PublicCollection',
                                         backref=db.backref('public_collection'),
                                         foreign_keys=[collection_id, original_author_id],
@@ -96,3 +99,7 @@ class UserPublicContent(db.Model):
     announcement_id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    public_announcement = db.relationship('PublicAnnouncements',
+                                          backref=db.backref('public_announcements'),
+                                          foreign_keys=announcement_id,
+                                          primaryjoin='PublicAnnouncements.id == UserPublicContent.announcement_id')

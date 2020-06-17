@@ -63,17 +63,27 @@ def index():
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    page = request.args.get('page', 1, type=int)
-    pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
-        page, per_page=current_app.config['RANDOMISE_IT_POSTS_PER_PAGE'],
-        error_out=False)
-    stories = pagination.items
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
+    # page = request.args.get('page', 1, type=int)
+    # pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
+    #     page, per_page=current_app.config['RANDOMISE_IT_POSTS_PER_PAGE'],
+    #     error_out=False)
+    story_count = Post.query.filter(Post.author_id == current_user.id).count()
+    table_count = RandomTable.query.filter(RandomTable.author_id == current_user.id).count()
+    macro_count = Macros.query.filter(Macros.author_id == current_user.id).count()
+    collection_count = Collection.query.filter(Collection.author_id == current_user.id).count()
 
-    return render_template('user.html', user=user, stories=stories,
-                           pagination=pagination, tables=tables, macro_list=macros, collections=collection_list)
+    stats = {
+        "story_count": story_count,
+        "table_count": table_count,
+        "macro_count": macro_count,
+        "collection_count": collection_count
+    }
+
+    shared_content = PublicAnnouncements.query.filter(PublicAnnouncements.author_id == current_user.id)
+    shared_content_owned = UserPublicContent.query.filter(UserPublicContent.author_id == current_user.id)
+
+    return render_template('user.html', user=user, stats=stats,
+                           shared_content=shared_content, shared_content_owned=shared_content_owned)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -762,7 +772,8 @@ def transfer_public_content(public_id):
                     .first() is None:
                 new_collection = PublicLinkedCollections(author_id=current_user.id,
                                                          collection_id=c.id,
-                                                         original_author_id=c.author_id)
+                                                         original_author_id=c.author_id,
+                                                         announcement_id=c.announcement_id)
                 db.session.add(new_collection)
                 collection_count += 1
 
@@ -774,7 +785,8 @@ def transfer_public_content(public_id):
                     .first() is None:
                 new_macro = PublicLinkedMacros(author_id=current_user.id,
                                                macro_id=m.id,
-                                               original_author_id=m.author_id)
+                                               original_author_id=m.author_id,
+                                               announcement_id=m.announcement_id)
                 db.session.add(new_macro)
                 macro_count += 1
 
@@ -786,7 +798,8 @@ def transfer_public_content(public_id):
                     .first() is None:
                 new_table = PublicLinkedTables(author_id=current_user.id,
                                                table_id=t.id,
-                                               original_author_id=t.author_id)
+                                               original_author_id=t.author_id,
+                                               announcement_id=t.announcement_id)
                 db.session.add(new_table)
                 table_count += 1
 
@@ -808,6 +821,60 @@ def get_public_content(public_id):
     results = {"collections": [i[0] for i in public_collections], "macros": [i[0] for i in public_macros],
                "tables": [i[0] for i in public_tables]}
     return results
+
+
+@main.route('/delete-public-announcement/<string:public_id>', methods=['DELETE'])
+@login_required
+def delete_public_announcement(public_id):
+    if db.session.query(PublicAnnouncements) \
+            .filter(PublicAnnouncements.id == public_id) \
+            .filter(PublicAnnouncements.author_id == current_user.id) \
+            .first() is None:
+        abort(400)
+
+    table_count = PublicRandomTable.query.filter(PublicRandomTable.announcement_id == public_id).count()
+    macro_count = PublicMacros.query.filter(PublicMacros.announcement_id == public_id).count()
+    collection_count = PublicCollection.query.filter(PublicCollection.announcement_id == public_id).count()
+
+    tables = db.session.query(PublicRandomTable).filter(PublicRandomTable.announcement_id == public_id)
+    tables.delete()
+    macros = db.session.query(PublicMacros).filter(PublicMacros.announcement_id == public_id)
+    macros.delete()
+    collection = db.session.query(PublicCollection).filter(PublicCollection.announcement_id == public_id)
+    collection.delete()
+    announcement = db.session.query(PublicAnnouncements).filter(PublicAnnouncements.id == public_id)
+    announcement.delete()
+
+    return make_response(jsonify({'success': True,
+                                  'collection_count': str(collection_count),
+                                  'macro_count': str(macro_count),
+                                  'table_count': str(table_count)
+                                  }))
+
+
+@main.route('/delete-shared-content/<string:public_id>', methods=['DELETE'])
+@login_required
+def delete_shared_content(public_id):
+    if db.session.query(UserPublicContent) \
+            .filter(UserPublicContent.announcement_id == public_id) \
+            .filter(UserPublicContent.author_id == current_user.id) \
+            .first() is None:
+        abort(400)
+
+    tables = db.session.query(PublicLinkedTables).filter(PublicLinkedTables.announcement_id == public_id). \
+        filter(PublicLinkedTables.author_id == current_user.id)
+    tables.delete()
+    macros = db.session.query(PublicLinkedMacros).filter(PublicLinkedMacros.announcement_id == public_id). \
+        filter(PublicLinkedMacros.author_id == current_user.id)
+    macros.delete()
+    collection = db.session.query(PublicLinkedCollections).filter(PublicLinkedCollections.announcement_id == public_id). \
+        filter(PublicLinkedCollections.author_id == current_user.id)
+    collection.delete()
+    announcement = db.session.query(UserPublicContent).filter(UserPublicContent.id == public_id). \
+        filter(UserPublicContent.author_id == current_user.id)
+    announcement.delete()
+
+    return make_response(jsonify({'success': True}))
 
 
 @main.route('/id-check/<string:type>/<string:id>', methods=['GET'])
@@ -849,14 +916,17 @@ def share_public():
                         db.session.rollback()
                         return render_template('error_page.html', description='Error finding Collection ' + c_id)
                     else:
-                        pc = PublicCollection(id=c.id,
-                                              name=c.name,
-                                              definition=c.definition,
-                                              tags=c.tags,
-                                              author_id=current_user.id,
-                                              permissions=ProductPermission.PUBLIC,
-                                              announcement_id=announcement.id)
-                        db.session.add(pc)
+                        if db.session.query(PublicCollection). \
+                                filter(PublicCollection.author_id == current_user.id). \
+                                filter(PublicCollection.id == c.id).first() is None:
+                            pc = PublicCollection(id=c.id,
+                                                  name=c.name,
+                                                  definition=c.definition,
+                                                  tags=c.tags,
+                                                  author_id=current_user.id,
+                                                  permissions=ProductPermission.PUBLIC,
+                                                  announcement_id=announcement.id)
+                            db.session.add(pc)
             if public_macros != ['']:
                 for m_id in public_macros:
                     m = Macros.query.get([m_id, current_user.id])
@@ -864,14 +934,17 @@ def share_public():
                         db.session.rollback()
                         return render_template('error_page.html', description='Error finding Macro ' + m_id)
                     else:
-                        pm = PublicMacros(id=m.id,
-                                          name=m.name,
-                                          definition=m.definition,
-                                          tags=m.tags,
-                                          author_id=current_user.id,
-                                          permissions=ProductPermission.PUBLIC,
-                                          announcement_id=announcement.id)
-                        db.session.add(pm)
+                        if db.session.query(PublicMacros). \
+                                filter(PublicMacros.author_id == current_user.id). \
+                                filter(PublicMacros.id == m.id).first() is None:
+                            pm = PublicMacros(id=m.id,
+                                              name=m.name,
+                                              definition=m.definition,
+                                              tags=m.tags,
+                                              author_id=current_user.id,
+                                              permissions=ProductPermission.PUBLIC,
+                                              announcement_id=announcement.id)
+                            db.session.add(pm)
             if public_tables != ['']:
                 for t_id in public_tables:
                     t = RandomTable.query.get([t_id, current_user.id])
@@ -879,19 +952,22 @@ def share_public():
                         db.session.rollback()
                         return render_template('error_page.html', description='Error finding Random Table ' + t_id)
                     else:
-                        pt = PublicRandomTable(id=t.id,
-                                               name=t.name,
-                                               description=t.description,
-                                               definition=t.definition,
-                                               tags=t.tags,
-                                               author_id=current_user.id,
-                                               min=t.min,
-                                               max=t.max,
-                                               description_html=t.description_html,
-                                               line_type=t.line_type,
-                                               row_count=t.row_count,
-                                               announcement_id=announcement.id)
-                        db.session.add(pt)
+                        if db.session.query(PublicRandomTable). \
+                                filter(PublicRandomTable.author_id == current_user.id). \
+                                filter(PublicRandomTable.id == t.id).first() is None:
+                            prt = PublicRandomTable(id=t.id,
+                                                    name=t.name,
+                                                    description=t.description,
+                                                    definition=t.definition,
+                                                    tags=t.tags,
+                                                    author_id=current_user.id,
+                                                    min=t.min,
+                                                    max=t.max,
+                                                    description_html=t.description_html,
+                                                    line_type=t.line_type,
+                                                    row_count=t.row_count,
+                                                    announcement_id=announcement.id)
+                            db.session.add(prt)
             db.session.commit()
             flash('Content Shared')
             return redirect(url_for('.share_public'))
@@ -900,13 +976,18 @@ def share_public():
     macros = macro_query()
     tables = table_query()
     tags = tag_query()
-    shared_public_tables = db.session.query(PublicLinkedTables.table_id).filter(PublicLinkedTables.original_author_id == current_user.id)
-    shared_tables=[i.table_id for i in shared_public_tables]
-    shared_public_macros = db.session.query(PublicLinkedMacros.macro_id).filter(PublicLinkedMacros.original_author_id == current_user.id)
-    shared_macros=[i.macro_id for i in shared_public_macros]
-    shared_public_collections = db.session.query(PublicLinkedCollections.collection_id).filter(
-        PublicLinkedCollections.original_author_id == current_user.id)
-    shared_collections=[i.collection_id for i in shared_public_collections]
+    shared_public_tables = db.session.query(PublicRandomTable.id).filter(
+        PublicRandomTable.author_id == current_user.id)
+    shared_tables = [i.id for i in shared_public_tables]
+
+    shared_public_macros = db.session.query(PublicMacros.id).filter(
+        PublicMacros.author_id == current_user.id)
+    shared_macros = [i.id for i in shared_public_macros]
+
+    shared_public_collections = db.session.query(PublicCollection.id).filter(
+        PublicCollection.author_id == current_user.id)
+    shared_collections = [i.id for i in shared_public_collections]
+
     collection_references = collections.OrderedDict()
     table_references = collections.OrderedDict()
     macro_references = collections.OrderedDict()
