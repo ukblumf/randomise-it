@@ -20,6 +20,11 @@
             </div>
             <div class="col-md-4">
                 {{ macros.tag_filter(tags) }}
+                {% if collection_id %}
+                    <button class="btn btn-danger pull-right" onclick="confirmDelete();">DELETE
+                        COLLECTION
+                    </button>
+                {% endif %}
                 <h4>Macros</h4>
                 {{ macros.list_rows_in_ul_header('macro') }}
                 {{ macros.list_rows_in_ul('macro', macro_list, current_user) }}
@@ -107,6 +112,33 @@
                             </div><br/><div id="preview-error"></div>`);
             $("#preview-button").html(" " + $("#collection_name").val() + " <span class='caret'></span>");
             createCollectionPreview($("#collection_definition").val(), $("#preview-list"));
+        }
+
+        function confirmDelete() {
+            if (confirm('Please confirm you want to delete this collection')) {
+                const url = "{{ url_for('.delete_collection', username=username, id=collection_id) }}";
+                $.ajax({
+                    type: "DELETE",
+                    url: url, success: function (result) {
+                        $('<div></div>')
+                            .html("<h3>Collection Deleted</h3>")
+                            .dialog({
+                                modal: true,
+                                title: '{{ collection_id }}',
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("destroy").remove();
+                                        location.replace("/");
+                                    }
+                                }
+                            });
+                        selectedElement.prop('disabled', true);
+                    },
+                    error: function (result) {
+                        alert(JSON.stringify(result));
+                    }
+                });
+            }
         }
 
         $(function () {

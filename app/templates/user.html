@@ -57,7 +57,7 @@
                             <li class="list-group-item">
                                 {{ item.title }}
                                 <button onclick="deleteAnnouncement($(this));" id="{{ item.id }}"
-                                        data-title="{{ item.title }}" class="pull-right">DELETE
+                                        data-title="{{ item.title }}" class="btn btn-danger pull-right">DELETE
                                 </button>
                             </li>
                         {% endfor %}
@@ -71,7 +71,7 @@
                             <li class="list-group-item">
                                 {{ item.public_announcement.title }}
                                 <button onclick="deleteSharedPublicOwned($(this));" id="{{ item.announcement_id }}"
-                                        data-title="{{ item.public_announcement.title }}" class="pull-right">
+                                        data-title="{{ item.public_announcement.title }}" class="btn btn-danger pull-right">
                                     DELETE
                                 </button>
                             </li>

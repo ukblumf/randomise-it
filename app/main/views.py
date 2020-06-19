@@ -327,7 +327,7 @@ def edit_table(username, id):
 
     return render_template('table.html', tables=tables, macro_list=macros, form=form, tags=tags,
                            public_tables=public_tables, public_macros=public_macros,
-                           public_collections=public_collections)
+                           public_collections=public_collections, username=username, table_id=id)
 
 
 @main.route('/bulk-table-import', methods=['GET', 'POST'])
@@ -439,7 +439,7 @@ def edit_story(username, id):
 
     return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list,
                            tags=tags, public_collections=public_collections,
-                           public_macros=public_macros, public_tables=public_tables)
+                           public_macros=public_macros, public_tables=public_tables, username=username, story_id=id)
 
 
 @main.route('/random-value/<string:username>/<string:id>', methods=['GET'])
@@ -518,7 +518,7 @@ def edit_macro(username, id):
     return render_template('macro.html', form=form, macro_list=macros, tables=tables, edit_macro=macro,
                            form_type='macro', tags=tags,
                            public_tables=public_tables, public_macros=public_macros,
-                           public_collections=public_collections)
+                           public_collections=public_collections, username=username, macro_id=id)
 
 
 @main.route('/macro/<string:username>/<string:id>', methods=['GET'])
@@ -609,7 +609,7 @@ def edit_collection(username, id):
     return render_template('collection.html', form=form, macro_list=macros, tables=tables, collections=collection_list,
                            tags=tags,
                            public_tables=public_tables, public_macros=public_macros,
-                           public_collections=public_collections)
+                           public_collections=public_collections, username=username, collection_id=id)
 
 
 @main.route('/collection/<string:username>/<string:id>', methods=['GET'])
@@ -850,6 +850,58 @@ def delete_public_announcement(public_id):
                                   'macro_count': str(macro_count),
                                   'table_count': str(table_count)
                                   }))
+
+
+@main.route('/delete-table/<string:username>/<string:id>', methods=['DELETE'])
+@login_required
+def delete_table(username, id):
+    if username != current_user.username:
+        abort(403)
+
+    deleted_table = db.session.query(RandomTable).filter(RandomTable.id == id). \
+        filter(RandomTable.author_id == current_user.id)
+    deleted_table.delete()
+
+    return {'success': True}
+
+
+@main.route('/delete-macro/<string:username>/<string:id>', methods=['DELETE'])
+@login_required
+def delete_macro(username, id):
+    if username != current_user.username:
+        abort(403)
+
+    deleted_macro = db.session.query(Macros).filter(Macros.id == id). \
+        filter(Macros.author_id == current_user.id)
+    deleted_macro.delete()
+
+    return {'success': True}
+
+
+@main.route('/delete-collection/<string:username>/<string:id>', methods=['DELETE'])
+@login_required
+def delete_collection(username, id):
+    if username != current_user.username:
+        abort(403)
+
+    deleted_collection = db.session.query(Collection).filter(Collection.id == id). \
+        filter(Collection.author_id == current_user.id)
+    deleted_collection.delete()
+
+    return {'success': True}
+
+
+@main.route('/delete-story/<string:username>/<string:id>', methods=['DELETE'])
+@login_required
+def delete_story(username, id):
+    if username != current_user.username:
+        abort(403)
+
+    deleted_story = db.session.query(Post).filter(Post.id == id). \
+        filter(Post.author_id == current_user.id)
+    deleted_story.delete()
+
+    return {'success': True}
 
 
 @main.route('/delete-shared-content/<string:public_id>', methods=['DELETE'])

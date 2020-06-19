@@ -19,6 +19,11 @@
                 </div>
                 <div class="col-md-4">
                     {{ macros.tag_filter(tags) }}
+                    {% if story_id %}
+                        <button class="btn btn-danger pull-right" onclick="confirmDelete();">DELETE
+                            STORY
+                        </button>
+                    {% endif %}
                     <h4>Macros</h4>
                     <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
                     <div style="height: 200px; overflow-y: scroll;">
@@ -155,7 +160,7 @@
                 $.each(result[0].split("\n"), function (i, item) {
                     item = item.trim();
                     if (item) {
-                        const ref_id = item.substring(item.indexOf('<<')+2, item.indexOf('>>'));
+                        const ref_id = item.substring(item.indexOf('<<') + 2, item.indexOf('>>'));
                         const [username, id_type, id] = ref_id.split(".");
                         if (id_type == 'collection') {
                             const sub_menu = $(`<ul class="dropdown-menu"/>`);
@@ -252,6 +257,33 @@
             $("#story").val(story_text_val.slice(0, cursor_pos) + result + " " + story_text_val.slice(cursor_pos));
             $('#story').prop('selectionStart', cursor_pos + result.length + 1);
             $('#story').prop('selectionEnd', cursor_pos + result.length + 1);
+        }
+
+        function confirmDelete() {
+            if (confirm('Please confirm you want to delete this story')) {
+                const url = "{{ url_for('.delete_story', username=username, id=story_id) }}";
+                $.ajax({
+                    type: "DELETE",
+                    url: url, success: function (result) {
+                        $('<div></div>')
+                            .html("<h3>Story Deleted</h3>")
+                            .dialog({
+                                modal: true,
+                                title: '{{ story_id }}',
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("destroy").remove();
+                                        location.replace("/");
+                                    }
+                                }
+                            });
+                        selectedElement.prop('disabled', true);
+                    },
+                    error: function (result) {
+                        alert(JSON.stringify(result));
+                    }
+                });
+            }
         }
 
         $(document).ready(function () {

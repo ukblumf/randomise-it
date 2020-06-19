@@ -23,6 +23,11 @@
             </div>
             <div class="col-md-4">
                 {{ macros.tag_filter(tags) }}
+                {% if macro_id %}
+                    <button class="btn btn-danger pull-right" onclick="confirmDelete();">DELETE
+                        MACRO
+                    </button>
+                {% endif %}
                 <h4>Macros</h4>
                 {{ macros.list_rows_in_ul_header('macro') }}
                 {{ macros.list_rows_in_ul('macro', macro_list, current_user) }}
@@ -40,6 +45,10 @@
 
 {% block scripts %}
     {{ super() }}
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+            crossorigin="anonymous">
+    </script>
     <script>
         function addId(id) {
             const insert_text = id;
@@ -49,6 +58,33 @@
             $("#macro_body").val(macro_text_val.slice(0, cursor_pos) + insert_text + " " + macro_text_val.slice(cursor_pos));
             $('#macro_body').prop('selectionStart', cursor_pos + insert_text.length);
             $('#macro_body').prop('selectionEnd', cursor_pos + insert_text.length);
+        }
+
+        function confirmDelete() {
+            if (confirm('Please confirm you want to delete this macro')) {
+                const url = "{{ url_for('.delete_macro', username=username, id=macro_id) }}";
+                $.ajax({
+                    type: "DELETE",
+                    url: url, success: function (result) {
+                        $('<div></div>')
+                            .html("<h3>Macro Deleted</h3>")
+                            .dialog({
+                                modal: true,
+                                title: '{{ macro_id }}',
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("destroy").remove();
+                                        location.replace("/");
+                                    }
+                                }
+                            });
+                        selectedElement.prop('disabled', true);
+                    },
+                    error: function (result) {
+                        alert(JSON.stringify(result));
+                    }
+                });
+            }
         }
 
         $(document).ready(function () {
