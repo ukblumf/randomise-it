@@ -6,7 +6,7 @@ from .decorators import permission_required
 from .errors import forbidden, bad_request
 from sqlalchemy import exists, and_
 from ..validate import validate_text
-from ..get_random_value import process_text
+from ..get_random_value import process_text_extended
 
 
 @api.route('/macros/')
@@ -102,5 +102,5 @@ def process_macro(id):
     # current_app.logger.warning("macro id:" + id + ", user id:" + str(g.current_user.id))
     macro = Macros.query.get_or_404([id, g.current_user.id])
 
-    return jsonify({'macro_text': process_text(macro.definition)})
+    return jsonify({'macro_text': process_text_extended(macro.definition)})
 

@@ -14,7 +14,7 @@ from ..public_models import *
 from ..decorators import admin_required, permission_required
 from ..validate import check_table_definition_validity, validate_text, validate_collection
 from ..randomise_utils import *
-from ..get_random_value import get_row_from_random_table_definition, process_text
+from ..get_random_value import get_row_from_random_table_definition, process_text_extended
 from markdown import markdown
 import bleach
 
@@ -525,7 +525,7 @@ def edit_macro(username, id):
 def get_macro(username, id):
     macro = get_macro_record(username, id)
     if macro is not None:
-        macro_text = process_text(macro.definition)
+        macro_text = process_text_extended(macro.definition)
         return bleach.linkify(bleach.clean(markdown(macro_text, output_format='html'), tags=ALLOWED_TAGS, strip=True))
     else:
         return 'Error finding macro id: ' + username + '.macro.' + id
@@ -536,7 +536,7 @@ def preview_macro():
     macro = request.form['macro'].replace('\n', '<br/>')
     if macro:
         return bleach.linkify(
-            bleach.clean(markdown(process_text(macro), output_format='html'), tags=ALLOWED_TAGS, strip=True))
+            bleach.clean(markdown(process_text_extended(macro), output_format='html'), tags=ALLOWED_TAGS, strip=True))
     else:
         abort(400)
 
