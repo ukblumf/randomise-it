@@ -21,6 +21,7 @@ def process_text_extended(text):
     new_text = ''
 
     while True:
+        increment = True
         #  check for dice, enclosed by (( ))
         if char_check('('):
             enclosed_text, cursor_position = extract_enclosed_text(')')
@@ -29,7 +30,7 @@ def process_text_extended(text):
                 if generated_text:
                     new_text += generated_text
                     i = cursor_position + 2
-
+                    increment = False
         #  Check for external reference (table or macro), enclosed by << >>
         elif char_check('<'):
             enclosed_reference, cursor_position = extract_enclosed_text('>')
@@ -37,28 +38,34 @@ def process_text_extended(text):
                 generated_text = extract_reference_link(enclosed_reference).rstrip(' ').rstrip(',')
                 new_text += generated_text
                 i = cursor_position + 2
+                increment = False
 
         #  Check for programming directive, enclosed by [[ ]]
         elif char_check('['):
             command, cursor_position = extract_enclosed_text(']')
-            directive, param = command.split(':')
+            command_list = iter(command.split(':'))
+            directive = next(command_list)
+            params = [param for param in command_list]
+
             if directive == 'LOOP':
-                if param not in loop_control:
-                    #  store name of loop, cursor position and iteration count=0
-                    loop_control[param] = [cursor_position + 2, 1]
+                if params[0] not in loop_control:
+                    #  store name of loop, cursor position and iteration count=1
+                    loop_control[params[0]] = [cursor_position + 2, 1]
                     i = cursor_position + 2
+                    increment = False
             elif directive == 'ENDLOOP':
-                #  check if loop exists
-                loop_name, max_value = param.split('=')
+                loop_name, max_value = params[0].split('=')
                 if loop_name in loop_control:
                     if loop_control[loop_name][1] < int(max_value):
                         loop_control[loop_name][1] += 1
                         i = loop_control[loop_name][0]
+                        increment = False
                     else:
                         del loop_control[loop_name]
                         i = cursor_position + 2
+                        increment = False
 
-        else:
+        if increment:
             if i >= len(text):
                 break
             new_text += text[i]
@@ -204,7 +211,10 @@ def extract_reference_link(external_id):
 
 def get_text_from_external_table(external_id):
     generated_text = 'Problem with ' + external_id
-    username, id_type, ident = external_id.split('.')
+    try:
+        username, id_type, ident = external_id.split('.')
+    except Exception as e:
+        return generated_text
 
     if id_type == 'table':
         table = get_random_table_record(username, ident)
