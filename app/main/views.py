@@ -1083,7 +1083,7 @@ def build_collection_references(coll_obj):
                 except Exception as inst:
                     raise inst
             else:
-                raise Exception('Table not found', coll_item + ' not found.')
+                raise Exception('Table not found', coll_item + ' not found. Referenced in ' + coll_obj.name)
         elif id_type == 'macro':
             macro = get_macro_record(username, reference_id)
             if macro is not None:
@@ -1092,13 +1092,13 @@ def build_collection_references(coll_obj):
                 except Exception as inst:
                     raise inst
             else:
-                raise Exception('Macro not found', coll_item + ' not found')
+                raise Exception('Macro not found', coll_item + ' not found. Referenced in ' + coll_obj.name)
         elif id_type == 'collection':
             sub_coll = get_collection_record(username, reference_id)
             if sub_coll is not None:
                 coll_dict[coll_item] = build_collection_references(sub_coll)
             else:
-                raise Exception('Collection Not Found', coll_item + ' not found in db for user ' + str(current_user.id))
+                raise Exception('Collection Not Found', coll_item + ' not found . Referenced in ' + coll_obj.name)
     return coll_dict
 
 
