@@ -25,12 +25,13 @@ class Config:
 
     @staticmethod
     def init_app(app):
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open(dir_path + '/resources/categories.dat') as f:
-            cats = list(f)
-            for category in cats:
-                select = re.search(r'^(.*?):(.*)$', category, re.IGNORECASE)
-                Config.CATEGORIES.append([select.group(1), select.group(2)])
+        pass
+        # dir_path = os.path.dirname(os.path.realpath(__file__))
+        # with open(dir_path + '/resources/categories.dat') as f:
+        #     cats = list(f)
+        #     for category in cats:
+        #         select = re.search(r'^(.*?):(.*)$', category, re.IGNORECASE)
+        #         Config.CATEGORIES.append([select.group(1), select.group(2)])
 
 
 class DevelopmentConfig(Config):
