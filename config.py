@@ -4,7 +4,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'cffc7bf5a527415c8cd7f52e2a4dc4e1'
+    SECRET_KEY = os.getenv('SECRET_KEY') or 'cffc7bf5a527415c8cd7f52e2a4dc4e1'
     SSL_DISABLE = False
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -36,19 +36,19 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
+    SQLALCHEMY_DATABASE_URI = os.getenv('DEV_DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data-dev.sqlite')
 
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
+    SQLALCHEMY_DATABASE_URI = os.getenv('TEST_DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data-test.sqlite')
     WTF_CSRF_ENABLED = False
 
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL') or \
                               'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 
     @classmethod
@@ -76,7 +76,7 @@ class ProductionConfig(Config):
 
 
 class HerokuConfig(ProductionConfig):
-    SSL_DISABLE = bool(os.environ.get('SSL_DISABLE'))
+    SSL_DISABLE = bool(os.getenv('SSL_DISABLE'))
 
     @classmethod
     def init_app(cls, app):
