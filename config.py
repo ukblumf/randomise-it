@@ -52,7 +52,7 @@ class ProductionConfig(Config):
 
     @classmethod
     def init_app(cls, app):
-        Config.init_app(app)
+        pass
     #
     #     # email errors to the administrators
     #     import logging
