@@ -1124,14 +1124,14 @@ def find_references(obj_id, definition, references, depth):
                 references.append(external_id + '::' + str(depth))
                 find_references(external_id, table.definition, references, depth)
             else:
-                raise Exception('Table not found', external_id + ' not found in db for user:' + str(current_user.id))
+                raise Exception('Table not found', external_id + ' not found referenced from ' + obj_id)
         elif id_type == 'macro':
             macro = get_macro_record(username, reference_id)
             if macro is not None:
                 references.append(external_id + '::' + str(depth))
                 find_references(external_id, macro.definition, references, depth)
             else:
-                raise Exception('Macro not found', external_id + ' not found in db for user:' + str(current_user.id))
+                raise Exception('Macro not found', external_id + ' not found  referenced from ' + obj_id)
         open_angle_brackets = definition.find("<<", close_angle_brackets)
     return references
 
