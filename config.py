@@ -2,9 +2,7 @@ import os, re
 from dotenv import load_dotenv
 
 load_dotenv()
-
 basedir = os.path.abspath(os.path.dirname(__file__))
-
 
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY') or 'cffc7bf5a527415c8cd7f52e2a4dc4e1'
