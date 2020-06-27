@@ -35,11 +35,12 @@ def slugify(text):
     return text
 
 
-def _build_cors_prelight_response():
+def _build_cors_preflight_response():
     response = make_response()
     response.headers.add("Access-Control-Allow-Origin", "*")
     response.headers.add('Access-Control-Allow-Headers', "*")
     response.headers.add('Access-Control-Allow-Methods', "*")
+    print("Returning preflight response")
     return response
 
 
@@ -455,7 +456,7 @@ def edit_story(username, id):
 @main.route('/random-value/<string:username>/<string:id>', methods=['GET', 'OPTIONS'])
 def get_random_value(username, id):
     if request.method == "OPTIONS":  # CORS preflight
-        return _build_cors_prelight_response()
+        return _build_cors_preflight_response()
     table = get_random_table_record(username, id)
     if table is not None:
         return get_row_from_random_table_definition(table)
@@ -536,7 +537,7 @@ def edit_macro(username, id):
 @main.route('/macro/<string:username>/<string:id>', methods=['GET', 'OPTIONS'])
 def get_macro(username, id):
     if request.method == "OPTIONS":  # CORS preflight
-        return _build_cors_prelight_response()
+        return _build_cors_preflight_response()
     macro = get_macro_record(username, id)
     if macro is not None:
         macro_text = process_text_extended(macro.definition)
@@ -629,7 +630,7 @@ def edit_collection(username, id):
 @main.route('/collection/<string:username>/<string:id>', methods=['GET', 'OPTIONS'])
 def get_collection(username, id):
     if request.method == "OPTIONS":  # CORS preflight
-        return _build_cors_prelight_response()
+        return _build_cors_preflight_response()
     collection = get_collection_record(username, id)
     if collection is not None:
         return collection.definition
@@ -832,7 +833,7 @@ def transfer_public_content(public_id):
 @login_required
 def get_public_content(public_id):
     if request.method == "OPTIONS":  # CORS preflight
-        return _build_cors_prelight_response()
+        return _build_cors_preflight_response()
     public_id = public_id[5:]
     public_collections = PublicCollection.query.with_entities(PublicCollection.id).filter_by(announcement_id=public_id)
     public_macros = PublicMacros.query.with_entities(PublicMacros.id).filter_by(announcement_id=public_id)
