@@ -17,9 +17,6 @@ from ..randomise_utils import *
 from ..get_random_value import get_row_from_random_table_definition, process_text_extended
 from markdown import markdown
 import bleach
-from flask_cors import CORS
-
-CORS(main, supports_credentials=True)
 
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
@@ -38,6 +35,14 @@ def slugify(text):
     return text
 
 
+def _build_cors_prelight_response():
+    response = make_response()
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add('Access-Control-Allow-Headers', "*")
+    response.headers.add('Access-Control-Allow-Methods', "*")
+    return response
+
+
 @main.after_app_request
 def after_request(response):
     for query in get_debug_queries():
@@ -46,8 +51,7 @@ def after_request(response):
                 'Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n'
                 % (query.statement, query.parameters, query.duration,
                    query.context))
-    header = response.headers
-    header['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Origin'] = '*'
     return response
 
 
@@ -448,8 +452,10 @@ def edit_story(username, id):
                            public_macros=public_macros, public_tables=public_tables, username=username, story_id=id)
 
 
-@main.route('/random-value/<string:username>/<string:id>', methods=['GET'])
+@main.route('/random-value/<string:username>/<string:id>', methods=['GET', 'OPTIONS'])
 def get_random_value(username, id):
+    if request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
     table = get_random_table_record(username, id)
     if table is not None:
         return get_row_from_random_table_definition(table)
@@ -527,8 +533,10 @@ def edit_macro(username, id):
                            public_collections=public_collections, username=username, macro_id=id)
 
 
-@main.route('/macro/<string:username>/<string:id>', methods=['GET'])
+@main.route('/macro/<string:username>/<string:id>', methods=['GET', 'OPTIONS'])
 def get_macro(username, id):
+    if request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
     macro = get_macro_record(username, id)
     if macro is not None:
         macro_text = process_text_extended(macro.definition)
@@ -618,8 +626,10 @@ def edit_collection(username, id):
                            public_collections=public_collections, username=username, collection_id=id)
 
 
-@main.route('/collection/<string:username>/<string:id>', methods=['GET'])
+@main.route('/collection/<string:username>/<string:id>', methods=['GET', 'OPTIONS'])
 def get_collection(username, id):
+    if request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
     collection = get_collection_record(username, id)
     if collection is not None:
         return collection.definition
@@ -755,7 +765,7 @@ def discover():
                            free_products=free_products)
 
 
-@main.route('/transfer-public-content/<string:public_id>', methods=['POST'])
+@main.route('/transfer-public-content/<string:public_id>', methods=['POST', 'OPTIONS'])
 @login_required
 def transfer_public_content(public_id):
     if db.session.query(PublicAnnouncements) \
@@ -818,9 +828,11 @@ def transfer_public_content(public_id):
     return make_response(jsonify({'success': False}))
 
 
-@main.route('/public-content/<string:public_id>', methods=['GET'])
+@main.route('/public-content/<string:public_id>', methods=['GET', 'OPTIONS'])
 @login_required
 def get_public_content(public_id):
+    if request.method == "OPTIONS":  # CORS preflight
+        return _build_cors_prelight_response()
     public_id = public_id[5:]
     public_collections = PublicCollection.query.with_entities(PublicCollection.id).filter_by(announcement_id=public_id)
     public_macros = PublicMacros.query.with_entities(PublicMacros.id).filter_by(announcement_id=public_id)
@@ -830,7 +842,7 @@ def get_public_content(public_id):
     return results
 
 
-@main.route('/delete-public-announcement/<string:public_id>', methods=['DELETE'])
+@main.route('/delete-public-announcement/<string:public_id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 def delete_public_announcement(public_id):
     if db.session.query(PublicAnnouncements) \
@@ -859,7 +871,7 @@ def delete_public_announcement(public_id):
                                   }))
 
 
-@main.route('/delete-table/<string:username>/<string:id>', methods=['DELETE'])
+@main.route('/delete-table/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 def delete_table(username, id):
     if username != current_user.username:
@@ -872,7 +884,7 @@ def delete_table(username, id):
     return {'success': True}
 
 
-@main.route('/delete-macro/<string:username>/<string:id>', methods=['DELETE'])
+@main.route('/delete-macro/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 def delete_macro(username, id):
     if username != current_user.username:
@@ -885,7 +897,7 @@ def delete_macro(username, id):
     return {'success': True}
 
 
-@main.route('/delete-collection/<string:username>/<string:id>', methods=['DELETE'])
+@main.route('/delete-collection/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 def delete_collection(username, id):
     if username != current_user.username:
@@ -898,7 +910,7 @@ def delete_collection(username, id):
     return {'success': True}
 
 
-@main.route('/delete-story/<string:username>/<string:id>', methods=['DELETE'])
+@main.route('/delete-story/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 def delete_story(username, id):
     if username != current_user.username:
@@ -911,7 +923,7 @@ def delete_story(username, id):
     return {'success': True}
 
 
-@main.route('/delete-shared-content/<string:public_id>', methods=['DELETE'])
+@main.route('/delete-shared-content/<string:public_id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 def delete_shared_content(public_id):
     if db.session.query(UserPublicContent) \
@@ -936,7 +948,7 @@ def delete_shared_content(public_id):
     return make_response(jsonify({'success': True}))
 
 
-@main.route('/id-check/<string:type>/<string:id>', methods=['GET'])
+@main.route('/id-check/<string:type>/<string:id>', methods=['GET', 'OPTIONS'])
 @login_required
 def id_exists(type, id):
     check = "0"
