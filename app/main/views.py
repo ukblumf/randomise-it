@@ -19,7 +19,7 @@ from markdown import markdown
 import bleach
 from flask_cors import CORS, cross_origin
 
-CORS(main)
+CORS(main, supports_credentials=True)
 
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
