@@ -20,7 +20,7 @@ import bleach
 from flask_cors import CORS
 
 CORS(main, supports_credentials=True)
-
+main.config['CORS_HEADERS'] = 'Content-Type'
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
