@@ -7,7 +7,6 @@ from flask_login import LoginManager
 from flask_pagedown import PageDown
 from config import config
 from flask_bootstrap import StaticCDN
-from flask_cors import CORS
 
 bootstrap = Bootstrap()
 mail = Mail()
@@ -30,7 +29,6 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
     pagedown.init_app(app)
-    CORS(app)
 
     # if not app.debug and not app.testing and not app.config['SSL_DISABLE']:
     #     from flask_sslify import SSLify

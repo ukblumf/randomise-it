@@ -1,7 +1,7 @@
 import collections
 
 from flask import render_template, redirect, url_for, abort, flash, request, \
-    current_app, make_response, jsonify
+    current_app, make_response, jsonify, Blueprint, Flask
 from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
 from . import main
@@ -17,7 +17,10 @@ from ..randomise_utils import *
 from ..get_random_value import get_row_from_random_table_definition, process_text_extended
 from markdown import markdown
 import bleach
-from flask_cors import cross_origin
+from flask_cors import CORS, cross_origin
+
+CORS(main)
+
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
