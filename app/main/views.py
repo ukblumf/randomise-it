@@ -398,6 +398,7 @@ def bulk_table_import():
 
 @main.route('/create-story', methods=['GET', 'POST'])
 @login_required
+@cross_origin()
 def create_story():
     form = StoryForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
