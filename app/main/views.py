@@ -522,7 +522,7 @@ def edit_macro(username, id):
                            public_collections=public_collections, username=username, macro_id=id)
 
 
-@main.route('/macro/<string:username>/<string:id>', methods=['GET'])
+@main.route('/macro/<string:username>/<string:id>', methods=['GET', 'OPTIONS'])
 @cross_origin()
 def get_macro(username, id):
     macro = get_macro_record(username, id)
@@ -533,7 +533,8 @@ def get_macro(username, id):
         return 'Error finding macro id: ' + username + '.macro.' + id
 
 
-@main.route('/preview-macro', methods=['POST'])
+@main.route('/preview-macro', methods=['POST', 'OPTIONS'])
+@login_required
 @cross_origin()
 def preview_macro():
     macro = request.form['macro'].replace('\n', '<br/>')
@@ -615,7 +616,7 @@ def edit_collection(username, id):
                            public_collections=public_collections, username=username, collection_id=id)
 
 
-@main.route('/collection/<string:username>/<string:id>', methods=['GET'])
+@main.route('/collection/<string:username>/<string:id>', methods=['GET', 'OPTIONS'])
 @cross_origin()
 def get_collection(username, id):
     collection = get_collection_record(username, id)
@@ -753,7 +754,7 @@ def discover():
                            free_products=free_products)
 
 
-@main.route('/transfer-public-content/<string:public_id>', methods=['POST'])
+@main.route('/transfer-public-content/<string:public_id>', methods=['POST', 'OPTIONS'])
 @login_required
 @cross_origin()
 def transfer_public_content(public_id):
@@ -817,7 +818,7 @@ def transfer_public_content(public_id):
     return make_response(jsonify({'success': False}))
 
 
-@main.route('/public-content/<string:public_id>', methods=['GET'])
+@main.route('/public-content/<string:public_id>', methods=['GET', 'OPTIONS'])
 @login_required
 @cross_origin()
 def get_public_content(public_id):
@@ -830,7 +831,7 @@ def get_public_content(public_id):
     return results
 
 
-@main.route('/delete-public-announcement/<string:public_id>', methods=['DELETE'])
+@main.route('/delete-public-announcement/<string:public_id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 @cross_origin()
 def delete_public_announcement(public_id):
@@ -860,7 +861,7 @@ def delete_public_announcement(public_id):
                                   }))
 
 
-@main.route('/delete-table/<string:username>/<string:id>', methods=['DELETE'])
+@main.route('/delete-table/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 @cross_origin()
 def delete_table(username, id):
@@ -874,7 +875,7 @@ def delete_table(username, id):
     return {'success': True}
 
 
-@main.route('/delete-macro/<string:username>/<string:id>', methods=['DELETE'])
+@main.route('/delete-macro/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 @cross_origin()
 def delete_macro(username, id):
@@ -888,7 +889,7 @@ def delete_macro(username, id):
     return {'success': True}
 
 
-@main.route('/delete-collection/<string:username>/<string:id>', methods=['DELETE'])
+@main.route('/delete-collection/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 @cross_origin()
 def delete_collection(username, id):
@@ -902,7 +903,7 @@ def delete_collection(username, id):
     return {'success': True}
 
 
-@main.route('/delete-story/<string:username>/<string:id>', methods=['DELETE'])
+@main.route('/delete-story/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 @cross_origin()
 def delete_story(username, id):
@@ -916,7 +917,7 @@ def delete_story(username, id):
     return {'success': True}
 
 
-@main.route('/delete-shared-content/<string:public_id>', methods=['DELETE'])
+@main.route('/delete-shared-content/<string:public_id>', methods=['DELETE', 'OPTIONS'])
 @login_required
 @cross_origin()
 def delete_shared_content(public_id):
@@ -942,7 +943,7 @@ def delete_shared_content(public_id):
     return make_response(jsonify({'success': True}))
 
 
-@main.route('/id-check/<string:type>/<string:id>', methods=['GET'])
+@main.route('/id-check/<string:type>/<string:id>', methods=['GET', 'OPTIONS'])
 @login_required
 @cross_origin()
 def id_exists(type, id):
