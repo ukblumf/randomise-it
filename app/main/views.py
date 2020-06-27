@@ -17,7 +17,7 @@ from ..randomise_utils import *
 from ..get_random_value import get_row_from_random_table_definition, process_text_extended
 from markdown import markdown
 import bleach
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 
 CORS(main, supports_credentials=True)
 
@@ -398,7 +398,6 @@ def bulk_table_import():
 
 @main.route('/create-story', methods=['GET', 'POST'])
 @login_required
-@cross_origin()
 def create_story():
     form = StoryForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
@@ -526,8 +525,7 @@ def edit_macro(username, id):
                            public_collections=public_collections, username=username, macro_id=id)
 
 
-@main.route('/macro/<string:username>/<string:id>', methods=['GET', 'OPTIONS'])
-@cross_origin()
+@main.route('/macro/<string:username>/<string:id>', methods=['GET'])
 def get_macro(username, id):
     macro = get_macro_record(username, id)
     if macro is not None:
@@ -537,9 +535,7 @@ def get_macro(username, id):
         return 'Error finding macro id: ' + username + '.macro.' + id
 
 
-@main.route('/preview-macro', methods=['POST', 'OPTIONS'])
-@login_required
-@cross_origin()
+@main.route('/preview-macro', methods=['POST'])
 def preview_macro():
     macro = request.form['macro'].replace('\n', '<br/>')
     if macro:
@@ -620,8 +616,7 @@ def edit_collection(username, id):
                            public_collections=public_collections, username=username, collection_id=id)
 
 
-@main.route('/collection/<string:username>/<string:id>', methods=['GET', 'OPTIONS'])
-@cross_origin()
+@main.route('/collection/<string:username>/<string:id>', methods=['GET'])
 def get_collection(username, id):
     collection = get_collection_record(username, id)
     if collection is not None:
@@ -758,9 +753,8 @@ def discover():
                            free_products=free_products)
 
 
-@main.route('/transfer-public-content/<string:public_id>', methods=['POST', 'OPTIONS'])
+@main.route('/transfer-public-content/<string:public_id>', methods=['POST'])
 @login_required
-@cross_origin()
 def transfer_public_content(public_id):
     if db.session.query(PublicAnnouncements) \
             .filter(PublicAnnouncements.id == public_id) \
@@ -822,9 +816,8 @@ def transfer_public_content(public_id):
     return make_response(jsonify({'success': False}))
 
 
-@main.route('/public-content/<string:public_id>', methods=['GET', 'OPTIONS'])
+@main.route('/public-content/<string:public_id>', methods=['GET'])
 @login_required
-@cross_origin()
 def get_public_content(public_id):
     public_id = public_id[5:]
     public_collections = PublicCollection.query.with_entities(PublicCollection.id).filter_by(announcement_id=public_id)
@@ -835,9 +828,8 @@ def get_public_content(public_id):
     return results
 
 
-@main.route('/delete-public-announcement/<string:public_id>', methods=['DELETE', 'OPTIONS'])
+@main.route('/delete-public-announcement/<string:public_id>', methods=['DELETE'])
 @login_required
-@cross_origin()
 def delete_public_announcement(public_id):
     if db.session.query(PublicAnnouncements) \
             .filter(PublicAnnouncements.id == public_id) \
@@ -865,9 +857,8 @@ def delete_public_announcement(public_id):
                                   }))
 
 
-@main.route('/delete-table/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
+@main.route('/delete-table/<string:username>/<string:id>', methods=['DELETE'])
 @login_required
-@cross_origin()
 def delete_table(username, id):
     if username != current_user.username:
         abort(403)
@@ -879,9 +870,8 @@ def delete_table(username, id):
     return {'success': True}
 
 
-@main.route('/delete-macro/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
+@main.route('/delete-macro/<string:username>/<string:id>', methods=['DELETE'])
 @login_required
-@cross_origin()
 def delete_macro(username, id):
     if username != current_user.username:
         abort(403)
@@ -893,9 +883,8 @@ def delete_macro(username, id):
     return {'success': True}
 
 
-@main.route('/delete-collection/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
+@main.route('/delete-collection/<string:username>/<string:id>', methods=['DELETE'])
 @login_required
-@cross_origin()
 def delete_collection(username, id):
     if username != current_user.username:
         abort(403)
@@ -907,9 +896,8 @@ def delete_collection(username, id):
     return {'success': True}
 
 
-@main.route('/delete-story/<string:username>/<string:id>', methods=['DELETE', 'OPTIONS'])
+@main.route('/delete-story/<string:username>/<string:id>', methods=['DELETE'])
 @login_required
-@cross_origin()
 def delete_story(username, id):
     if username != current_user.username:
         abort(403)
@@ -921,9 +909,8 @@ def delete_story(username, id):
     return {'success': True}
 
 
-@main.route('/delete-shared-content/<string:public_id>', methods=['DELETE', 'OPTIONS'])
+@main.route('/delete-shared-content/<string:public_id>', methods=['DELETE'])
 @login_required
-@cross_origin()
 def delete_shared_content(public_id):
     if db.session.query(UserPublicContent) \
             .filter(UserPublicContent.announcement_id == public_id) \
@@ -947,9 +934,8 @@ def delete_shared_content(public_id):
     return make_response(jsonify({'success': True}))
 
 
-@main.route('/id-check/<string:type>/<string:id>', methods=['GET', 'OPTIONS'])
+@main.route('/id-check/<string:type>/<string:id>', methods=['GET'])
 @login_required
-@cross_origin()
 def id_exists(type, id):
     check = "0"
     if type == 'table':
