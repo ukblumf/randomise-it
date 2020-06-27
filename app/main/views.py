@@ -20,7 +20,7 @@ import bleach
 from flask_cors import CORS
 
 CORS(main, supports_credentials=True)
-main.config['CORS_HEADERS'] = 'Content-Type'
+
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
@@ -46,6 +46,8 @@ def after_request(response):
                 'Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n'
                 % (query.statement, query.parameters, query.duration,
                    query.context))
+    header = response.headers
+    header['Access-Control-Allow-Origin'] = '*'
     return response
 
 
