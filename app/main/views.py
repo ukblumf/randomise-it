@@ -1,7 +1,7 @@
 import collections
 
 from flask import render_template, redirect, url_for, abort, flash, request, \
-    current_app, make_response, jsonify
+    current_app, make_response, jsonify, Flask
 from flask_login import login_required, current_user
 from flask_sqlalchemy import get_debug_queries
 from . import main
@@ -17,6 +17,11 @@ from ..randomise_utils import *
 from ..get_random_value import get_row_from_random_table_definition, process_text_extended
 from markdown import markdown
 import bleach
+from flask_cors import CORS, cross_origin
+app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
@@ -45,7 +50,7 @@ def after_request(response):
     return response
 
 
-@main.route('/', methods=['GET', 'POST'])
+@main.route('/', methods=['GET'])
 def index():
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
     stories = None
@@ -522,6 +527,7 @@ def edit_macro(username, id):
 
 
 @main.route('/macro/<string:username>/<string:id>', methods=['GET'])
+@cross_origin()
 def get_macro(username, id):
     macro = get_macro_record(username, id)
     if macro is not None:
@@ -532,6 +538,7 @@ def get_macro(username, id):
 
 
 @main.route('/preview-macro', methods=['POST'])
+@cross_origin()
 def preview_macro():
     macro = request.form['macro'].replace('\n', '<br/>')
     if macro:
@@ -613,6 +620,7 @@ def edit_collection(username, id):
 
 
 @main.route('/collection/<string:username>/<string:id>', methods=['GET'])
+@cross_origin()
 def get_collection(username, id):
     collection = get_collection_record(username, id)
     if collection is not None:
@@ -751,6 +759,7 @@ def discover():
 
 @main.route('/transfer-public-content/<string:public_id>', methods=['POST'])
 @login_required
+@cross_origin()
 def transfer_public_content(public_id):
     if db.session.query(PublicAnnouncements) \
             .filter(PublicAnnouncements.id == public_id) \
@@ -813,6 +822,8 @@ def transfer_public_content(public_id):
 
 
 @main.route('/public-content/<string:public_id>', methods=['GET'])
+@login_required
+@cross_origin()
 def get_public_content(public_id):
     public_id = public_id[5:]
     public_collections = PublicCollection.query.with_entities(PublicCollection.id).filter_by(announcement_id=public_id)
@@ -825,6 +836,7 @@ def get_public_content(public_id):
 
 @main.route('/delete-public-announcement/<string:public_id>', methods=['DELETE'])
 @login_required
+@cross_origin()
 def delete_public_announcement(public_id):
     if db.session.query(PublicAnnouncements) \
             .filter(PublicAnnouncements.id == public_id) \
@@ -854,6 +866,7 @@ def delete_public_announcement(public_id):
 
 @main.route('/delete-table/<string:username>/<string:id>', methods=['DELETE'])
 @login_required
+@cross_origin()
 def delete_table(username, id):
     if username != current_user.username:
         abort(403)
@@ -867,6 +880,7 @@ def delete_table(username, id):
 
 @main.route('/delete-macro/<string:username>/<string:id>', methods=['DELETE'])
 @login_required
+@cross_origin()
 def delete_macro(username, id):
     if username != current_user.username:
         abort(403)
@@ -880,6 +894,7 @@ def delete_macro(username, id):
 
 @main.route('/delete-collection/<string:username>/<string:id>', methods=['DELETE'])
 @login_required
+@cross_origin()
 def delete_collection(username, id):
     if username != current_user.username:
         abort(403)
@@ -893,6 +908,7 @@ def delete_collection(username, id):
 
 @main.route('/delete-story/<string:username>/<string:id>', methods=['DELETE'])
 @login_required
+@cross_origin()
 def delete_story(username, id):
     if username != current_user.username:
         abort(403)
@@ -906,6 +922,7 @@ def delete_story(username, id):
 
 @main.route('/delete-shared-content/<string:public_id>', methods=['DELETE'])
 @login_required
+@cross_origin()
 def delete_shared_content(public_id):
     if db.session.query(UserPublicContent) \
             .filter(UserPublicContent.announcement_id == public_id) \
@@ -931,6 +948,7 @@ def delete_shared_content(public_id):
 
 @main.route('/id-check/<string:type>/<string:id>', methods=['GET'])
 @login_required
+@cross_origin()
 def id_exists(type, id):
     check = "0"
     if type == 'table':
