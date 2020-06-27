@@ -218,7 +218,7 @@
         }
 
         function addMacro(username, macroId) {
-            const get_macro_url = "{{ url_for('.get_macro', username='', id='') }}" + username + '/' + macroId;
+            const get_macro_url = "/macro/" + username + '/' + macroId;
             $.ajax({
                 url: get_macro_url, macroId: macroId, success: function (result) {
                     $("#random-output").text(result);
