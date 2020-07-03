@@ -92,6 +92,7 @@ def validate_text(definition, id):
             close_angle_brackets = definition.find(">>", open_angle_brackets)
 
             external_id = definition[open_angle_brackets + 2:close_angle_brackets]
+
             external_data = None
             username, id_type, reference_id = split_id(external_id)
 
@@ -125,27 +126,34 @@ def validate_text(definition, id):
                                                           re.IGNORECASE)):  # e.g. 1d6x<<table.magic-item-table-a>>
                                         if not bool(re.search(r'^\d+-\d+x<<table\..*?>>$', generator,
                                                               re.IGNORECASE)):  # e.g. 1-10x<<table.magic-item-table-a>>
-                                            if bool(re.search(r'(\d+d\d+|\d+|[\+|\-])', generator, re.IGNORECASE)):
-                                                components = re.finditer(r'(\d+d\d+|\d+|[\+|\-])', generator, re.IGNORECASE)
-                                                valid_generator = True
-                                                expect_value = True
-                                                operand = 1
-                                                for component in components:
-                                                    if expect_value:
-                                                        expect_value = False
-                                                        if re.search(r'd', component.group(1), re.IGNORECASE):
-                                                            # dice notation
-                                                            if not bool(re.search(r'^(\d+)d(\d+)', component.group(1), re.IGNORECASE)) and not bool(re.search(r'\d+', component.group(1), re.IGNORECASE)):
+                                            if not bool(re.search(r'^\d+x<<table\..*?>>$', generator,
+                                                                  re.IGNORECASE)):  # e.g. 3x<<table.magic-item-table-a>>
+                                                if bool(re.search(r'(\d+d\d+|\d+|[\+|\-])', generator, re.IGNORECASE)):
+                                                    components = re.finditer(r'(\d+d\d+|\d+|[\+|\-])', generator,
+                                                                             re.IGNORECASE)
+                                                    valid_generator = True
+                                                    expect_value = True
+                                                    operand = 1
+                                                    for component in components:
+                                                        if expect_value:
+                                                            expect_value = False
+                                                            if re.search(r'd', component.group(1), re.IGNORECASE):
+                                                                # dice notation
+                                                                if not bool(
+                                                                        re.search(r'^(\d+)d(\d+)', component.group(1),
+                                                                                  re.IGNORECASE)) and not bool(
+                                                                        re.search(r'\d+', component.group(1),
+                                                                                  re.IGNORECASE)):
+                                                                    valid_generator = False
+                                                                    break
+                                                        else:
+                                                            expect_value = True
+                                                            if component.group(1) != '+' and component.group(1) != '-':
                                                                 valid_generator = False
                                                                 break
-                                                    else:
-                                                        expect_value = True
-                                                        if component.group(1) != '+' and component.group(1) != '-':
-                                                            valid_generator = False
-                                                            break
-                                                if not valid_generator:
-                                                    error_message += '\nRandom number in ((' + generator + ')) not recognised'
-                                                    validate_definition = False
+                                                    if not valid_generator:
+                                                        error_message += '\nRandom number in ((' + generator + ')) not recognised'
+                                                        validate_definition = False
             open_brackets = definition.find("((", close_brackets)
 
     return validate_definition, error_message

@@ -64,6 +64,12 @@ def process_text_extended(text):
                         del loop_control[loop_name]
                         i = cursor_position + 2
                         increment = False
+            elif directive == 'IF':
+                chance, true_condition = params
+                if random.randint(1, 100) <= int(chance.strip('%')):
+                    new_text += process_text_extended(true_condition)
+                i = cursor_position + 2
+                increment = False
 
         if increment:
             if i >= len(text):
@@ -167,6 +173,15 @@ def dice_generator(dice_pattern):
         for n in range(roll):
             generated_text += get_text_from_external_table(external_table.group(1)) + ","
 
+    elif bool(re.search(r'^\d+x<<.*?>>$', dice_pattern, re.IGNORECASE)):
+        # Found static number with external reference
+        num = re.search(r'^(\d+)', dice_pattern, re.IGNORECASE)
+        # number in rng.group(1))
+        external_table = re.search(r'x<<(.*?)>>$', dice_pattern, re.IGNORECASE)
+        # External table in external_table.group(1))
+        for n in range(int(num.group(1))):
+            generated_text += get_text_from_external_table(external_table.group(1)) + ","
+
     elif bool(re.search(r'(\d+d\d+|\d+|[\+|\-])', dice_pattern, re.IGNORECASE)):
         # found chained dice and static numbers to produce sum
         components = re.finditer(r'(\d+d\d+|\d+|[\+|\-])', dice_pattern, re.IGNORECASE)
@@ -204,7 +219,7 @@ def extract_reference_link(external_id):
             # Chance succeeded
             external_id = chance.group(2)
         else:
-            return None
+            return ""
 
     return get_text_from_external_table(external_id)
 

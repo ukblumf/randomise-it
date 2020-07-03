@@ -17,6 +17,7 @@ from ..randomise_utils import *
 from ..get_random_value import get_row_from_random_table_definition, process_text_extended
 from markdown import markdown
 import bleach
+import re
 
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
@@ -31,7 +32,8 @@ translate_table = {ord(char): u'' for char in non_url_safe}
 
 def slugify(text):
     text = text.translate(translate_table)
-    text = u'_'.join(text.split())
+    text = u'-'.join(text.split())
+    text = re.sub('--+', '-', text)
     return text
 
 
@@ -349,7 +351,7 @@ def bulk_table_import():
         for line in table_lines:
             if not new_table:
                 new_table = line
-                new_table_id = slugify(line)
+                new_table_id = slugify(line.lower())
                 if not RandomTable.query.get([new_table_id, current_user.id]):
                     continue
                 else:
@@ -367,8 +369,8 @@ def bulk_table_import():
                                     tags=form.bulk_tag.data,
                                     author_id=current_user.id)
 
-                max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
-                    table)
+                max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = \
+                    check_table_definition_validity(table)
                 if validate_table_definition:
                     table.min = min_rng
                     table.max = max_rng
@@ -381,7 +383,7 @@ def bulk_table_import():
                     new_table_definition = ''
                     continue
                 else:
-                    flash(error_message)
+                    flash(error_message + ', Table id : ' + new_table_id + ', Table name : ' + new_table)
                     db.session.rollback()
                     error_on_import = True
                     break
