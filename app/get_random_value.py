@@ -70,6 +70,10 @@ def process_text_extended(text):
                     new_text += process_text_extended(true_condition)
                 i = cursor_position + 2
                 increment = False
+            elif directive == 'CHOICE':
+                new_text += process_text_extended(params[random.randint(0, len(params)-1)])
+                i = cursor_position + 2
+                increment = False
 
         if increment:
             if i >= len(text):
@@ -176,7 +180,7 @@ def dice_generator(dice_pattern):
     elif bool(re.search(r'^\d+x<<.*?>>$', dice_pattern, re.IGNORECASE)):
         # Found static number with external reference
         num = re.search(r'^(\d+)', dice_pattern, re.IGNORECASE)
-        # number in rng.group(1))
+        # number in num.group(1))
         external_table = re.search(r'x<<(.*?)>>$', dice_pattern, re.IGNORECASE)
         # External table in external_table.group(1))
         for n in range(int(num.group(1))):
