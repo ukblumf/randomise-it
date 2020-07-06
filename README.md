@@ -1,4 +1,4 @@
-RANDOMISE-IT
+The Randomist
 ============
 
 The ability to create, store, edit and share random tables, macros and collections
