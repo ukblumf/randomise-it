@@ -421,6 +421,7 @@ class RandomTable(db.Model):
     tags = db.Column(db.Text, index=True)
     original_author_id = db.Column(db.Integer)
     row_count = db.Column(db.Integer)
+    modifier_name = db.Column(db.Text)
 
     @staticmethod
     def on_changed_table(target, value, oldvalue, initiator):

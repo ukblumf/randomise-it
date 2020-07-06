@@ -102,6 +102,12 @@
             crossorigin="anonymous">
     </script>
     <script>
+        table_modifiers = {};
+        {% for t in tables %}{% if t.modifier_name %}table_modifiers['{{ current_user.username }}.table.{{ t.id }}'] = '{{ t.modifier_name }}';
+        {% endif %}{% endfor %}
+        {% for t in public_tables %}{% if t.modifier_name %}table_modifiers['{{ t.original_author.username }}.table.{{ t.table_id }}'] = '{{ t.public_table.modifier_name }}';
+        {% endif %}{% endfor %}
+
         function pinItem(id, element) {
             //check if id already exists in pinned box
             const pins = $("#pins");
@@ -185,7 +191,14 @@
         }
 
         function addTable(username, tableId) {
-            const get_random_table_url = "/random-value/" + username + '/' + tableId;
+            let get_random_table_url = "/random-value/" + username + '/' + tableId;
+            const item = username + '.table.' + tableId;
+            if (item in table_modifiers) {
+                const modifier = prompt(table_modifiers[item], "0");
+                if (modifier != null && !isNaN(modifier)) {
+                    get_random_table_url += '?modifier=' + modifier;
+                }
+            }
             $.ajax({
                 url: get_random_table_url, tableId: tableId, success: function (result) {
                     $("#random-output").text(result);
@@ -261,7 +274,7 @@
 
         function confirmDelete() {
             if (confirm('Please confirm you want to delete this story')) {
-                const url = "/delete-story/";
+                const url = "{{ url_for('.delete_story', username=username, id=story_id) }}";
                 $.ajax({
                     type: "DELETE",
                     url: url, success: function (result) {

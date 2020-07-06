@@ -18,6 +18,7 @@ class PublicRandomTable(db.Model):
     tags = db.Column(db.Text, index=True)
     row_count = db.Column(db.Integer)
     announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
+    modifier_name = db.Column(db.Text)
 
 
 class PublicMacros(db.Model):

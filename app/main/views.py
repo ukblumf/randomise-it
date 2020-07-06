@@ -19,7 +19,6 @@ from markdown import markdown
 import bleach
 import re
 
-
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
                 'h1', 'h2', 'h3', 'br']
@@ -265,7 +264,8 @@ def create_table():
                             description=form.table_description.data,
                             definition=form.table_definition.data,
                             tags=form.table_tags.data,
-                            author_id=current_user.id)
+                            author_id=current_user.id,
+                            modifier_name=form.modifier_name.data)
 
         max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
             table)
@@ -306,6 +306,7 @@ def edit_table(username, id):
         table.description = form.table_description.data
         table.definition = form.table_definition.data
         table.tags = form.table_tags.data
+        table.modifier_name = form.modifier_name.data
 
         max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = \
             check_table_definition_validity(table)
@@ -326,6 +327,7 @@ def edit_table(username, id):
     form.table_tags.data = table.tags
     form.table_id.data = table.id
     form.table_id.render_kw = {'readonly': True}
+    form.modifier_name.data = table.modifier_name
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
@@ -450,7 +452,14 @@ def edit_story(username, id):
 def get_random_value(username, id):
     table = get_random_table_record(username, id)
     if table is not None:
-        return get_row_from_random_table_definition(table)
+        modifier = 0
+        if request.args.get('modifier'):
+            modifier_param = request.args.get('modifier')
+            try:
+                modifier = int(float(modifier_param))
+            except Exception as e:
+                pass
+        return get_row_from_random_table_definition(table, modifier)
 
     return 'Error finding random table id: ' + username + '.table.' + id
 
@@ -1023,7 +1032,8 @@ def share_public():
                                                     description_html=t.description_html,
                                                     line_type=t.line_type,
                                                     row_count=t.row_count,
-                                                    announcement_id=announcement.id)
+                                                    announcement_id=announcement.id,
+                                                    modifier_name=t.modifier_name)
                             db.session.add(prt)
             db.session.commit()
             flash('Content Shared')

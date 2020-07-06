@@ -65,6 +65,8 @@ class TableForm(FlaskForm):
     table_description = TextAreaField('Description')
     table_definition = TextAreaField('Random Table Definition', render_kw={"rows": 20, "cols": 70})
     table_tags = SelectField('Tags')
+    modifier_name = StringField('Modifier Name', validators=[Length(0, 255)],
+                                description="Leave blank if no modifiers required, otherwise enter text to display")
     submit = SubmitField('Save')
 
 

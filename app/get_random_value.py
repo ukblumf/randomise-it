@@ -252,12 +252,16 @@ def get_text_from_external_table(external_id):
     return generated_text
 
 
-def get_row_from_random_table_definition(table):
+def get_row_from_random_table_definition(table, modifier=0):
     min_rng = table.min
     max_rng = table.max
     table_list = table.definition.splitlines()
     table_iter = iter(table_list)
-    random_number = random.randint(min_rng, max_rng)
+    random_number = random.randint(min_rng, max_rng) + modifier
+    if random_number < min_rng:
+        random_number = min_rng
+    elif random_number > max_rng:
+        random_number = max_rng
     selected_text = ''
     # get row from table
     if table.line_type == 1:

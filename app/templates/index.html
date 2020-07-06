@@ -171,8 +171,15 @@
             });
 
             $("button#get-random-value").click(function () {
+                let url = $(this).val()
+                if ($(this).data('modifier') && $(this).data('modifier') != 'None') {
+                    const modifier = prompt($(this).data('modifier'),"0");
+                    if (modifier != null && !isNaN(modifier)) {
+                        url += '?modifier=' + modifier;
+                    }
+                }
                 $.ajax({
-                    url: $(this).val(), success: function (result) {
+                    url: url, success: function (result) {
                         $("#preview-panel").html(result);
                     }
                 });

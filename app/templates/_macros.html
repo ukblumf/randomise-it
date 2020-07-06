@@ -1,7 +1,9 @@
 {% macro pagination_widget(pagination, endpoint, fragment='') %}
     <ul class="pagination">
         <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
-            <a href="{% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
+            <a href="
+
+                    {% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
                 &laquo;
             </a>
         </li>
@@ -21,7 +23,9 @@
             {% endif %}
         {% endfor %}
         <li{% if not pagination.has_next %} class="disabled"{% endif %}>
-            <a href="{% if pagination.has_next %}{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
+            <a href="
+
+                    {% if pagination.has_next %}{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
                 &raquo;
             </a>
         </li>
@@ -48,7 +52,8 @@
             {% if item.name is defined %}
                 <td>{% if name == 'table' %}
                     <button id="get-random-value"
-                            value="{{ url_for('.get_random_value', username=current_user.username, id=item.id) }}">
+                            value="{{ url_for('.get_random_value', username=current_user.username, id=item.id) }}"
+                            data-modifier="{{ item.modifier_name }}">
                 {% elif name == 'macro' %}
                     <button id="get-macro-value"
                             value="{{ url_for('.get_macro', username=current_user.username, id=item.id) }}">
@@ -86,14 +91,15 @@
 {% macro list_public_rows_in_table(name, items) %}
     {% for item in items %}
         <tr {% if name == 'table' %}
-                {% if item.public_table.tags is defined %}data-tag="{{ item.public_table.tags }}"{% endif %}
-            {% elif name == 'macro' %}
-                {% if item.public_macro.tags is defined %}data-tag="{{ item.public_macro.tags }}"{% endif %}
-            {% endif %}>
+            {% if item.public_table.tags is defined %}data-tag="{{ item.public_table.tags }}"{% endif %}
+        {% elif name == 'macro' %}
+            {% if item.public_macro.tags is defined %}data-tag="{{ item.public_macro.tags }}"{% endif %}
+        {% endif %}>
             <td>
                 {% if name == 'table' %}
                     <button id="get-random-value"
-                            value="{{ url_for('.get_random_value', username=item.original_author.username, id=item.table_id) }}">
+                            value="{{ url_for('.get_random_value', username=item.original_author.username, id=item.table_id) }}"
+                            data-modifier="{{ item.public_table.modifier_name }}">
                         {{ item.public_table.name }} <small
                             class="text-muted">({{ item.public_table.row_count }})</small>
                     </button>
@@ -132,8 +138,10 @@
                   onclick="pinItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', this)"></span>
             {% if name == 'collection' %}
                 <button onclick="pinItem('{{ current_user.username }}.{{ name }}.{{ item.id }}')">{{ item.name }}</button>
-            {% else %}
-                <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}')">{{ item.name }}</button>
+            {% elif name == 'macro' %}
+                <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', '')">{{ item.name }}</button>
+            {% elif name == 'table' %}
+                <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', '{{ item.modifier_name }}')">{{ item.name }}</button>
             {% endif %}
         </li>
     {% endfor %}
@@ -158,19 +166,19 @@
 {% macro list_public_rows_in_ul(name, items) %}
     {% for item in items %}
         <li class="list-group-item" {% if name == 'table' %}
-                {% if item.public_table.tags is defined %}data-tag="{{ item.public_table.tags }}"{% endif %}
-            {% elif name == 'macro' %}
-                {% if item.public_macro.tags is defined %}data-tag="{{ item.public_macro.tags }}"{% endif %}
-            {% elif name == 'collection' %}
-                {% if item.public_collection.tags is defined %}data-tag="{{ item.public_collection.tags }}"{% endif %}
-            {% endif %}>
-        {% if name == 'table' %}
-            <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.table_id }}>>')">{{ item.public_table.name }}</button>
+            {% if item.public_table.tags is defined %}data-tag="{{ item.public_table.tags }}"{% endif %}
         {% elif name == 'macro' %}
-            <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.macro_id }}>>')">{{ item.public_macro.name }}</button>
+            {% if item.public_macro.tags is defined %}data-tag="{{ item.public_macro.tags }}"{% endif %}
         {% elif name == 'collection' %}
-            <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.collection_id }}>>')">{{ item.public_collection.name }}</button>
-        {% endif %}
+            {% if item.public_collection.tags is defined %}data-tag="{{ item.public_collection.tags }}"{% endif %}
+        {% endif %}>
+            {% if name == 'table' %}
+                <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.table_id }}>>')">{{ item.public_table.name }}</button>
+            {% elif name == 'macro' %}
+                <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.macro_id }}>>')">{{ item.public_macro.name }}</button>
+            {% elif name == 'collection' %}
+                <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.collection_id }}>>')">{{ item.public_collection.name }}</button>
+            {% endif %}
         </li>
     {% endfor %}
 {% endmacro %}
