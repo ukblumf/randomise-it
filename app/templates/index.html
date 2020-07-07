@@ -189,6 +189,7 @@
                 }
                 $.ajax({
                     url: url, success: function (result) {
+                        result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
                         $("#preview-panel").html(result);
                     }
                 });
@@ -196,6 +197,7 @@
             $("button#get-macro-value").click(function () {
                 $.ajax({
                     url: $(this).val(), success: function (result) {
+                        result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
                         $("#preview-panel").html(result);
                     }
                 });
