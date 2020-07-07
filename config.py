@@ -16,13 +16,13 @@ class Config:
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    RANDOMISE_IT_MAIL_SUBJECT_PREFIX = '[Flasky]'
-    RANDOMISE_IT_MAIL_SENDER = 'Blumf <neil.blumfield@gmail.com>'
-    RANDOMISE_IT_ADMIN = os.environ.get('RANDOMISE_IT_ADMIN')
-    RANDOMISE_IT_POSTS_PER_PAGE = 20
-    RANDOMISE_IT_FOLLOWERS_PER_PAGE = 50
-    RANDOMISE_IT_COMMENTS_PER_PAGE = 30
-    RANDOMISE_IT_SLOW_DB_QUERY_TIME = 0.5
+    RANDOMIST_MAIL_SUBJECT_PREFIX = '[The Randomist]'
+    RANDOMIST_MAIL_SENDER = 'Blumf <neil.blumfield@gmail.com>'
+    RANDOMIST_ADMIN = os.environ.get('RANDOMIST_ADMIN')
+    RANDOMIST_POSTS_PER_PAGE = 20
+    RANDOMIST_FOLLOWERS_PER_PAGE = 50
+    RANDOMIST_COMMENTS_PER_PAGE = 30
+    RANDOMIST_SLOW_DB_QUERY_TIME = 0.5
     CATEGORIES = []
 
     @staticmethod
@@ -68,9 +68,9 @@ class ProductionConfig(Config):
     #             secure = ()
     #     mail_handler = SMTPHandler(
     #         mailhost=(cls.MAIL_SERVER, cls.MAIL_PORT),
-    #         fromaddr=cls.RANDOMISE_IT_MAIL_SENDER,
-    #         toaddrs=[cls.RANDOMISE_IT_ADMIN],
-    #         subject=cls.RANDOMISE_IT_MAIL_SUBJECT_PREFIX + ' Application Error',
+    #         fromaddr=cls.RANDOMIST_MAIL_SENDER,
+    #         toaddrs=[cls.RANDOMIST_ADMIN],
+    #         subject=cls.RANDOMIST_MAIL_SUBJECT_PREFIX + ' Application Error',
     #         credentials=credentials,
     #         secure=secure)
     #     mail_handler.setLevel(logging.ERROR)

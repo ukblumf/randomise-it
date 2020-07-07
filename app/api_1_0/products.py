@@ -12,7 +12,7 @@
 # def get_products():
 #     page = request.args.get('page', 1, type=int)
 #     pagination = Products.query.paginate(
-#         page, per_page=current_app.config['RANDOMISE_IT_POSTS_PER_PAGE'],
+#         page, per_page=current_app.config['RANDOMIST_POSTS_PER_PAGE'],
 #         error_out=False)
 #     products = pagination.items
 #     prev = None
