@@ -329,6 +329,9 @@ class Post(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     pins = db.Column(db.Text)
+    last_modified = db.Column(db.DateTime,
+                              default=datetime.utcnow(),
+                              onupdate=datetime.utcnow())
 
     # comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
@@ -422,6 +425,9 @@ class RandomTable(db.Model):
     original_author_id = db.Column(db.Integer)
     row_count = db.Column(db.Integer)
     modifier_name = db.Column(db.Text)
+    last_modified = db.Column(db.DateTime,
+                              default=datetime.utcnow(),
+                              onupdate=datetime.utcnow())
 
     @staticmethod
     def on_changed_table(target, value, oldvalue, initiator):
@@ -486,6 +492,9 @@ class Macros(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     tags = db.Column(db.Text, index=True)
     original_author_id = db.Column(db.Integer)
+    last_modified = db.Column(db.DateTime,
+                              default=datetime.utcnow(),
+                              onupdate=datetime.utcnow())
 
     @staticmethod
     def on_changed_table(target, value, oldvalue, initiator):
@@ -549,6 +558,9 @@ class Collection(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     tags = db.Column(db.Text, index=True)
     original_author_id = db.Column(db.Integer)
+    last_modified = db.Column(db.DateTime,
+                              default=datetime.utcnow(),
+                              onupdate=datetime.utcnow())
 
     def to_json(self):
         items = self.items.splitlines()
@@ -633,6 +645,9 @@ class MarketPlace(db.Model):
     sale_price = db.Column(db.Float, default=0)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     categories = db.relationship('MarketCategory', backref='market_product', lazy='dynamic')
+    last_modified = db.Column(db.DateTime,
+                              default=datetime.utcnow(),
+                              onupdate=datetime.utcnow())
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):

@@ -19,6 +19,7 @@ class PublicRandomTable(db.Model):
     row_count = db.Column(db.Integer)
     announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
     modifier_name = db.Column(db.Text)
+    last_modified = db.Column(db.DateTime)
 
 
 class PublicMacros(db.Model):
@@ -32,6 +33,7 @@ class PublicMacros(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     tags = db.Column(db.Text, index=True)
     announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
+    last_modified = db.Column(db.DateTime)
 
 
 class PublicCollection(db.Model):
@@ -45,6 +47,7 @@ class PublicCollection(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     tags = db.Column(db.Text, index=True)
     announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
+    last_modified = db.Column(db.DateTime)
 
 
 class PublicLinkedTables(db.Model):
