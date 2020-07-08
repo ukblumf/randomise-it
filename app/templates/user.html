@@ -59,12 +59,14 @@
                     </thead>
                     <tbody id="announcementList" style="height: 200px">
                     {% for item in shared_content %}
-                        <td>{{ item.title }}</td>
-                        <td>
-                            <button onclick="deleteAnnouncement($(this));" id="{{ item.id }}"
-                                    data-title="{{ item.title }}" class="btn btn-danger">DELETE
-                            </button>
-                        </td>
+                        <tr>
+                            <td>{{ item.title }}</td>
+                            <td>
+                                <button onclick="deleteAnnouncement($(this));" id="{{ item.id }}"
+                                        data-title="{{ item.title }}" class="btn btn-danger">DELETE
+                                </button>
+                            </td>
+                        </tr>
                     {% endfor %}
                     </tbody>
                 </table>
@@ -79,14 +81,16 @@
                     </thead>
                     <tbody id="ownedSharedList" style="height: 200px">
                     {% for item in shared_content_owned %}
-                        <td>{{ item.public_announcement.title }}</td>
-                        <td>
-                            <button onclick="deleteSharedPublicOwned($(this));" id="{{ item.announcement_id }}"
-                                    data-title="{{ item.public_announcement.title }}"
-                                    class="btn btn-danger pull-right">
-                                DELETE
-                            </button>
-                        </td>
+                        <tr>
+                            <td>{{ item.public_announcement.title }}</td>
+                            <td>
+                                <button onclick="deleteSharedPublicOwned($(this));" id="{{ item.announcement_id }}"
+                                        data-title="{{ item.public_announcement.title }}"
+                                        class="btn btn-danger pull-right">
+                                    DELETE
+                                </button>
+                            </td>
+                        </tr>
                     {% endfor %}
                     </tbody>
                 </table>
@@ -115,13 +119,16 @@
                     </thead>
                     <tbody id="updatedTableList" style="height: 200px">
                     {% for item in updated_tables %}
-                        <td>{{ item.name }}</td>
-                        <td>
-                            <button onclick="refreshSharedItem($(this));"
-                                    id="{{ current_user.username }}.table.{{ item.id }}" data-title="{{ item.name }}"
-                                    class="btn btn-warning">REFRESH
-                            </button>
-                        </td>
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>
+                                <button onclick="refreshSharedItem($(this));"
+                                        id="{{ current_user.username }}.table.{{ item.id }}"
+                                        data-title="{{ item.name }}"
+                                        class="btn btn-warning">REFRESH
+                                </button>
+                            </td>
+                        </tr>
                     {% endfor %}
                     </tbody>
                 </table>
@@ -136,13 +143,16 @@
                     </thead>
                     <tbody id="updatedMacroList" style="height: 200px">
                     {% for item in updated_macros %}
-                        <td>{{ item.name }}</td>
-                        <td>
-                            <button onclick="refreshSharedItem($(this));"
-                                    id="{{ current_user.username }}.macro.{{ item.id }}" data-title="{{ item.name }}"
-                                    class="btn btn-warning">REFRESH
-                            </button>
-                        </td>
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>
+                                <button onclick="refreshSharedItem($(this));"
+                                        id="{{ current_user.username }}.macro.{{ item.id }}"
+                                        data-title="{{ item.name }}"
+                                        class="btn btn-warning">REFRESH
+                                </button>
+                            </td>
+                        </tr>
                     {% endfor %}
                     </tbody>
                 </table>
@@ -157,14 +167,16 @@
                     </thead>
                     <tbody id="updatedCollectionList" style="height: 200px">
                     {% for item in updated_collections %}
-                        <td>{{ item.name }}</td>
-                        <td>
-                            <button onclick="refreshSharedItem($(this));"
-                                    id="{{ current_user.username }}.collection.{{ item.id }}"
-                                    data-title="{{ item.name }}"
-                                    class="btn btn-warning">REFRESH
-                            </button>
-                        </td>
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>
+                                <button onclick="refreshSharedItem($(this));"
+                                        id="{{ current_user.username }}.collection.{{ item.id }}"
+                                        data-title="{{ item.name }}"
+                                        class="btn btn-warning">REFRESH
+                                </button>
+                            </td>
+                        </tr>
                     {% endfor %}
                     </tbody>
                 </table>
