@@ -3,6 +3,7 @@ import collections
 from flask import render_template, redirect, url_for, abort, flash, request, \
     current_app, make_response, jsonify
 from flask_login import login_required, current_user
+from sqlalchemy import and_, text
 from flask_sqlalchemy import get_debug_queries
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, TableForm, StoryForm, MacroForm, \
@@ -85,8 +86,28 @@ def user(username):
     shared_content = PublicAnnouncements.query.filter(PublicAnnouncements.author_id == current_user.id)
     shared_content_owned = UserPublicContent.query.filter(UserPublicContent.author_id == current_user.id)
 
+    sql = text('SELECT * FROM random_table JOIN public_random_table ON public_random_table.id = random_table.id AND '
+               'public_random_table.author_id = random_table.author_id '
+               'WHERE public_random_table.last_modified is NOT random_table.last_modified')
+
+    updated_tables = db.engine.execute(sql)
+
+    sql = text('SELECT * FROM macros JOIN public_macros ON public_macros.id = macros.id AND '
+               'public_macros.author_id = macros.author_id '
+               'WHERE public_macros.last_modified is NOT macros.last_modified')
+
+    updated_macros = db.engine.execute(sql)
+
+    sql = text('SELECT * FROM collection JOIN public_collection ON public_collection.id = collection.id AND '
+               'public_collection.author_id = collection.author_id '
+               'WHERE public_collection.last_modified is NOT collection.last_modified')
+
+    updated_collections = db.engine.execute(sql)
+
     return render_template('user.html', user=user, stats=stats,
-                           shared_content=shared_content, shared_content_owned=shared_content_owned)
+                           shared_content=shared_content, shared_content_owned=shared_content_owned,
+                           updated_tables=updated_tables, updated_macros=updated_macros,
+                           updated_collections=updated_collections)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -939,6 +960,74 @@ def delete_shared_content(public_id):
     announcement = db.session.query(UserPublicContent).filter(UserPublicContent.id == public_id). \
         filter(UserPublicContent.author_id == current_user.id)
     announcement.delete()
+
+    return make_response(jsonify({'success': True}))
+
+
+@main.route('/refresh-shared-content/<string:id>', methods=['POST'])
+@login_required
+def refresh_shared_content(id):
+
+    username, id_type, reference_id = split_id(id)
+    if username != current_user.username:
+        abort(403)
+
+    if id_type == 'table':
+        if db.session.query(RandomTable) \
+                .filter(RandomTable.id == reference_id) \
+                .filter(RandomTable.author_id == current_user.id) \
+                .first() is None:
+            abort(403)
+        table = RandomTable.query.get_or_404([reference_id, current_user.id])
+        public_table = PublicRandomTable.query.get_or_404([reference_id, current_user.id])
+        public_table.name = table.name
+        public_table.description = table.description
+        public_table.definition = table.definition
+        public_table.min = table.min
+        public_table.max = table.max
+        public_table.description_html = table.description_html
+        public_table.line_type = table.line_type
+        public_table.tags = table.tags
+        public_table.row_count = table.row_count
+        public_table.modifier_name = table.modifier_name
+        public_table.last_modified = table.last_modified
+        db.session.add(public_table)
+        db.session.commit()
+
+    elif id_type == 'macro':
+        if db.session.query(Macros) \
+                .filter(Macros.id == reference_id) \
+                .filter(Macros.author_id == current_user.id) \
+                .first() is None:
+            abort(403)
+        macro = Macros.query.get_or_404([reference_id, current_user.id])
+        public_macro = PublicMacros.query.get_or_404([reference_id, current_user.id])
+        public_macro.name = macro.name
+        public_macro.definition = macro.definition
+        public_macro.definition_html = macro.definition
+        public_macro.tags = macro.tags
+        public_macro.last_modified = macro.last_modified
+        db.session.add(public_macro)
+        db.session.commit()
+
+    elif id_type == 'collection':
+        if db.session.query(Collection) \
+                .filter(Collection.id == reference_id) \
+                .filter(Collection.author_id == current_user.id) \
+                .first() is None:
+            abort(403)
+        collection_obj = Collection.query.get_or_404([reference_id, current_user.id])
+        public_collection_obj = PublicCollection.query.get_or_404([reference_id, current_user.id])
+        public_collection_obj.name = collection_obj.name
+        public_collection_obj.description = collection_obj.description
+        public_collection_obj.definition = collection_obj.definition
+        public_collection_obj.tags = collection_obj.tags
+        public_collection_obj.last_modified = collection_obj.last_modified
+        db.session.add(public_collection_obj)
+        db.session.commit()
+
+    else:
+        abort(400)
 
     return make_response(jsonify({'success': True}))
 

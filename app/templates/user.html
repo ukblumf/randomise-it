@@ -50,34 +50,126 @@
         </div>
         <div class="row">
             <div class="col-md-4">
-                <div style="height: 200px; overflow-y: scroll;">
-                    <ul class="list-group" id="announcementList">
-                        {% for item in shared_content %}
-                            <li class="list-group-item">
-                                {{ item.title }}
-                                <button onclick="deleteAnnouncement($(this));" id="{{ item.id }}"
-                                        data-title="{{ item.title }}" class="btn btn-danger pull-right">DELETE
-                                </button>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="col-xs-10">Name</th>
+                        <th class="col-xs-2">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody id="announcementList" style="height: 200px">
+                    {% for item in shared_content %}
+                        <td>{{ item.title }}</td>
+                        <td>
+                            <button onclick="deleteAnnouncement($(this));" id="{{ item.id }}"
+                                    data-title="{{ item.title }}" class="btn btn-danger">DELETE
+                            </button>
+                        </td>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
             <div class="col-md-4">
-                <div style="height: 200px; overflow-y: scroll;">
-                    <ul class="list-group" id="ownedSharedList">
-                        {% for item in shared_content_owned %}
-                            <li class="list-group-item">
-                                {{ item.public_announcement.title }}
-                                <button onclick="deleteSharedPublicOwned($(this));" id="{{ item.announcement_id }}"
-                                        data-title="{{ item.public_announcement.title }}" class="btn btn-danger pull-right">
-                                    DELETE
-                                </button>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="col-xs-10">Name</th>
+                        <th class="col-xs-2">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody id="ownedSharedList" style="height: 200px">
+                    {% for item in shared_content_owned %}
+                        <td>{{ item.public_announcement.title }}</td>
+                        <td>
+                            <button onclick="deleteSharedPublicOwned($(this));" id="{{ item.announcement_id }}"
+                                    data-title="{{ item.public_announcement.title }}"
+                                    class="btn btn-danger pull-right">
+                                DELETE
+                            </button>
+                        </td>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
+        </div>
+        <div class="row">
+            <h2>Updated Content</h2>
+            <div class="col-md-4">
+                <h4>Tables</h4>
+            </div>
+            <div class="col-md-4">
+                <h4>Macros</h4>
+            </div>
+            <div class="col-md-4">
+                <h4>Collections</h4>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="col-xs-10">Name</th>
+                        <th class="col-xs-2">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody id="updatedTableList" style="height: 200px">
+                    {% for item in updated_tables %}
+                        <td>{{ item.name }}</td>
+                        <td>
+                            <button onclick="refreshSharedItem($(this));"
+                                    id="{{ current_user.username }}.table.{{ item.id }}" data-title="{{ item.name }}"
+                                    class="btn btn-warning">REFRESH
+                            </button>
+                        </td>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="col-xs-10">Name</th>
+                        <th class="col-xs-2">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody id="updatedMacroList" style="height: 200px">
+                    {% for item in updated_macros %}
+                        <td>{{ item.name }}</td>
+                        <td>
+                            <button onclick="refreshSharedItem($(this));"
+                                    id="{{ current_user.username }}.macro.{{ item.id }}" data-title="{{ item.name }}"
+                                    class="btn btn-warning">REFRESH
+                            </button>
+                        </td>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th class="col-xs-10">Name</th>
+                        <th class="col-xs-2">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody id="updatedCollectionList" style="height: 200px">
+                    {% for item in updated_collections %}
+                        <td>{{ item.name }}</td>
+                        <td>
+                            <button onclick="refreshSharedItem($(this));"
+                                    id="{{ current_user.username }}.collection.{{ item.id }}"
+                                    data-title="{{ item.name }}"
+                                    class="btn btn-warning">REFRESH
+                            </button>
+                        </td>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
         </div>
     </div>
 {% endblock %}
@@ -125,6 +217,32 @@
                     url: url, title: selectedElement, success: function (result) {
                         $('<div></div>')
                             .html("<h4>Removed content from your library</h4>")
+                            .dialog({
+                                modal: true,
+                                title: selectedElement.data('title'),
+                                buttons: {
+                                    Ok: function () {
+                                        $(this).dialog("destroy").remove();
+                                    }
+                                }
+                            });
+                        selectedElement.prop('disabled', true);
+                    },
+                    error: function (result) {
+                        alert(JSON.stringify(result));
+                    }
+                });
+            }
+        }
+
+        function refreshSharedItem(selectedElement) {
+            if (confirm('Please confirm you want to refresh ' + selectedElement.data('title'))) {
+                const url = "{{ url_for('.refresh_shared_content', id='') }}" + selectedElement.attr('id');
+                $.ajax({
+                    type: "POST",
+                    url: url, title: selectedElement, success: function (result) {
+                        $('<div></div>')
+                            .html("<h4>Refreshed Content</h4>")
                             .dialog({
                                 modal: true,
                                 title: selectedElement.data('title'),
