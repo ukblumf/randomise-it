@@ -86,46 +86,25 @@ def user(username):
     shared_content = PublicAnnouncements.query.filter(PublicAnnouncements.author_id == current_user.id)
     shared_content_owned = UserPublicContent.query.filter(UserPublicContent.author_id == current_user.id)
 
-    table_sql = ''
-    macro_sql = ''
-    collection_sql = ''
+    sql = text(
+        'SELECT * FROM random_table JOIN public_random_table ON public_random_table.id = random_table.id AND '
+        'public_random_table.author_id = random_table.author_id '
+        'WHERE random_table.author_id = ' + str(
+            current_user.id) + ' and public_random_table.last_modified != random_table.last_modified')
+    updated_tables = db.engine.execute(sql)
 
-    #  issue with sqlalchemy not generating correct SQL for join between two tables and filter on date
-    #  seems sqlite does not like using != comparison between date fields, needs to be 'is NOT'
+    sql = text('SELECT * FROM macros JOIN public_macros ON public_macros.id = macros.id AND '
+                     'public_macros.author_id = macros.author_id '
+                     'WHERE macros.author_id = ' + str(
+        current_user.id) + ' and public_macros.last_modified != macros.last_modified')
+    updated_macros = db.engine.execute(sql)
 
-    if db.session.bind.dialect.name[:5] == 'sqlit':
-        table_sql = text('SELECT * FROM random_table JOIN public_random_table ON public_random_table.id = random_table.id AND '
-                   'public_random_table.author_id = random_table.author_id '
-                   'WHERE random_table.author_id = ' + str(current_user.id) + ' and public_random_table.last_modified is NOT random_table.last_modified')
-
-        macro_sql = text('SELECT * FROM macros JOIN public_macros ON public_macros.id = macros.id AND '
-                   'public_macros.author_id = macros.author_id '
-                   'WHERE macros.author_id = ' + str(current_user.id) + ' and public_macros.last_modified is NOT macros.last_modified')
-
-        collection_sql = text('SELECT * FROM collection JOIN public_collection ON public_collection.id = collection.id AND '
-                   'public_collection.author_id = collection.author_id '
-                   'WHERE collection.author_id = ' + str(current_user.id) + ' and public_collection.last_modified is NOT collection.last_modified')
-    else:
-        table_sql = text(
-            'SELECT * FROM random_table JOIN public_random_table ON public_random_table.id = random_table.id AND '
-            'public_random_table.author_id = random_table.author_id '
-            'WHERE random_table.author_id = ' + str(
-                current_user.id) + ' and public_random_table.last_modified != random_table.last_modified')
-
-        macro_sql = text('SELECT * FROM macros JOIN public_macros ON public_macros.id = macros.id AND '
-                         'public_macros.author_id = macros.author_id '
-                         'WHERE macros.author_id = ' + str(
-            current_user.id) + ' and public_macros.last_modified != macros.last_modified')
-
-        collection_sql = text(
-            'SELECT * FROM collection JOIN public_collection ON public_collection.id = collection.id AND '
-            'public_collection.author_id = collection.author_id '
-            'WHERE collection.author_id = ' + str(
-                current_user.id) + ' and public_collection.last_modified != collection.last_modified')
-
-    updated_tables = db.engine.execute(table_sql)
-    updated_macros = db.engine.execute(macro_sql)
-    updated_collections = db.engine.execute(collection_sql)
+    sql = text(
+        'SELECT * FROM collection JOIN public_collection ON public_collection.id = collection.id AND '
+        'public_collection.author_id = collection.author_id '
+        'WHERE collection.author_id = ' + str(
+            current_user.id) + ' and public_collection.last_modified != collection.last_modified')
+    updated_collections = db.engine.execute(sql)
 
     return render_template('user.html', user=user, stats=stats,
                            shared_content=shared_content, shared_content_owned=shared_content_owned,
