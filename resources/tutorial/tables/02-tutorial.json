@@ -1,0 +1,15 @@
+{
+  "id": "tutorial-2-gems",
+  "name": "Tutorial 2 Gems",
+  "description": "Line Numbers are useful. You specify the  number followed by a double colon.\nThe numbers can be a range to give that entry more chance/weight\nIf all the entries on your Table have the same chance then you do not need to add numbers\nNote: You cannot mix lines with and without numbers in same Table\nIt's either line numbers or not\n",
+  "definition": [
+    "1::Diamond",
+    "2::Emerald",
+    "3-5::Topaz",
+    "6-8::Opal",
+    "9::Ruby",
+    "10::Sapphire",
+    "11-15::Amethyst",
+    "16-20::Garnet"
+  ]
+}

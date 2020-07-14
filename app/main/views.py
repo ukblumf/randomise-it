@@ -441,13 +441,13 @@ def create_story():
                            public_macros=public_macros, public_tables=public_tables)
 
 
-@main.route('/edit-story/<string:username>/<int:id>', methods=['GET', 'POST'])
+@main.route('/edit-story/<string:username>/<string:id>', methods=['GET', 'POST'])
 @login_required
 def edit_story(username, id):
     if current_user.username != username:
         abort(400)
 
-    story = Post.query.get_or_404(id)
+    story = Post.query.get_or_404(int(id))
     if current_user != story.author and not current_user.can(Permission.ADMINISTER):
         abort(403)
 

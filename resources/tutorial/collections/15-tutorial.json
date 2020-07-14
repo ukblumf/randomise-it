@@ -1,0 +1,13 @@
+{
+  "id": "tutorial-15-macros",
+  "name": "Tutorial 15 Macros Collection",
+  "description": "A list of our tutorial macros",
+  "definition": [
+    "<<USERNAME.macro.tutorial-6-first-macro>>",
+    "<<USERNAME.macro.tutorial-7-linking-macros-and-tables>>",
+    "<<USERNAME.macro.tutorial-8-chance>>",
+    "<<USERNAME.macro.tutorial-9-loops>>",
+    "<<USERNAME.macro.tutorial-10-if>>",
+    "<<USERNAME.macro.tutorial-11-choice>>"
+  ]
+}

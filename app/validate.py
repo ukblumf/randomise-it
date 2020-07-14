@@ -25,7 +25,7 @@ def check_table_definition_validity(table):
 
     if with_line_numbers and without_line_numbers:
         error_message = 'Table definition invalid, mixed line numbers on rows'
-        return 0, 0, False, 0, error_message
+        return 0, 0, False, 0, error_message, 0
 
     if without_line_numbers:
         table_line_type = 0

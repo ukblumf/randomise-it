@@ -1,0 +1,14 @@
+{
+  "id": "tutorial-1-colours",
+  "name": "Tutorial 1 Colours",
+  "description": "A list of colours, no lines numbers are present. Each item on a separate line. Give it a try",
+  "definition": [
+    "Black",
+    "Blue",
+    "Red",
+    "Green",
+    "White",
+    "Yellow",
+    "Orange"
+  ]
+}

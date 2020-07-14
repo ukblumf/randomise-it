@@ -1,0 +1,14 @@
+{
+  "id": "tutorial-3-generating-numbers",
+  "name": "Tutorial 3 - Generating Numbers",
+  "description": "Generating numbers, note the number generators are surrounded by double brackets",
+  "definition": [
+    "Dice notation - <number of dice>d<die type>: ((2d4)), ((3d6)), ((1d20))",
+    "Range - <low range>-<high range>: ((1-10)), ((13-24)), ((1-100))",
+    "Dice notation and multiplier - <number of dice>d<die type>x<multiplier>:  ((3d6x10)), ((1d12x100))",
+    "Dice notation and addition - <number of dice>d<die type>+<add>: ((2d4+2)), ((3d6+4))",
+    "Dice notation and subtraction - <number of dice>d<die type>-<subtract>: ((4d4-1)), ((3d6-2))",
+    "Range and multiplier - <low range>-<high range>x<multiplier>: ((1-10x100)), ((3-18x10))",
+    "Dice chain, e.g ((1d6+1d4+1)), ((3d6+2d8-2)), ((6+1d6+1d8-2))"
+  ]
+}

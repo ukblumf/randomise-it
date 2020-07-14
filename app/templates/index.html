@@ -190,6 +190,7 @@
                 $.ajax({
                     url: url, success: function (result) {
                         result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
+                        result = result.replace(/</g, '&lt;')
                         $("#preview-panel").html(result);
                     }
                 });

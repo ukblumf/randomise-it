@@ -1,0 +1,13 @@
+{
+  "id": "tutorial-16-tables-and-macros",
+  "name": "Tutorial 16 Tables and Macros",
+  "description": "A list of our tutorial tables with the macros collections",
+  "definition": [
+    "<<USERNAME.table.tutorial-1-colours>>",
+    "<<USERNAME.table.tutorial-2-gems>>",
+    "<<USERNAME.table.tutorial-3-generating-numbers>>",
+    "<<USERNAME.table.tutorial-4-linking-tables>>",
+    "<<USERNAME.table.tutorial-5-linking-tables-advanced>>",
+    "<<USERNAME.collection.tutorial-15-macros>>"
+  ]
+}

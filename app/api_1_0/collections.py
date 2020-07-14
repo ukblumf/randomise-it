@@ -35,7 +35,7 @@ def get_collection(id):
     return jsonify(collection.to_json())
 
 
-@api.route('/colleciton/', methods=['POST'])
+@api.route('/collection/', methods=['POST'])
 @permission_required(Permission.WRITE_ARTICLES)
 def new_collection():
     collection = Collection.from_json(request.json)

@@ -1,0 +1,5 @@
+{
+  "id": "tutorial-8-chance",
+  "name": "Tutorial 8 - % Chance",
+  "definition": "20% chance of having a gem - <<20% USERNAME.table.tutorial-2-gems>>\n50% chance of seeing the colour - <<50% USERNAME.table.tutorial-1-colours>>\n"
+}

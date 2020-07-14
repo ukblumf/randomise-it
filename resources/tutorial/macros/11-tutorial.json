@@ -1,0 +1,5 @@
+{
+  "id": "tutorial-11-choice",
+  "name": "Tutorial 11 - Choice",
+  "definition": "Usable within macros and tables\n[[CHOICE:Nothing here:((1d20x<<USERNAME.table.tutorial-2-gems>>)):A <<USERNAME.table.tutorial-1-colours>> cow, standing next to a <<USERNAME.table.tutorial-1-colours>> beanstalk.]]\n\nCHOICE is followed by a number of colon separated options. One of which will be picked.\n"
+}

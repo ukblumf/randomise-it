@@ -1,0 +1,5 @@
+{
+  "id": "tutorial-10-if",
+  "name": "Tutorial 10 - IF",
+  "definition": "IFs are used with the chance %\n[[IF:25%:Then something happens, can also link to tables and macros]]\n"
+}
