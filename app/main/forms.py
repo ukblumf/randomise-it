@@ -21,13 +21,13 @@ class EditProfileForm(FlaskForm):
 
 
 class EditProfileAdminForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Length(1, 64), Email()])
+    email = StringField('Email', validators=[DataRequired(), Length(1, 254), Email()])
     username = StringField('Username', validators=[
-        DataRequired(), Length(1, 64), Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
-                                              'UserNames must have only letters, numbers, dots or underscores')])
+        DataRequired(), Length(1, 32), Regexp('^[A-Za-z][A-Za-z0-9_]*$', 0,
+                                              'UserNames must have only letters, numbers, underscores')])
     confirmed = BooleanField('Confirmed')
     role = SelectField('Role', coerce=int)
-    name = StringField('Real name', validators=[Length(0, 64)])
+    name = StringField('Real name', validators=[Length(0, 128)])
     location = StringField('Location', validators=[Length(0, 64)])
     about_me = TextAreaField('About me')
     submit = SubmitField('Submit')
@@ -97,7 +97,7 @@ class CollectionForm(FlaskForm):
 
 
 class TagForm(FlaskForm):
-    tag_id = StringField('Tag ID', validators=[Length(0, 64)])
+    tag_id = StringField('Tag ID', validators=[Length(0, 50)])
     submit = SubmitField('Save')
 
 

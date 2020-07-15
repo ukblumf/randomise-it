@@ -33,6 +33,10 @@ $(document).ready(function(){
 
   id_form_field.blur(function() {
     if ( id_form_field.val() ) {
+        if (id_form_field.val().length >50) {
+            alert('Tag too long (50 chars max)');
+            return;
+        }
         var id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
 
         $.ajax({url: id_exists_url, success: function(result){
