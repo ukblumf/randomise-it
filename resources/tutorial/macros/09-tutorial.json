@@ -1,5 +1,5 @@
 {
   "id": "tutorial-9-loops",
   "name": "Tutorial 9 - Loops",
-  "definition": "[[LOOP:tutorial]]\nA <<USERNAME.table.tutorial-1-colours>> <<USERNAME.table.tutorial-2-gems>>\n[[ENDLOOP:tutorial:5]]\n\nBreaking that down the 'LOOP:tutorial' represents the start of the loop and the loop name.\nthe 'ENDLOOP:tutorial:5' represents the end of the loop for that variable and the maximum number of\niterations. Each loop will do at least one pass.\n"
+  "definition": "[[LOOP:tutorial]]\nA <<USERNAME.table.tutorial-1-colours>> <<USERNAME.table.tutorial-2-gems>>\n[[ENDLOOP:tutorial=5]]"
 }

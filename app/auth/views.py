@@ -169,6 +169,7 @@ def create_tutorial():
         with open(file) as f:
             data = json.load(f)
             data['pins'] = data['pins'].replace('USERNAME', current_user.username)
+            data['body'] = data['body'].replace('USERNAME', current_user.username)
         story = Post(id=int(data['id']),
                      body=data['body'],
                      title=data['title'],

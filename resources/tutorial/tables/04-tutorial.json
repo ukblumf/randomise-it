@@ -3,8 +3,8 @@
   "name": "Tutorial 4 Linking tables",
   "description": "What's the fun of random tables unless you can start linking them together.",
   "definition": [
-    "My favourite colour is <<USERNAME.table.tutorial-1-colours>>",
-    "My favourite gems are  ((2-5x<<USERNAME.table.tutorial-2-gems>>))",
-    "Pick a <<USERNAME.table.tutorial-3-generating-numbers>> number"
+    "<<USERNAME.table.tutorial-1-colours>> is my favourite colour",
+    "My favourite gem is a <<USERNAME.table.tutorial-2-gems>>",
+    "The numbers <<USERNAME.table.tutorial-3-generating-numbers>> are the code to the safe"
   ]
 }

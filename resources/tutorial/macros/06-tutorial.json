@@ -1,5 +1,5 @@
 {
   "id": "tutorial-6-first-macro",
   "name": "Tutorial 6 First Macro",
-  "definition": "You are in front of a <<USERNAME.table.tutorial-1-colours>> house, upon the door is knocker\ninset with a large <<USERNAME.table.tutorial-2-gems>>.\nThere are ((2d6)) windows scattered across the frontage.\nFrom within a voice can be heard reciting numbers - \"<<USERNAME.table.tutorial-3-generating-numbers>>\"\n"
+  "definition": "a <<USERNAME.table.tutorial-1-colours>> house, upon the door is a knocker inset with a large <<USERNAME.table.tutorial-2-gems>>.\nThere are ((2d4)) windows scattered across the frontage.\nFrom with a voice can be heard reciting numbers - \"<<USERNAME.table.tutorial-3-generating-numbers>>\"\n"
 }

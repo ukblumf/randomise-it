@@ -1,5 +1,5 @@
 {
   "id": "tutorial-7-linking-macros-and-tables",
   "name": "Tutorial 7 - Linking Macros and Tables",
-  "definition": "A cluster of strange houses - ((1d6x<<USERNAME.macro.tutorial-6-first-macro>>))\nThe road that leads to them is coloured ((3-4x<<USERNAME.table.tutorial-1-colours>>))\n"
+  "definition": "The first house your meet is <<USERNAME.macro.tutorial-6-first-macro>>\nThe road that leads to it is coloured ((3-4x<<USERNAME.table.tutorial-1-colours>>)).\nBeyond are ((2d6)) more houses of similar design."
 }
