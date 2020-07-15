@@ -101,8 +101,8 @@ def create_tutorial():
             filter(Collection.author_id == current_user.id)
         if deleted_coll:
             deleted_coll.delete()
-    for s in (-1, -2, -3):
-        deleted_story = db.session.query(Post).filter(Post.id == s). \
+    for s in ("Tutorial - READ ME FIRST", "Tutorial - Stories", "Tutorial - Sharing and Discovering Content"):
+        deleted_story = db.session.query(Post).filter(Post.title == s). \
             filter(Post.author_id == current_user.id)
         if deleted_story:
             deleted_story.delete()
@@ -170,8 +170,7 @@ def create_tutorial():
             data = json.load(f)
             data['pins'] = data['pins'].replace('USERNAME', current_user.username)
             data['body'] = data['body'].replace('USERNAME', current_user.username)
-        story = Post(id=int(data['id']),
-                     body=data['body'],
+        story = Post(body=data['body'],
                      title=data['title'],
                      pins=data['pins'],
                      author_id=current_user.id)
