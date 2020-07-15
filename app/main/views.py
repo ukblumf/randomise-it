@@ -448,7 +448,7 @@ def edit_story(username, id):
         abort(400)
 
     story = Post.query.get_or_404(int(id))
-    if current_user != story.author and not current_user.can(Permission.ADMINISTER):
+    if current_user.id != story.author_id and not current_user.can(Permission.ADMINISTER):
         abort(403)
 
     form = StoryForm()
