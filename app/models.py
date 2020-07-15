@@ -322,7 +322,7 @@ def load_user(user_id):
 
 class Post(db.Model):
     __tablename__ = 'posts'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.Text)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
