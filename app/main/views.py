@@ -26,7 +26,7 @@ ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
 non_url_safe = ['"', '#', '$', '%', '&', '+',
                 ',', '/', ':', ';', '=', '?',
                 '@', '[', '\\', ']', '^', '`',
-                '{', '|', '}', '~', "'"]
+                '{', '|', '}', '~', "'", "."]
 translate_table = {ord(char): u'' for char in non_url_safe}
 
 
