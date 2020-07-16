@@ -376,6 +376,11 @@ def bulk_table_import():
         for line in table_lines:
             if not new_table:
                 new_table = line
+                if len(new_table) > 160:
+                    flash("Table name '" + new_table_id + "' too long. Max Length 160 characters. Bulk import cancelled.")
+                    db.session.rollback()
+                    error_on_import = True
+                    break
                 new_table_id = slugify(line.lower())
                 if len(new_table_id) > 128:
                     flash("Table id '" + new_table_id + "' too long. Max Length 128 characters. Bulk import cancelled.")
