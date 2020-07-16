@@ -30,11 +30,11 @@ non_url_safe = ['"', '#', '$', '%', '&', '+',
 translate_table = {ord(char): u'' for char in non_url_safe}
 
 
-def slugify(text):
-    text = text.translate(translate_table)
-    text = u'-'.join(text.split())
-    text = re.sub('--+', '-', text)
-    return text
+def slugify(slug_text):
+    slug_text = slug_text.translate(translate_table)
+    slug_text = u'-'.join(slug_text.split())
+    slug_text = re.sub('--+', '-', slug_text)
+    return slug_text
 
 
 @main.after_app_request
@@ -377,6 +377,11 @@ def bulk_table_import():
             if not new_table:
                 new_table = line
                 new_table_id = slugify(line.lower())
+                if len(new_table_id) > 128:
+                    flash("Table id '" + new_table_id + "' too long. Max Length 128 characters. Bulk import cancelled.")
+                    db.session.rollback()
+                    error_on_import = True
+                    break
                 if not RandomTable.query.get([new_table_id, current_user.id]):
                     continue
                 else:
