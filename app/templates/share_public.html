@@ -128,15 +128,15 @@
                 [, id_type, reference_id] = ref_id.split(".");
             }
 
-            if (id_type == 'collection' && $("#collections_shared").val().indexOf(reference_id) == -1) {
+            if (id_type == 'collection' && $("#collections_shared").val().indexOf(reference_id + " ") == -1) {
                 $("#shared-collections").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + ref_id + "' id='" + ref_id + "'>" + ref_id + "</li>");
                 $("#collections_shared").val($("#collections_shared").val() + reference_id + " ");
                 addDependentReferences(collections[ref_id], ref_id);
-            } else if (id_type == 'macro' && $("#macros_shared").val().indexOf(reference_id) == -1) {
+            } else if (id_type == 'macro' && $("#macros_shared").val().indexOf(reference_id + " ") == -1) {
                 $("#shared-macros").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + ref_id + "' id='" + ref_id + "'>" + ref_id + "</li>");
                 $("#macros_shared").val($("#macros_shared").val() + reference_id + " ");
                 addDependentReferences(macros[ref_id], ref_id);
-            } else if (id_type == 'table' && $("#tables_shared").val().indexOf(reference_id) == -1) {
+            } else if (id_type == 'table' && $("#tables_shared").val().indexOf(reference_id + " ") == -1) {
                 $("#shared-tables").append("<li class='list-group-item btn' onclick='removeId(this)' data-parentid='" + ref_id + "' id='" + ref_id + "'>" + ref_id + "</li>");
                 $("#tables_shared").val($("#tables_shared").val() + reference_id + " ");
                 addDependentReferences(tables[ref_id], ref_id);
@@ -171,7 +171,7 @@
             });
 
             function updateLists(full_id, reference_id, parentId, displayList, hiddenList) {
-                if (hiddenList.val().indexOf(reference_id) == -1) {
+                if (hiddenList.val().indexOf(reference_id + " ") == -1) {
                     displayList.append("<li class='list-group-item disabled' data-parentid='" + parentId + "' id='" + full_id + "'>" + reference_id + "</li>");
                     hiddenList.val(hiddenList.val() + reference_id + " ");
                 }
