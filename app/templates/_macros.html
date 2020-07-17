@@ -3,6 +3,8 @@
         <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
             <a href="
 
+
+
                     {% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
                 &laquo;
             </a>
@@ -25,21 +27,21 @@
         <li{% if not pagination.has_next %} class="disabled"{% endif %}>
             <a href="
 
-                    {% if pagination.has_next %}{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
-                &raquo;
-            </a>
+                    {% if pagination.has_next %}{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">&raquo;</a>
         </li>
     </ul>
 {% endmacro %}
 
 {% macro list_rows_in_table_header(name, current_user) %}
-    <input class="form-control" id="{{ name }}Filter" type="text" placeholder="Search..">
-    <table class="table table-striped table-bordered fixed_header">
+    <table class="table table-striped table-bordered" id="{{ name }}DataTable">
     <thead>
     <tr>
-        <th>Name</th>
+        <th>{{ name[0]|upper}}{{name[1:] }}</th>
         {% if current_user.is_authenticated %}
-            <th>Edit</th>
+            {% if name != 'story' %}
+                <th>Tag</th>
+                <th>Edit</th>
+            {% endif %}
         {% endif %}
     </tr>
     </thead>
@@ -48,35 +50,35 @@
 
 {% macro list_rows_in_table(name, items, current_user) %}
     {% for item in items %}
-        <tr {% if item.tags is defined %}data-tag="{{ item.tags }}"{% endif %}>
+        <tr>
             {% if item.name is defined %}
                 <td>{% if name == 'table' %}
-                    <button id="get-random-value"
+                    <button id="get-random-value" class="btn btn-primary btn-sm"
                             value="{{ url_for('.get_random_value', username=current_user.username, id=item.id) }}"
                             data-modifier="{{ item.modifier_name }}">
                 {% elif name == 'macro' %}
-                    <button id="get-macro-value"
+                    <button id="get-macro-value" class="btn btn-primary btn-sm"
                             value="{{ url_for('.get_macro', username=current_user.username, id=item.id) }}">
                 {% endif %}
                     {{ item.name }}{% if item.row_count is defined %}
-                        <small class="text-muted">({{ item.row_count }})</small> {% endif %}
+                        <small class="text-dark">({{ item.row_count }})</small> {% endif %}
                     {% if name in ['table', 'macro'] %}
                         </button>
                     {% endif %}
                 </td>
+                <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
                 {% if current_user.is_authenticated %}
                     <td>
-                        <button onclick="window.location='{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}';">
+                        <a href="{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}"
+                           class="btn btn-warning" role="button">
                             Edit
-                        </button>
+                        </a>
                     </td>
                 {% endif %}
             {% else %}
-                <td>{{ item.title }}</td>
                 <td>
-                    <button onclick="window.location='{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}';">
-                        Edit
-                    </button>
+                    <a href="{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}"
+                       class="btn btn-warning" role="button">{{ item.title }}</a>
                 </td>
             {% endif %}
         </tr>
@@ -97,19 +99,20 @@
         {% endif %}>
             <td>
                 {% if name == 'table' %}
-                    <button id="get-random-value"
+                    <button id="get-random-value" class="btn btn-primary btn-sm"
                             value="{{ url_for('.get_random_value', username=item.original_author.username, id=item.table_id) }}"
                             data-modifier="{{ item.public_table.modifier_name }}">
                         {{ item.public_table.name }} <small
-                            class="text-muted">({{ item.public_table.row_count }})</small>
+                            class="text-dark">({{ item.public_table.row_count }})</small>
                     </button>
                 {% elif name == 'macro' %}
-                    <button id="get-macro-value"
+                    <button id="get-macro-value" class="btn btn-primary btn-sm"
                             value="{{ url_for('.get_macro', username=item.original_author.username, id=item.macro_id) }}">
                         {{ item.public_macro.name }}
                     </button>
                 {% endif %}
             </td>
+            <td></td>
             <td>public</td>
         </tr>
     {% endfor %}

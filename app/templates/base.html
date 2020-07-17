@@ -8,6 +8,7 @@
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap.min.css">
 
     <script>
         function slugify(string) {
@@ -98,17 +99,13 @@
 
 {% block content %}
     <div class="container-fluid">
-        {% for message in get_flashed_messages() %}
-            <div class="alert alert-warning">
+        {% for message in get_flashed_messages() %}<div class="alert alert-warning">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 {{ message }}
-            </div>
-        {% endfor %}
-
+            </div>{% endfor %}
         {% block page_content %}{% endblock %}
     </div>
 {% endblock %}
-
 {% block scripts %}
     {{ super() }}
     {{ moment.include_moment() }}
