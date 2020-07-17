@@ -1143,9 +1143,21 @@ def share_public():
             flash('Content Shared')
             return redirect(url_for('.share_public'))
 
-    collection_list = collection_query()
-    macros = macro_query()
-    tables = table_query()
+    collection_list = Collection.query. \
+        filter(Collection.author_id == current_user.id). \
+        filter(Collection.id.notin_(('tutorial-15-macros', 'tutorial-16-tables-and-macros'))). \
+        order_by(Collection.timestamp.desc())
+    macros = Macros.query. \
+        filter(Macros.author_id == current_user.id). \
+        filter(Macros.id.notin_(('tutorial-6-first-macro', 'tutorial-7-linking-macros-and-tables', 'tutorial-8-chance',
+                                'tutorial-9-loops', 'tutorial-10-if', 'tutorial-11-choice'))). \
+        order_by(Macros.timestamp.desc())
+    tables = RandomTable.query. \
+        filter(RandomTable.author_id == current_user.id). \
+        filter(RandomTable.id.notin_(('tutorial-1-colours', 'tutorial-2-gems', 'tutorial-3-generating-numbers',
+                                     'tutorial-4-linking-tables', 'tutorial-5-linking-tables-advanced'))). \
+        order_by(RandomTable.timestamp.desc())
+
     tags = tag_query()
     shared_public_tables = db.session.query(PublicRandomTable.id).filter(
         PublicRandomTable.author_id == current_user.id)
