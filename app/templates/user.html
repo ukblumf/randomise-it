@@ -248,11 +248,12 @@
         }
 
         function refreshSharedItem(selectedElement) {
-            if (confirm('Please confirm you want to refresh ' + selectedElement.data('title'))) {
+            // if (confirm('Please confirm you want to refresh ' + selectedElement.data('title'))) {
                 const url = "{{ url_for('.refresh_shared_content', id='') }}" + selectedElement.attr('id');
                 $.ajax({
                     type: "POST",
                     url: url, title: selectedElement, success: function (result) {
+                        /*
                         $('<div></div>')
                             .html("<h4>Refreshed Content</h4>")
                             .dialog({
@@ -264,13 +265,14 @@
                                     }
                                 }
                             });
+                         */
                         selectedElement.prop('disabled', true);
                     },
                     error: function (result) {
                         alert(JSON.stringify(result));
                     }
                 });
-            }
+            // }
         }
     </script>
 {% endblock %}

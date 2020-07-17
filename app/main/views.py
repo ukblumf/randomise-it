@@ -94,8 +94,8 @@ def user(username):
     updated_tables = db.engine.execute(sql)
 
     sql = text('SELECT * FROM macros JOIN public_macros ON public_macros.id = macros.id AND '
-                     'public_macros.author_id = macros.author_id '
-                     'WHERE macros.author_id = ' + str(
+               'public_macros.author_id = macros.author_id '
+               'WHERE macros.author_id = ' + str(
         current_user.id) + ' and public_macros.last_modified != macros.last_modified')
     updated_macros = db.engine.execute(sql)
 
@@ -377,7 +377,8 @@ def bulk_table_import():
             if not new_table:
                 new_table = line
                 if len(new_table) > 160:
-                    flash("Table name '" + new_table_id + "' too long. Max Length 160 characters. Bulk import cancelled.")
+                    flash(
+                        "Table name '" + new_table_id + "' too long. Max Length 160 characters. Bulk import cancelled.")
                     db.session.rollback()
                     error_on_import = True
                     break
@@ -979,7 +980,6 @@ def delete_shared_content(public_id):
 @main.route('/refresh-shared-content/<string:id>', methods=['POST'])
 @login_required
 def refresh_shared_content(id):
-
     username, id_type, reference_id = split_id(id)
     if username != current_user.username:
         abort(403)
@@ -1092,7 +1092,8 @@ def share_public():
                                                   tags=c.tags,
                                                   author_id=current_user.id,
                                                   permissions=ProductPermission.PUBLIC,
-                                                  announcement_id=announcement.id)
+                                                  announcement_id=announcement.id,
+                                                  last_modified=c.last_modified)
                             db.session.add(pc)
             if public_macros != ['']:
                 for m_id in public_macros:
@@ -1110,7 +1111,8 @@ def share_public():
                                               tags=m.tags,
                                               author_id=current_user.id,
                                               permissions=ProductPermission.PUBLIC,
-                                              announcement_id=announcement.id)
+                                              announcement_id=announcement.id,
+                                              last_modified=m.last_modified)
                             db.session.add(pm)
             if public_tables != ['']:
                 for t_id in public_tables:
@@ -1134,7 +1136,8 @@ def share_public():
                                                     line_type=t.line_type,
                                                     row_count=t.row_count,
                                                     announcement_id=announcement.id,
-                                                    modifier_name=t.modifier_name)
+                                                    modifier_name=t.modifier_name,
+                                                    last_modified=t.last_modified)
                             db.session.add(prt)
             db.session.commit()
             flash('Content Shared')
