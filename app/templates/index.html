@@ -11,9 +11,9 @@
     </div>
     <div class="panel panel-default" id="info-panel">
         <div class="panel-heading">The wonderful world of Imagination driven by Randomness
-        <button type="button" class="close pull-right" id="info-panel-close">
-            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-        </button>
+            <button type="button" class="close pull-right" id="info-panel-close">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+            </button>
         </div>
         <div class="panel-body">At The Randomist we want to harness the power of randomness to drive creativity, that
             weird juxtaposition of concepts that spark an idea. That unusual hint that gets you to the next level in
@@ -181,31 +181,35 @@
 
             $("button#get-random-value").click(function () {
                 let url = $(this).val()
+                const [ignore, username, id_type, id] = $(this).val().split("/");
                 if ($(this).data('modifier') && $(this).data('modifier') != 'None') {
-                    const modifier = prompt($(this).data('modifier'),"0");
+                    const modifier = prompt($(this).data('modifier'), "0");
                     if (modifier != null && !isNaN(modifier)) {
                         url += '?modifier=' + modifier;
                     }
                 }
                 $.ajax({
-                    url: url, success: function (result) {
+                    url: url, reference_id: id, success: function (result) {
                         result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
                         result = result.replace(/</g, '&lt;')
-                        $("#preview-panel").html(result);
+                        const el = '<div><small class="text-muted">' + this.reference_id + '</small><p>' + result + '</p></div>';
+                        $("#preview-panel").prepend(el);
                     }
                 });
             });
             $("button#get-macro-value").click(function () {
+                const [ignore, username, id_type, id] = $(this).val().split("/");
                 $.ajax({
-                    url: $(this).val(), success: function (result) {
+                    url: $(this).val(), reference_id: id, success: function (result) {
                         result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
-                        $("#preview-panel").html(result);
+                         const el = '<div><small class="text-muted">' + this.reference_id + '</small><p>' + result + '</p></div>';
+                        $("#preview-panel").prepend(el);
                     }
                 });
             });
             $("button#info-panel-close").click(function () {
                 $("#info-panel").remove();
-                Cookies.set("info-panel-close",'y')
+                Cookies.set("info-panel-close", 'y')
             });
 
         });

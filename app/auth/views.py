@@ -1,16 +1,19 @@
+import glob
+import json
+import os
+
 from flask import render_template, redirect, request, url_for, flash, current_app
 from flask_login import login_user, logout_user, login_required, \
     current_user
+
 from . import auth
-from .. import db
-from ..models import User
-from ..email import send_email
 from .forms import LoginForm, RegistrationForm, ChangePasswordForm, \
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
-import glob, os
-import json
+from .. import db
+from ..email import send_email
 from ..models import RandomTable, Macros, Collection, Post, Tags
-from ..validate import check_table_definition_validity, validate_text, validate_collection
+from ..models import User
+from ..validate import check_table_definition_validity
 
 
 @auth.before_app_request
