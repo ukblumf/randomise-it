@@ -23,6 +23,10 @@
             </div>
             <div class="col-md-4">
                 {{ macros.tag_filter(tags) }}
+                {% if is_public %}
+                    <button class="btn btn-info" onclick="embedCode();">Embed Macro
+                {% endif %}
+                </button>
                 {% if macro_id %}
                     <button class="btn btn-danger pull-right" onclick="confirmDelete();">DELETE
                         MACRO
@@ -85,6 +89,27 @@
                     }
                 });
             }
+        }
+
+        function embedCode() {
+            $('<div></div>')
+                .html('<div class="well well-sm"><textarea id="embed-macro" rows="4" cols="40">&lt;embed src="' + window.location.origin + '/macro/{{ current_user.username }}/' + $("#macro_id").val() + '"/></textarea></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Embed Macro',
+                    buttons: {
+                        Copy: function (event) {
+                            const copyText = $("#embed-macro");
+                            copyText.select();
+                            if (typeof copyText.setSelectionRange === "function") {
+                                copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+                            }
+                            document.execCommand('copy')
+                            $(this).dialog("close");
+                            $(this).remove();
+                        }
+                    }
+                });
         }
 
         $(document).ready(function () {

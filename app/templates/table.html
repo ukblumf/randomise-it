@@ -13,10 +13,15 @@
                 </div>
                 <div class="col-md-4">
                     {{ macros.tag_filter(tags) }}
+                    {% if is_public %}
+                        <button class="btn btn-info" onclick="embedCode();">Embed Table
+                    {% endif %}
+                    </button>
                     {% if table_id %}
                         <button class="btn btn-danger pull-right" onclick="confirmDelete();">DELETE
                             TABLE
                         </button>
+
                     {% endif %}
                     <h4>Macros</h4>
                     {{ macros.list_rows_in_ul_header('macro') }}
@@ -78,6 +83,26 @@
             }
         }
 
+        function embedCode() {
+            $('<div></div>')
+                .html('<div class="well well-sm"><textarea id="embed-table" rows="4" cols="40">&lt;embed src="' + window.location.origin + '/random-value/{{ current_user.username }}/' + $("#table_id").val() + '"/></textarea></div>')
+                .dialog({
+                    modal: true,
+                    title: 'Embed Table',
+                    buttons: {
+                        Copy: function (event) {
+                            const copyText = $("#embed-table");
+                            copyText.select();
+                            if (typeof copyText.setSelectionRange === "function") {
+                                copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+                            }
+                            document.execCommand('copy')
+                            $(this).dialog("close");
+                            $(this).remove();
+                        }
+                    }
+                });
+        }
 
         $(document).ready(function () {
             function filterList(list, filter, tag) {

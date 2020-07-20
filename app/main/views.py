@@ -354,9 +354,12 @@ def edit_table(username, id):
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
+    is_public = db.session.query(PublicRandomTable).filter(PublicRandomTable.author_id == current_user.id).filter(
+        PublicRandomTable.id == id).first() is not None
+
     return render_template('table.html', tables=tables, macro_list=macros, form=form, tags=tags,
                            public_tables=public_tables, public_macros=public_macros,
-                           public_collections=public_collections, username=username, table_id=id)
+                           public_collections=public_collections, username=username, table_id=id, is_public=is_public)
 
 
 @main.route('/bulk-table-import', methods=['GET', 'POST'])
@@ -562,10 +565,13 @@ def edit_macro(username, id):
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
+    is_public = db.session.query(PublicMacros).filter(PublicMacros.author_id == current_user.id).filter(
+        PublicMacros.id == id).first() is not None
+
     return render_template('macro.html', form=form, macro_list=macros, tables=tables, edit_macro=macro,
                            form_type='macro', tags=tags,
                            public_tables=public_tables, public_macros=public_macros,
-                           public_collections=public_collections, username=username, macro_id=id)
+                           public_collections=public_collections, username=username, macro_id=id, is_public=is_public)
 
 
 @main.route('/macro/<string:username>/<string:id>', methods=['GET'])
@@ -579,6 +585,7 @@ def get_macro(username, id):
 
 
 @main.route('/preview-macro', methods=['POST'])
+@login_required
 def preview_macro():
     macro = request.form['macro'].replace('\n', '<br/>')
     if macro:
@@ -1150,12 +1157,12 @@ def share_public():
     macros = Macros.query. \
         filter(Macros.author_id == current_user.id). \
         filter(Macros.id.notin_(('tutorial-6-first-macro', 'tutorial-7-linking-macros-and-tables', 'tutorial-8-chance',
-                                'tutorial-9-loops', 'tutorial-10-if', 'tutorial-11-choice'))). \
+                                 'tutorial-9-loops', 'tutorial-10-if', 'tutorial-11-choice'))). \
         order_by(Macros.timestamp.desc())
     tables = RandomTable.query. \
         filter(RandomTable.author_id == current_user.id). \
         filter(RandomTable.id.notin_(('tutorial-1-colours', 'tutorial-2-gems', 'tutorial-3-generating-numbers',
-                                     'tutorial-4-linking-tables', 'tutorial-5-linking-tables-advanced'))). \
+                                      'tutorial-4-linking-tables', 'tutorial-5-linking-tables-advanced'))). \
         order_by(RandomTable.timestamp.desc())
 
     tags = tag_query()
