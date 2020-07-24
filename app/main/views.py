@@ -9,7 +9,7 @@ from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, TableForm, StoryForm, MacroForm, \
     CollectionForm, TagForm, MarketForm, BulkTableImportForm, Share
 from .. import db
-from ..models import Permission, Role, User, Post, Comment, RandomTable, Macros, ProductPermission, Collection, Tags, \
+from ..models import Permission, Role, User, Post, RandomTable, Macros, ProductPermission, Collection, Tags, \
     MarketPlace, MarketCategory
 from ..public_models import *
 from ..decorators import admin_required, permission_required
