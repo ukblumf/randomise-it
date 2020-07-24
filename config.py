@@ -14,12 +14,11 @@ class Config:
     MAIL_SERVER = 'smtp.fastmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_SUPPRESS_SEND = os.environ.get('MAIL_SUPPRESS_SEND')
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     RANDOMIST_MAIL_SUBJECT_PREFIX = '[The Randomist]'
     RANDOMIST_MAIL_SENDER = 'random_admin@randomist.io'
-    RANDOMIST_ADMIN = os.environ.get('RANDOMIST_ADMIN')
+    RANDOMIST_ADMIN = os.getenv('RANDOMIST_ADMIN')
     RANDOMIST_POSTS_PER_PAGE = 20
     RANDOMIST_FOLLOWERS_PER_PAGE = 50
     RANDOMIST_COMMENTS_PER_PAGE = 30
