@@ -11,13 +11,13 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_RECORD_QUERIES = True
-    MAIL_SERVER = 'smtp.googlemail.com'
+    MAIL_SERVER = 'smtp.fastmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     RANDOMIST_MAIL_SUBJECT_PREFIX = '[The Randomist]'
-    RANDOMIST_MAIL_SENDER = 'Blumf <neil.blumfield@gmail.com>'
+    RANDOMIST_MAIL_SENDER = 'random_admin@randomist.io'
     RANDOMIST_ADMIN = os.environ.get('RANDOMIST_ADMIN')
     RANDOMIST_POSTS_PER_PAGE = 20
     RANDOMIST_FOLLOWERS_PER_PAGE = 50
