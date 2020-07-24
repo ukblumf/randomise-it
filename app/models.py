@@ -143,13 +143,13 @@ class User(UserMixin, db.Model):
             except IntegrityError:
                 db.session.rollback()
 
-    @staticmethod
-    def add_self_follows():
-        for user in User.query.all():
-            if not user.is_following(user):
-                user.follow(user)
-                db.session.add(user)
-                db.session.commit()
+    # @staticmethod
+    # def add_self_follows():
+    #     for user in User.query.all():
+    #         if not user.is_following(user):
+    #             user.follow(user)
+    #             db.session.add(user)
+    #             db.session.commit()
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -161,7 +161,6 @@ class User(UserMixin, db.Model):
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(
                 self.email.encode('utf-8')).hexdigest()
-        self.followed.append(Follow(followed=self))
 
     @property
     def password(self):
@@ -250,28 +249,28 @@ class User(UserMixin, db.Model):
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
             url=url, hash=hash, size=size, default=default, rating=rating)
 
-    def follow(self, user):
-        if not self.is_following(user):
-            f = Follow(follower=self, followed=user)
-            db.session.add(f)
+    # def follow(self, user):
+    #     if not self.is_following(user):
+    #         f = Follow(follower=self, followed=user)
+    #         db.session.add(f)
+    #
+    # def unfollow(self, user):
+    #     f = self.followed.filter_by(followed_id=user.id).first()
+    #     if f:
+    #         db.session.delete(f)
+    #
+    # def is_following(self, user):
+    #     return self.followed.filter_by(
+    #         followed_id=user.id).first() is not None
+    #
+    # def is_followed_by(self, user):
+    #     return self.followers.filter_by(
+    #         follower_id=user.id).first() is not None
 
-    def unfollow(self, user):
-        f = self.followed.filter_by(followed_id=user.id).first()
-        if f:
-            db.session.delete(f)
-
-    def is_following(self, user):
-        return self.followed.filter_by(
-            followed_id=user.id).first() is not None
-
-    def is_followed_by(self, user):
-        return self.followers.filter_by(
-            follower_id=user.id).first() is not None
-
-    @property
-    def followed_posts(self):
-        return Post.query.join(Follow, Follow.followed_id == Post.author_id) \
-            .filter(Follow.follower_id == self.id)
+    # @property
+    # def followed_posts(self):
+    #     return Post.query.join(Follow, Follow.followed_id == Post.author_id) \
+    #         .filter(Follow.follower_id == self.id)
 
     def to_json(self):
         json_user = {
@@ -280,8 +279,6 @@ class User(UserMixin, db.Model):
             'member_since': self.member_since,
             'last_seen': self.last_seen,
             'posts': url_for('api.get_user_posts', id=self.id, _external=True),
-            'followed_posts': url_for('api.get_user_followed_posts',
-                                      id=self.id, _external=True),
             'post_count': self.posts.count()
         }
         return json_user
