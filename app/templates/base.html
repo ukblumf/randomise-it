@@ -84,6 +84,7 @@
                             </ul>
                         </li>
                     {% else %}
+                        <li><a id='register' href="{{ url_for('auth.register') }}">Register</a></li>
                         <li><a id='login' href="{{ url_for('auth.login') }}">Log In</a></li>
                     {% endif %}
                 </ul>
