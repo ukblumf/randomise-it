@@ -159,34 +159,45 @@
                 $("#info-panel").remove();
                 Cookies.set("info-panel-close", 'y')
             });
-
             $('#storyDataTable').DataTable({
                 scrollY: "320px",
                 scrollCollapse: true,
                 pageLength: 25,
                 lengthChange: false,
-                dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+                dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                language: {
+                    "emptyTable": "no stories yet"
+                }
             });
             let table_datatable = $('#tableDataTable').DataTable({
                 scrollY: "320px",
                 scrollCollapse: true,
                 pageLength: 25,
                 lengthChange: false,
-                dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+                dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                language: {
+                    "emptyTable": "no tables"
+                }
             });
             let macro_datatable = $('#macroDataTable').DataTable({
                 scrollY: "320px",
                 scrollCollapse: true,
                 pageLength: 25,
                 lengthChange: false,
-                dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+                dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                language: {
+                    "emptyTable": "no macros"
+                }
             });
             let collection_datatable = $('#collectionDataTable').DataTable({
                 scrollY: "320px",
                 scrollCollapse: true,
                 pageLength: 25,
                 lengthChange: false,
-                dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>"
+                dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                language: {
+                    "emptyTable": "no collections"
+                }
             });
 
             $("#tagFilter").change(function () {
