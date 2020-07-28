@@ -217,10 +217,16 @@
             });
 
             $("#tagFilter").change(function () {
+                Cookies.set("index-tag", $(this).children("option:selected").val());
                 table_datatable.draw();
                 macro_datatable.draw();
                 collection_datatable.draw();
             });
+
+            if (typeof Cookies.get('index-tag') !== 'undefined') {
+                $("#tagFilter").val(Cookies.get('index-tag'));
+                $("#tagFilter").trigger('change');
+            }
 
             $("#mainContent").removeClass("invisible");
         });
