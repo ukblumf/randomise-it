@@ -67,6 +67,7 @@ class TableForm(FlaskForm):
     table_tags = SelectField('Tags')
     modifier_name = StringField('Modifier Name', validators=[Length(0, 255)],
                                 description="Leave blank if no modifiers required, otherwise enter text to display")
+    supporting = BooleanField('Supporting table?')
     submit = SubmitField('Save')
 
 
@@ -83,6 +84,7 @@ class MacroForm(FlaskForm):
     macro_id = StringField('Identifier', validators=[Length(0, 255)])
     macro_body = TextAreaField("Create Macro", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
     macro_tags = SelectField('Tags')
+    supporting = BooleanField('Supporting Macro?')
     submit = SubmitField('Save')
 
 
@@ -93,6 +95,7 @@ class CollectionForm(FlaskForm):
     collection_definition = TextAreaField("Collection Items", validators=[DataRequired()],
                                           render_kw={"rows": 15, "cols": 60})
     collection_tags = SelectField('Tags')
+    supporting = BooleanField('Supporting collection?')
     submit = SubmitField('Save')
 
 

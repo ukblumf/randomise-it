@@ -426,6 +426,7 @@ class RandomTable(db.Model):
     last_modified = db.Column(db.DateTime,
                               default=datetime.utcnow(),
                               onupdate=datetime.utcnow())
+    supporting = db.Column(db.Boolean, default=False)
 
     @staticmethod
     def on_changed_table(target, value, oldvalue, initiator):
@@ -493,6 +494,7 @@ class Macros(db.Model):
     last_modified = db.Column(db.DateTime,
                               default=datetime.utcnow(),
                               onupdate=datetime.utcnow())
+    supporting = db.Column(db.Boolean, default=False)
 
     @staticmethod
     def on_changed_table(target, value, oldvalue, initiator):
@@ -559,6 +561,7 @@ class Collection(db.Model):
     last_modified = db.Column(db.DateTime,
                               default=datetime.utcnow(),
                               onupdate=datetime.utcnow())
+    supporting = db.Column(db.Boolean, default=False)
 
     def to_json(self):
         items = self.items.splitlines()

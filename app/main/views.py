@@ -288,7 +288,8 @@ def create_table():
                             definition=form.table_definition.data,
                             tags=form.table_tags.data,
                             author_id=current_user.id,
-                            modifier_name=form.modifier_name.data)
+                            modifier_name=form.modifier_name.data,
+                            supporting=form.supporting.data)
 
         max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
             table)
@@ -330,6 +331,7 @@ def edit_table(username, id):
         table.definition = form.table_definition.data
         table.tags = form.table_tags.data
         table.modifier_name = form.modifier_name.data
+        table.supporting = form.supporting.data
 
         max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = \
             check_table_definition_validity(table)
@@ -351,6 +353,7 @@ def edit_table(username, id):
     form.table_id.data = table.id
     form.table_id.render_kw = {'readonly': True}
     form.modifier_name.data = table.modifier_name
+    form.supporting.data = table.supporting
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
@@ -448,7 +451,8 @@ def create_story():
         flash('Story Created')
         return redirect(url_for('.create_story'))
 
-    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data(
+        remove_supporting=True)
 
     return render_template('story.html', form=form, tables=tables, macro_list=macros, collections=collection_list,
                            tags=tags, public_collections=public_collections,
@@ -474,7 +478,8 @@ def edit_story(username, id):
         flash('Story Updated')
         return redirect(url_for('.edit_story', username=username, id=id))
 
-    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
+    collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data(
+        remove_supporting=True)
 
     form.title.data = story.title
     form.story.data = story.body
@@ -513,7 +518,8 @@ def create_macro():
                        name=form.macro_name.data,
                        definition=form.macro_body.data,
                        tags=form.macro_tags.data,
-                       author_id=current_user.id)
+                       author_id=current_user.id,
+                       supporting=form.supporting.data)
 
         validate_macro_definition, error_message = validate_text(macro.definition, macro.id)
         if validate_macro_definition:
@@ -547,6 +553,7 @@ def edit_macro(username, id):
         macro.definition = form.macro_body.data
         if form.macro_tags.data != '':
             macro.tags = form.macro_tags.data
+        macro.supporting = form.supporting.data
 
         validate_macro_definition, error_message = validate_text(macro.definition, macro.id)
         if validate_macro_definition:
@@ -560,6 +567,7 @@ def edit_macro(username, id):
     form.macro_body.data = macro.definition
     form.macro_id.data = macro.id
     form.macro_id.render_kw = {'readonly': True}
+    form.supporting.data = macro.supporting
     if macro.tags:
         form.macro_tags.data = macro.tags
 
@@ -607,7 +615,8 @@ def create_collection():
                                     name=form.collection_name.data,
                                     definition=form.collection_definition.data,
                                     tags=form.collection_tags.data,
-                                    author_id=current_user.id)
+                                    author_id=current_user.id,
+                                    supporting=form.supporting.data)
 
         validate, error_message = validate_collection(collection_obj.definition)
         if validate:
@@ -642,6 +651,7 @@ def edit_collection(username, id):
         collection_obj.description = form.collection_description.data
         collection_obj.definition = form.collection_definition.data
         collection_obj.tags = form.collection_tags.data
+        collection_obj.supporting = form.supporting.data
 
         validate, error_message = validate_collection(collection_obj.definition)
         if validate:
@@ -657,6 +667,7 @@ def edit_collection(username, id):
     form.collection_tags.data = collection_obj.tags
     form.collection_id.data = collection_obj.id
     form.collection_id.render_kw = {'readonly': True}
+    form.supporting.data = collection_obj.supporting
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
@@ -1278,34 +1289,69 @@ def tag_list():
     return [(p.id, p.id) for p in Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.id)]
 
 
-def macro_query(macro_id=None):
+def macro_query(macro_id=None, remove_supporting=False):
     if macro_id:
         return Macros.query.filter(Macros.author_id == current_user.id, Macros.id != macro_id).order_by(
             Macros.timestamp.desc())
-    return Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
+    macro_list = None
+    if remove_supporting:
+        macro_list = Macros.query.filter(Macros.author_id == current_user.id).filter(
+           Macros.supporting == False).order_by(Macros.timestamp.desc())
+    else:
+        macro_list = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
+
+    return macro_list
 
 
-def table_query():
-    return RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(RandomTable.timestamp.desc())
+def table_query(remove_supporting=False):
+    table_list = None
+    if remove_supporting:
+        table_list = RandomTable.query.filter(RandomTable.author_id == current_user.id).filter(
+            RandomTable.supporting == False).order_by(RandomTable.timestamp.desc())
+    else:
+        table_list = RandomTable.query.filter(RandomTable.author_id == current_user.id).order_by(
+            RandomTable.timestamp.desc())
+
+    return table_list
 
 
-def collection_query():
-    return Collection.query.filter(Collection.author_id == current_user.id).order_by(Collection.timestamp.desc())
+def collection_query(remove_supporting=False):
+    collection_list = None
+    if remove_supporting:
+        collection_list = Collection.query.filter(Collection.author_id == current_user.id).filter(
+            Collection.supporting == False).order_by(Collection.timestamp.desc())
+    else:
+        collection_list = Collection.query.filter(Collection.author_id == current_user.id).order_by(
+            Collection.timestamp.desc())
+
+    return collection_list
 
 
 def tag_query():
     return Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.id.asc())
 
 
-def required_data():
+def required_data(remove_supporting=False):
     if current_user.is_anonymous:
         return None, None, None, None, None, None, None
 
-    tables = table_query()
-    macros = macro_query()
-    collection_list = collection_query()
+    tables = table_query(remove_supporting=remove_supporting)
+    macros = macro_query(remove_supporting=remove_supporting)
+    collection_list = collection_query(remove_supporting=remove_supporting)
     tags = tag_query()
-    public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
-    public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
-    public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
+    public_tables = None
+    public_macros = None
+    public_collections = None
+    if remove_supporting:
+        public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id).filter(
+            PublicLinkedTables.public_table.has(PublicRandomTable.supporting == False))
+        public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id).filter(
+            PublicLinkedMacros.public_macro.has(PublicMacros.supporting == False))
+        public_collections = PublicLinkedCollections.query.filter(
+            PublicLinkedCollections.author_id == current_user.id).filter(
+            PublicLinkedCollections.public_collection.has(PublicCollection.supporting == False))
+    else:
+        public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
+        public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
+        public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
     return collection_list, macros, tables, tags, public_collections, public_macros, public_tables
