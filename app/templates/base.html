@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
-
-{% block title %}The Randomist {% endblock %}
+{% set SITE_TITLE = 'The Randomist (BETA)' %}
+{% block title %}{{ SITE_TITLE }}{% endblock %}
 
 {% block head %}
     {{ super() }}
@@ -41,7 +41,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ url_for('main.index') }}">The Randomist</a>
+                <a class="navbar-brand" href="{{ url_for('main.index') }}">{{ SITE_TITLE }}</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">

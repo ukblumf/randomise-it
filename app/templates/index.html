@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
-{% block title %}The Randomist {% endblock %}
 {% block page_content %}
     <h3>Hello{% if current_user.is_authenticated %}, {{ current_user.username }}{% else %}. Please create an account
         to harness the full power of The Randomist{% endif %}</h3>
