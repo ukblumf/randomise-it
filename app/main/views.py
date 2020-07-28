@@ -156,6 +156,18 @@ def edit_profile_admin(id):
     return render_template('profile.html', form=form, user=user)
 
 
+@main.route('/administ', methods=['GET'])
+@login_required
+@admin_required
+def admin_view():
+    stats = {}
+    user_count = db.session.query(User).count()
+    stats["User_Count"] = user_count
+    announcement_count = db.session.query(PublicAnnouncements).count()
+    stats["Announcement_Count"] = announcement_count
+
+    return render_template('administ.html', stats=stats.items())
+
 # @main.route('/follow/<username>')
 # @login_required
 # @permission_required(Permission.FOLLOW)
@@ -271,7 +283,6 @@ def edit_profile_admin(id):
 #     db.session.add(comment)
 #     return redirect(url_for('.moderate',
 #                             page=request.args.get('page', 1, type=int)))
-
 
 @main.route('/create-table', methods=['GET', 'POST'])
 @login_required

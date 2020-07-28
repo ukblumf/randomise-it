@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}The Randomist - Statistics{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Site Stats</h1>
+</div>
+<div class="col-md-4">
+    <ul>
+    {% for key, value in stats %}
+        <li><strong>{{ key }} : {{  value }}</strong></li>
+    {% endfor %}
+    </ul>
+</div>
+{% endblock %}
