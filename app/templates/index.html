@@ -20,7 +20,7 @@
         </div>
     </div>
     {% if current_user.is_authenticated %}
-        <div class="container-fluid" id="mainContent">
+        <div class="container-fluid invisible" id="mainContent">
             <div class="row">
                 <label for="tagFilter">Tag:</label>
                 <select id="tagFilter">
@@ -229,8 +229,10 @@
             });
 
             if (typeof Cookies.get('index-tag') !== 'undefined') {
-                $("#tagFilter").val(Cookies.get('index-tag'));
-                $("#tagFilter").trigger('change');
+                if (Cookies.get('index-tag') != "" ) {
+                    $("#tagFilter").val(Cookies.get('index-tag'));
+                    $("#tagFilter").trigger('change');
+                }
             }
 
             $("#mainContent").removeClass("invisible");
