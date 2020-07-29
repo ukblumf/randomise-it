@@ -1002,7 +1002,7 @@ def delete_shared_content(public_id):
     collection = db.session.query(PublicLinkedCollections).filter(PublicLinkedCollections.announcement_id == public_id). \
         filter(PublicLinkedCollections.author_id == current_user.id)
     collection.delete()
-    announcement = db.session.query(UserPublicContent).filter(UserPublicContent.id == public_id). \
+    announcement = db.session.query(UserPublicContent).filter(UserPublicContent.announcement_id == public_id). \
         filter(UserPublicContent.author_id == current_user.id)
     announcement.delete()
 
