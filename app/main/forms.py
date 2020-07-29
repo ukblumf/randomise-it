@@ -82,7 +82,7 @@ class StoryForm(FlaskForm):
 class MacroForm(FlaskForm):
     macro_name = StringField('Macro Name', validators=[Length(0, 255)])
     macro_id = StringField('Identifier', validators=[Length(0, 255)])
-    macro_body = TextAreaField("Create Macro", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
+    macro_body = TextAreaField("Macro Definition", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
     macro_tags = SelectField('Tags')
     supporting = BooleanField('Supporting Macro?')
     submit = SubmitField('Save')

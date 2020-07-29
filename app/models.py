@@ -328,8 +328,8 @@ class Post(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     pins = db.Column(db.Text)
     last_modified = db.Column(db.DateTime,
-                              default=datetime.utcnow(),
-                              onupdate=datetime.utcnow())
+                              default=datetime.utcnow,
+                              onupdate=datetime.utcnow)
 
     # comments = db.relationship('Comment', backref='post', lazy='dynamic')
 
@@ -424,8 +424,8 @@ class RandomTable(db.Model):
     row_count = db.Column(db.Integer)
     modifier_name = db.Column(db.Text)
     last_modified = db.Column(db.DateTime,
-                              default=datetime.utcnow(),
-                              onupdate=datetime.utcnow())
+                              default=datetime.utcnow,
+                              onupdate=datetime.utcnow)
     supporting = db.Column(db.Boolean, default=False)
 
     @staticmethod
@@ -492,8 +492,8 @@ class Macros(db.Model):
     tags = db.Column(db.Text, index=True)
     original_author_id = db.Column(db.Integer)
     last_modified = db.Column(db.DateTime,
-                              default=datetime.utcnow(),
-                              onupdate=datetime.utcnow())
+                              default=datetime.utcnow,
+                              onupdate=datetime.utcnow)
     supporting = db.Column(db.Boolean, default=False)
 
     @staticmethod
@@ -559,8 +559,8 @@ class Collection(db.Model):
     tags = db.Column(db.Text, index=True)
     original_author_id = db.Column(db.Integer)
     last_modified = db.Column(db.DateTime,
-                              default=datetime.utcnow(),
-                              onupdate=datetime.utcnow())
+                              default=datetime.utcnow,
+                              onupdate=datetime.utcnow)
     supporting = db.Column(db.Boolean, default=False)
 
     def to_json(self):
@@ -647,8 +647,8 @@ class MarketPlace(db.Model):
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     categories = db.relationship('MarketCategory', backref='market_product', lazy='dynamic')
     last_modified = db.Column(db.DateTime,
-                              default=datetime.utcnow(),
-                              onupdate=datetime.utcnow())
+                              default=datetime.utcnow,
+                              onupdate=datetime.utcnow)
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):

@@ -54,8 +54,10 @@ def index():
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
     stories = None
     if current_user.is_anonymous:
-        public_tables = PublicRandomTable.query.order_by(PublicRandomTable.timestamp.desc()).limit(100)
-        public_macros = PublicMacros.query.order_by(PublicMacros.timestamp.desc()).limit(100)
+        public_tables = PublicRandomTable.query.filter(PublicRandomTable.supporting == False).order_by(
+            PublicRandomTable.timestamp.desc()).limit(100)
+        public_macros = PublicMacros.query.filter(PublicMacros.supporting == False).order_by(
+            PublicMacros.timestamp.desc()).limit(100)
     else:
         stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
 
@@ -167,6 +169,7 @@ def admin_view():
     stats["Announcement_Count"] = announcement_count
 
     return render_template('administ.html', stats=stats.items())
+
 
 # @main.route('/follow/<username>')
 # @login_required
@@ -1032,6 +1035,7 @@ def refresh_shared_content(id):
         public_table.row_count = table.row_count
         public_table.modifier_name = table.modifier_name
         public_table.last_modified = table.last_modified
+        public_table.supporting = table.supporting
         db.session.add(public_table)
         db.session.commit()
 
@@ -1048,6 +1052,7 @@ def refresh_shared_content(id):
         public_macro.definition_html = macro.definition
         public_macro.tags = macro.tags
         public_macro.last_modified = macro.last_modified
+        public_macro.supporting = macro.supporting
         db.session.add(public_macro)
         db.session.commit()
 
@@ -1064,6 +1069,7 @@ def refresh_shared_content(id):
         public_collection_obj.definition = collection_obj.definition
         public_collection_obj.tags = collection_obj.tags
         public_collection_obj.last_modified = collection_obj.last_modified
+        public_collection_obj.supporting = collection_obj.supporting
         db.session.add(public_collection_obj)
         db.session.commit()
 
@@ -1122,7 +1128,8 @@ def share_public():
                                                   author_id=current_user.id,
                                                   permissions=ProductPermission.PUBLIC,
                                                   announcement_id=announcement.id,
-                                                  last_modified=c.last_modified)
+                                                  last_modified=c.last_modified,
+                                                  supporting=c.supporting)
                             db.session.add(pc)
             if public_macros != ['']:
                 for m_id in public_macros:
@@ -1141,7 +1148,8 @@ def share_public():
                                               author_id=current_user.id,
                                               permissions=ProductPermission.PUBLIC,
                                               announcement_id=announcement.id,
-                                              last_modified=m.last_modified)
+                                              last_modified=m.last_modified,
+                                              supporting=m.supporting)
                             db.session.add(pm)
             if public_tables != ['']:
                 for t_id in public_tables:
@@ -1166,7 +1174,8 @@ def share_public():
                                                     row_count=t.row_count,
                                                     announcement_id=announcement.id,
                                                     modifier_name=t.modifier_name,
-                                                    last_modified=t.last_modified)
+                                                    last_modified=t.last_modified,
+                                                    supporting=t.supporting)
                             db.session.add(prt)
             db.session.commit()
             flash('Content Shared')
@@ -1307,7 +1316,7 @@ def macro_query(macro_id=None, remove_supporting=False):
     macro_list = None
     if remove_supporting:
         macro_list = Macros.query.filter(Macros.author_id == current_user.id).filter(
-           Macros.supporting == False).order_by(Macros.timestamp.desc())
+            Macros.supporting == False).order_by(Macros.timestamp.desc())
     else:
         macro_list = Macros.query.filter(Macros.author_id == current_user.id).order_by(Macros.timestamp.desc())
 
