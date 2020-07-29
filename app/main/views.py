@@ -1359,19 +1359,20 @@ def required_data(remove_supporting=False):
     macros = macro_query(remove_supporting=remove_supporting)
     collection_list = collection_query(remove_supporting=remove_supporting)
     tags = tag_query()
-    public_tables = None
-    public_macros = None
-    public_collections = None
-    if remove_supporting:
-        public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id).filter(
-            PublicLinkedTables.public_table.has(PublicRandomTable.supporting == False))
-        public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id).filter(
-            PublicLinkedMacros.public_macro.has(PublicMacros.supporting == False))
-        public_collections = PublicLinkedCollections.query.filter(
-            PublicLinkedCollections.author_id == current_user.id).filter(
-            PublicLinkedCollections.public_collection.has(PublicCollection.supporting == False))
-    else:
-        public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
-        public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
-        public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
+    # public_tables = None
+    # public_macros = None
+    # public_collections = None
+    # if remove_supporting:
+    public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id).filter(
+        PublicLinkedTables.public_table.has(PublicRandomTable.supporting == False))
+    public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id).filter(
+        PublicLinkedMacros.public_macro.has(PublicMacros.supporting == False))
+    public_collections = PublicLinkedCollections.query.filter(
+        PublicLinkedCollections.author_id == current_user.id).filter(
+        PublicLinkedCollections.public_collection.has(PublicCollection.supporting == False))
+    # else:
+    #    public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
+    #    public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
+    #   public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
+
     return collection_list, macros, tables, tags, public_collections, public_macros, public_tables
