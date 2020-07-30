@@ -22,11 +22,11 @@ def retrieve_data(username, reference_id, private_table, link_table, public_tabl
         return public_table.query.get([reference_id, external_user.id])
     elif username != current_user.username:
         external_user = User.query.filter_by(username=username).first()
-        public_link_collection = link_table.query.get([current_user.id, reference_id, external_user.id])
-        if public_link_collection is not None:
-            return public_table.query.get([reference_id, external_user.id])
-        else:
-            return None
+        # public_link_collection = link_table.query.get([current_user.id, reference_id, external_user.id])
+        # if public_link_collection is not None:
+        return public_table.query.get([reference_id, external_user.id])
+        # else:
+        #    return None
     else:
         return private_table.query.get([reference_id, current_user.id])
 
