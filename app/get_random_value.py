@@ -186,9 +186,9 @@ def dice_generator(dice_pattern):
         for n in range(int(num.group(1))):
             generated_text += get_text_from_external_table(external_table.group(1)) + ","
 
-    elif bool(re.search(r'(\d+d\d+|\d+|[\+|\-])', dice_pattern, re.IGNORECASE)):
+    elif bool(re.search(r'(\d+d\d+|\d+|[\+|\-|x])', dice_pattern, re.IGNORECASE)):
         # found chained dice and static numbers to produce sum
-        components = re.finditer(r'(\d+d\d+|\d+|[\+|\-])', dice_pattern, re.IGNORECASE)
+        components = re.finditer(r'(\d+d\d+|\d+|[\+|\-|x])', dice_pattern, re.IGNORECASE)
         result = 0
         expect_value = True
         operand = 1
@@ -209,6 +209,8 @@ def dice_generator(dice_pattern):
                     operand = 1
                 elif component.group(1) == '-':
                     operand = -1
+                elif component.group(1) == 'x':
+                    operand = result
 
         generated_text = str(result)
 

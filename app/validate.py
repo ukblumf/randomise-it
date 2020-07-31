@@ -128,8 +128,8 @@ def validate_text(definition, id):
                                                               re.IGNORECASE)):  # e.g. 1-10x<<table.magic-item-table-a>>
                                             if not bool(re.search(r'^\d+x<<table\..*?>>$', generator,
                                                                   re.IGNORECASE)):  # e.g. 3x<<table.magic-item-table-a>>
-                                                if bool(re.search(r'(\d+d\d+|\d+|[\+|\-])', generator, re.IGNORECASE)):
-                                                    components = re.finditer(r'(\d+d\d+|\d+|[\+|\-])', generator,
+                                                if bool(re.search(r'(\d+d\d+|\d+|[\+|\-|x])', generator, re.IGNORECASE)):
+                                                    components = re.finditer(r'(\d+d\d+|\d+|[\+|\-|x])', generator,
                                                                              re.IGNORECASE)
                                                     valid_generator = True
                                                     expect_value = True
@@ -148,7 +148,7 @@ def validate_text(definition, id):
                                                                     break
                                                         else:
                                                             expect_value = True
-                                                            if component.group(1) != '+' and component.group(1) != '-':
+                                                            if component.group(1) != '+' and component.group(1) != '-' and component.group(1) != 'x':
                                                                 valid_generator = False
                                                                 break
                                                     if not valid_generator:
