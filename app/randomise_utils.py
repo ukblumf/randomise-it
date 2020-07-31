@@ -36,3 +36,11 @@ def split_id(id):
     if '%' in username:  # ignore chance percentage
         chance, username = username.split(' ')
     return username, id_type, reference_id
+
+
+def remove_blank_lines(data):
+    clean_data = ""
+    for line in data.splitlines(True):
+        if line.strip().rstrip():
+            clean_data += line
+    return clean_data

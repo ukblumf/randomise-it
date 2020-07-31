@@ -299,7 +299,7 @@ def create_table():
         table = RandomTable(id=form.table_id.data,
                             name=form.table_name.data,
                             description=form.table_description.data,
-                            definition=form.table_definition.data,
+                            definition=remove_blank_lines(form.table_definition.data),
                             tags=form.table_tags.data,
                             author_id=current_user.id,
                             modifier_name=form.modifier_name.data,
@@ -342,7 +342,7 @@ def edit_table(username, id):
     if form.validate_on_submit():
         table.name = form.table_name.data
         table.description = form.table_description.data
-        table.definition = form.table_definition.data
+        table.definition = remove_blank_lines(form.table_definition.data)
         table.tags = form.table_tags.data
         table.modifier_name = form.modifier_name.data
         table.supporting = form.supporting.data
@@ -444,6 +444,29 @@ def bulk_table_import():
                     error_on_import = True
                     break
             new_table_definition += line + '\n'
+
+        if new_table_definition and new_table_id:
+            table = RandomTable(id=new_table_id,
+                                name=new_table,
+                                description='',
+                                definition=new_table_definition,
+                                tags=form.bulk_tag.data,
+                                author_id=current_user.id)
+
+            max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = \
+                check_table_definition_validity(table)
+            if validate_table_definition:
+                table.min = min_rng
+                table.max = max_rng
+                table.line_type = table_type
+                table.row_count = row_count
+                db.session.add(table)
+                table_count += 1
+            else:
+                flash(error_message + ', Table id : ' + new_table_id + ', Table name : ' + new_table)
+                db.session.rollback()
+                error_on_import = True
+
         if not error_on_import:
             db.session.commit()
             flash(str(table_count) + ' Tables Created')
@@ -627,7 +650,7 @@ def create_collection():
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         collection_obj = Collection(id=form.collection_id.data,
                                     name=form.collection_name.data,
-                                    definition=form.collection_definition.data,
+                                    definition=remove_blank_lines(form.collection_definition.data),
                                     tags=form.collection_tags.data,
                                     author_id=current_user.id,
                                     supporting=form.supporting.data)
@@ -663,7 +686,7 @@ def edit_collection(username, id):
     if form.validate_on_submit():
         collection_obj.name = form.collection_name.data
         collection_obj.description = form.collection_description.data
-        collection_obj.definition = form.collection_definition.data
+        collection_obj.definition = remove_blank_lines(form.collection_definition.data)
         collection_obj.tags = form.collection_tags.data
         collection_obj.supporting = form.supporting.data
 
