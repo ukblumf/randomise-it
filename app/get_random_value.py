@@ -191,30 +191,37 @@ def dice_generator(dice_pattern):
         components = re.finditer(r'(\d+d\d+|\d+|[\+|\-|x])', dice_pattern, re.IGNORECASE)
         result = 0
         expect_value = True
-        operand = 1
+        operand = "+"
         for component in components:
             if expect_value:
                 expect_value = False
                 if re.search(r'd', component.group(1), re.IGNORECASE):
                     # dice notation
                     dice = re.search(r'^(\d+)d(\d+)', component.group(1), re.IGNORECASE)
+                    dice_sum = 0
                     for d in range(int(dice.group(1))):
-                        result += (random.randint(1, int(dice.group(2))) * operand)
+                        dice_sum += random.randint(1, int(dice.group(2)))
+                    result = apply_operand(result, dice_sum, operand)
                 elif re.search(r'\d+', component.group(1), re.IGNORECASE):
                     # static number
-                    result += (int(component.group(1)) * operand)
+                    result = apply_operand(result, int(component.group(1)), operand)
             else:
                 expect_value = True
-                if component.group(1) == '+':
-                    operand = 1
-                elif component.group(1) == '-':
-                    operand = -1
-                elif component.group(1) == 'x':
-                    operand = result
+                operand = component.group(1)
 
         generated_text = str(result)
 
     return generated_text
+
+
+def apply_operand(current_total, value, operand):
+    if operand == "+":
+        current_total += value
+    elif operand == "-":
+        current_total -= value
+    elif operand == "x":
+        current_total *= value
+    return current_total
 
 
 def extract_reference_link(external_id):
