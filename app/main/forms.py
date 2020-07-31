@@ -133,3 +133,13 @@ class Share(FlaskForm):
     macros_shared = HiddenField("Macros", validators=None)
     tables_shared = HiddenField("Tables", validators=None)
     submit = SubmitField('Share')
+
+    def validate(self):
+        if not super(Share, self).validate():
+            return False
+        if not self.collections_shared.data \
+                and not self.macros_shared.data \
+                and not self.tables_shared.data:
+            self.title.errors.append("No content selected to be shared")
+            return False
+        return True
