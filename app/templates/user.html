@@ -4,184 +4,212 @@
 {% block title %}{{ SITE_TABLE }} - {{ user.username }} - Manage Content{% endblock %}
 
 {% block page_content %}
-    <div class="page-header">
-        <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
-        <div class="profile-header">
-            <h1>{{ user.username }}</h1>
-            {% if user.name or user.location %}
-                <p>
-                    {% if user.name %}{{ user.name }}<br>{% endif %}
-                </p>
-            {% endif %}
-            {% if current_user.is_administrator() %}
-                <p><a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
-            {% endif %}
-            {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
-            <p>Member since {{ user.member_since }}.</p>
-            <p>
-                {% if user == current_user %}
-                    <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">Edit Profile</a>
-                {% endif %}
-                {% if current_user.is_administrator() %}
-                    <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">Edit Profile
-                        [Admin]</a>
-                {% endif %}
-            </p>
-        </div>
-    </div>
     <div class="container-fluid">
         <div class="row">
-            <h2>Your Content</h2>
-            <div class="col-md-4">
-                <h4>Collections count: {{ stats["collection_count"] }}</h4>
-                <h4>Macros count: {{ stats["macro_count"] }}</h4>
-                <h4>Tables count: {{ stats["table_count"] }}</h4>
-                <h4>Story count: {{ stats["story_count"] }}</h4>
+            <div class="page-header">
+                <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}">
+                <div class="col-md-5">
+                    <div class="profile-header">
+                        <h1>{{ user.username }}</h1>
+                        {% if user.name or user.location %}
+                            <p>
+                                {% if user.name %}{{ user.name }}<br>{% endif %}
+                            </p>
+                        {% endif %}
+                        {% if current_user.is_administrator() %}
+                            <p><a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
+                        {% endif %}
+                        {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+                        <p>Member since {{ user.member_since }}.</p>
+                        <p>
+                            {% if user == current_user %}
+                                <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">Edit Profile</a>
+                            {% endif %}
+                            {% if current_user.is_administrator() %}
+                                <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">Edit
+                                    Profile
+                                    [Admin]</a>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h2>Your Content</h2>
+                    <h4>Collections count: {{ stats["collection_count"] }}</h4>
+                    <h4>Macros count: {{ stats["macro_count"] }}</h4>
+                    <h4>Tables count: {{ stats["table_count"] }}</h4>
+                    <h4>Story count: {{ stats["story_count"] }}</h4>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <h2>Library</h2>
-            <div class="col-md-4">
-                <h4>Announcements</h4>
-            </div>
-            <div class="col-md-4">
-                <h4>Discovered</h4>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                    <tr>
-                        <th class="col-xs-10">Name</th>
-                        <th class="col-xs-2">Delete</th>
-                    </tr>
-                    </thead>
-                    <tbody id="announcementList" style="height: 200px">
-                    {% for item in shared_content %}
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#announcements">Announcements</a></li>
+            <li><a data-toggle="tab" href="#discovered">Discovered</a></li>
+            <li><a data-toggle="tab" href="#updated">Updated</a></li>
+            <li><a data-toggle="tab" href="#tags">Tags</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="announcements" class="tab-pane fade in active">
+                <div class="col-md-6">
+                    <table class="table table-striped table-bordered">
+                        <thead>
                         <tr>
-                            <td>{{ item.title }}</td>
-                            <td>
-                                <button onclick="deleteAnnouncement($(this));" id="{{ item.id }}"
-                                        data-title="{{ item.title }}" class="btn btn-danger">DELETE
-                                </button>
-                            </td>
+                            <th class="col-xs-10">Name</th>
+                            <th class="col-xs-2">Delete</th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody id="announcementList" style="height: 200px">
+                        {% for item in shared_content %}
+                            <tr>
+                                <td>{{ item.title }}</td>
+                                <td>
+                                    <button onclick="deleteAnnouncement($(this));" id="{{ item.id }}"
+                                            data-title="{{ item.title }}" class="btn btn-danger">DELETE
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="col-md-4">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                    <tr>
-                        <th class="col-xs-10">Name</th>
-                        <th class="col-xs-2">Delete</th>
-                    </tr>
-                    </thead>
-                    <tbody id="ownedSharedList" style="height: 200px">
-                    {% for item in shared_content_owned %}
+            <div id="discovered" class="tab-pane fade">
+                <div class="col-md-6">
+                    <table class="table table-striped table-bordered">
+                        <thead>
                         <tr>
-                            <td>{{ item.public_announcement.title }}</td>
-                            <td>
-                                <button onclick="deleteSharedPublicOwned($(this));" id="{{ item.announcement_id }}"
-                                        data-title="{{ item.public_announcement.title }}"
-                                        class="btn btn-danger pull-right">
-                                    DELETE
-                                </button>
-                            </td>
+                            <th class="col-xs-10">Name</th>
+                            <th class="col-xs-2">Delete</th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody id="ownedSharedList" style="height: 200px">
+                        {% for item in shared_content_owned %}
+                            <tr>
+                                <td>{{ item.public_announcement.title }}</td>
+                                <td>
+                                    <button onclick="deleteSharedPublicOwned($(this));" id="{{ item.announcement_id }}"
+                                            data-title="{{ item.public_announcement.title }}"
+                                            class="btn btn-danger pull-right">
+                                        DELETE
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <h2>Updated Content</h2>
-            <div class="col-md-4">
-                <h4>Tables</h4>
+            <div id="updated" class="tab-pane fade">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h4>Tables</h4>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Macros</h4>
+                    </div>
+                    <div class="col-md-4">
+                        <h4>Collections</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th class="col-xs-10">Name</th>
+                                <th class="col-xs-2">Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody id="updatedTableList" style="height: 200px">
+                            {% for item in updated_tables %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>
+                                        <button onclick="refreshSharedItem($(this));"
+                                                id="{{ current_user.username }}.table.{{ item.id }}"
+                                                data-title="{{ item.name }}"
+                                                class="btn btn-warning">REFRESH
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th class="col-xs-10">Name</th>
+                                <th class="col-xs-2">Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody id="updatedMacroList" style="height: 200px">
+                            {% for item in updated_macros %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>
+                                        <button onclick="refreshSharedItem($(this));"
+                                                id="{{ current_user.username }}.macro.{{ item.id }}"
+                                                data-title="{{ item.name }}"
+                                                class="btn btn-warning">REFRESH
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th class="col-xs-10">Name</th>
+                                <th class="col-xs-2">Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody id="updatedCollectionList" style="height: 200px">
+                            {% for item in updated_collections %}
+                                <tr>
+                                    <td>{{ item.name }}</td>
+                                    <td>
+                                        <button onclick="refreshSharedItem($(this));"
+                                                id="{{ current_user.username }}.collection.{{ item.id }}"
+                                                data-title="{{ item.name }}"
+                                                class="btn btn-warning">REFRESH
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-4">
-                <h4>Macros</h4>
-            </div>
-            <div class="col-md-4">
-                <h4>Collections</h4>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-4">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                    <tr>
-                        <th class="col-xs-10">Name</th>
-                        <th class="col-xs-2">Delete</th>
-                    </tr>
-                    </thead>
-                    <tbody id="updatedTableList" style="height: 200px">
-                    {% for item in updated_tables %}
+            <div id="tags" class="tab-pane fade in active">
+                <div class="col-md-4">
+                    <table class="table table-striped table-bordered">
+                        <thead>
                         <tr>
-                            <td>{{ item.name }}</td>
-                            <td>
-                                <button onclick="refreshSharedItem($(this));"
-                                        id="{{ current_user.username }}.table.{{ item.id }}"
-                                        data-title="{{ item.name }}"
-                                        class="btn btn-warning">REFRESH
-                                </button>
-                            </td>
+                            <th class="col-xs-10">Name</th>
+                            <th class="col-xs-2">Delete</th>
                         </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody id="tagList" style="height: 200px">
+                        {% for item in tags %}
+                            <tr>
+                                <td>{{ item.id }}</td>
+                                <td>
+                                    <button onclick="deleteTag($(this));" id="{{ item.id }}"
+                                            data-title="{{ item.id }}" class="btn btn-danger">DELETE
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="col-md-4">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                    <tr>
-                        <th class="col-xs-10">Name</th>
-                        <th class="col-xs-2">Delete</th>
-                    </tr>
-                    </thead>
-                    <tbody id="updatedMacroList" style="height: 200px">
-                    {% for item in updated_macros %}
-                        <tr>
-                            <td>{{ item.name }}</td>
-                            <td>
-                                <button onclick="refreshSharedItem($(this));"
-                                        id="{{ current_user.username }}.macro.{{ item.id }}"
-                                        data-title="{{ item.name }}"
-                                        class="btn btn-warning">REFRESH
-                                </button>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-md-4">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                    <tr>
-                        <th class="col-xs-10">Name</th>
-                        <th class="col-xs-2">Delete</th>
-                    </tr>
-                    </thead>
-                    <tbody id="updatedCollectionList" style="height: 200px">
-                    {% for item in updated_collections %}
-                        <tr>
-                            <td>{{ item.name }}</td>
-                            <td>
-                                <button onclick="refreshSharedItem($(this));"
-                                        id="{{ current_user.username }}.collection.{{ item.id }}"
-                                        data-title="{{ item.name }}"
-                                        class="btn btn-warning">REFRESH
-                                </button>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
         </div>
     </div>
 {% endblock %}
@@ -247,15 +275,14 @@
             }
         }
 
-        function refreshSharedItem(selectedElement) {
-            // if (confirm('Please confirm you want to refresh ' + selectedElement.data('title'))) {
-                const url = "{{ url_for('.refresh_shared_content', id='') }}" + selectedElement.attr('id');
+        function deleteTag(selectedElement) {
+            if (confirm('Please confirm you want to delete ' + selectedElement.data('title'))) {
+                const url = "{{ url_for('.delete_tag', id='') }}" + selectedElement.attr('id');
                 $.ajax({
-                    type: "POST",
+                    type: "DELETE",
                     url: url, title: selectedElement, success: function (result) {
-                        /*
                         $('<div></div>')
-                            .html("<h4>Refreshed Content</h4>")
+                            .html("<h4>Tag Deleted</h4>")
                             .dialog({
                                 modal: true,
                                 title: selectedElement.data('title'),
@@ -265,13 +292,40 @@
                                     }
                                 }
                             });
-                         */
                         selectedElement.prop('disabled', true);
                     },
                     error: function (result) {
                         alert(JSON.stringify(result));
                     }
                 });
+            }
+        }
+
+        function refreshSharedItem(selectedElement) {
+            // if (confirm('Please confirm you want to refresh ' + selectedElement.data('title'))) {
+            const url = "{{ url_for('.refresh_shared_content', id='') }}" + selectedElement.attr('id');
+            $.ajax({
+                type: "POST",
+                url: url, title: selectedElement, success: function (result) {
+                    /*
+                    $('<div></div>')
+                        .html("<h4>Refreshed Content</h4>")
+                        .dialog({
+                            modal: true,
+                            title: selectedElement.data('title'),
+                            buttons: {
+                                Ok: function () {
+                                    $(this).dialog("destroy").remove();
+                                }
+                            }
+                        });
+                     */
+                    selectedElement.prop('disabled', true);
+                },
+                error: function (result) {
+                    alert(JSON.stringify(result));
+                }
+            });
             // }
         }
     </script>

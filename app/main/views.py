@@ -108,10 +108,12 @@ def user(username):
             current_user.id) + ' and public_collection.last_modified != collection.last_modified')
     updated_collections = db.engine.execute(sql)
 
+    tags = tag_query()
+
     return render_template('user.html', user=user, stats=stats,
                            shared_content=shared_content, shared_content_owned=shared_content_owned,
                            updated_tables=updated_tables, updated_macros=updated_macros,
-                           updated_collections=updated_collections)
+                           updated_collections=updated_collections, tags=tags)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -363,7 +365,8 @@ def edit_table(username, id):
     form.table_name.data = table.name
     form.table_description.data = table.description
     form.table_definition.data = table.definition
-    form.table_tags.data = table.tags
+    if (table.tags, table.tags) in form.table_tags.choices:
+        form.table_tags.data = table.tags
     form.table_id.data = table.id
     form.table_id.render_kw = {'readonly': True}
     form.modifier_name.data = table.modifier_name
@@ -605,8 +608,8 @@ def edit_macro(username, id):
     form.macro_id.data = macro.id
     form.macro_id.render_kw = {'readonly': True}
     form.supporting.data = macro.supporting
-    if macro.tags:
-        form.macro_tags.data = macro.tags
+    if (macro.tags, macro.tags) in form.table_tags.choices:
+        form.macro.data = macro.tags
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
@@ -701,7 +704,8 @@ def edit_collection(username, id):
     form.collection_name.data = collection_obj.name
     form.collection_description.data = collection_obj.description
     form.collection_definition.data = collection_obj.definition
-    form.collection_tags.data = collection_obj.tags
+    if (collection_obj.tags, collection_obj.tags) in form.table_tags.choices:
+        form.collection_obj.data = collection_obj.tags
     form.collection_id.data = collection_obj.id
     form.collection_id.render_kw = {'readonly': True}
     form.supporting.data = collection_obj.supporting
@@ -1028,6 +1032,22 @@ def delete_shared_content(public_id):
     announcement = db.session.query(UserPublicContent).filter(UserPublicContent.announcement_id == public_id). \
         filter(UserPublicContent.author_id == current_user.id)
     announcement.delete()
+
+    return make_response(jsonify({'success': True}))
+
+
+@main.route('/delete-tag/<string:id>', methods=['DELETE'])
+@login_required
+def delete_tag(id):
+    if db.session.query(Tags) \
+            .filter(Tags.id == id) \
+            .filter(Tags.author_id == current_user.id) \
+            .first() is None:
+        abort(400)
+
+    tag = db.session.query(Tags).filter(Tags.id == id). \
+        filter(Tags.author_id == current_user.id)
+    tag.delete()
 
     return make_response(jsonify({'success': True}))
 
