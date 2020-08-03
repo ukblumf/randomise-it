@@ -21,7 +21,17 @@
             </select>
         </div>
         <div class="row">
-            <h2 class="bg-primary">Personal</h2>
+            <div class="panel panel-default" id="info-panel">
+                <div class="panel-heading">Click on the content you want to share, if item has dependent collections, macros or tables it will automatically add those.
+                    Once finished, fill in the announcement form at bottom and click Share.
+                    <button type="button" class="close pull-right" id="info-panel-close">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <h2 class="bg-primary">Your Content</h2>
             <div class="col-md-4">
                 <h3>Collections</h3>
             </div>
@@ -37,7 +47,7 @@
                 {{ macros.list_rows_in_ul_header('collection') }}
                 {% for item in collections %}
                     {% set item_shared = 'n' %}
-                    {% if item.id in shared_collections %}{% set item_shared = 'y'%}{% endif %}
+                    {% if item.id in shared_collections %}{% set item_shared = 'y' %}{% endif %}
                     <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}"{% endif %}
                         data-shared="{{ item_shared }}">
                         <button onclick="addId('<<{{ current_user.username }}.collection.{{ item.id }}>>')">{{ item.name }}</button>
@@ -50,7 +60,7 @@
                 {{ macros.list_rows_in_ul_header('macro') }}
                 {% for item in macro_list %}
                     {% set item_shared = 'n' %}
-                    {% if item.id in shared_macros %}{% set item_shared = 'y'%}{% endif %}
+                    {% if item.id in shared_macros %}{% set item_shared = 'y' %}{% endif %}
                     <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}"{% endif %}
                         data-shared="{{ item_shared }}">
                         <button onclick="addId('<<{{ current_user.username }}.macro.{{ item.id }}>>')">{{ item.name }}</button>
@@ -63,7 +73,7 @@
                 {{ macros.list_rows_in_ul_header('table') }}
                 {% for item in tables %}
                     {% set item_shared = 'n' %}
-                    {% if item.id in shared_tables %}{% set item_shared = 'y'%}{% endif %}
+                    {% if item.id in shared_tables %}{% set item_shared = 'y' %}{% endif %}
                     <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}"{% endif %}
                         data-shared="{{ item_shared }}">
                         <button onclick="addId('<<{{ current_user.username }}.table.{{ item.id }}>>')">{{ item.name }}</button>
@@ -74,7 +84,7 @@
             </div>
         </div>
         <div class="row">
-            <h2 class="bg-info">To be shared free</h2>
+            <h2 class="bg-info">To be Shared</h2>
             <div class="col-md-4">
                 <h3>Collections</h3>
             </div>
@@ -102,6 +112,7 @@
             </div>
         </div>
         <div class="row">
+            <h2 class="bg-success">Announcement</h2>
             <div class="col-md-4">
                 {% if current_user.can(Permission.WRITE_ARTICLES) %}
                     {{ wtf.quick_form(form) }}
