@@ -70,7 +70,7 @@
                 {% if current_user.is_authenticated %}
                     <td>
                         <a href="{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}"
-                           class="btn btn-warning" role="button">
+                           class="btn btn-warning btn-small" role="button">
                             Edit
                         </a>
                     </td>
@@ -78,7 +78,7 @@
             {% else %}
                 <td>
                     <a href="{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}"
-                       class="btn btn-warning" role="button">{{ item.title }}</a>
+                       class="btn btn-warning btn-small" role="button">{{ item.title }}</a>
                 </td>
             {% endif %}
         </tr>
@@ -140,11 +140,11 @@
             <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
                   onclick="pinItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', this)"></span>
             {% if name == 'collection' %}
-                <button onclick="pinItem('{{ current_user.username }}.{{ name }}.{{ item.id }}')">{{ item.name }}</button>
+                <button onclick="pinItem('{{ current_user.username }}.{{ name }}.{{ item.id }}')" class="btn btn-sml btn-info">{{ item.name }}</button>
             {% elif name == 'macro' %}
-                <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', '')">{{ item.name }}</button>
+                <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', '')"  class="btn btn-sml btn-info">{{ item.name }}</button>
             {% elif name == 'table' %}
-                <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', '{{ item.modifier_name }}')">{{ item.name }}</button>
+                <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', '{{ item.modifier_name }}')" class="btn btn-sml btn-info">{{ item.name }}</button>
             {% endif %}
         </li>
     {% endfor %}
@@ -158,7 +158,7 @@
 {% macro list_rows_in_ul(name, items, current_user) %}
     {% for item in items %}
         <li class="list-group-item" {% if item.tags is defined %}data-tag="{{ item.tags }}"{% endif %}>
-            <button onclick="addId('<<{{ current_user.username }}.{{ name }}.{{ item.id }}>>')">{{ item.name }}</button>
+            <button onclick="addId('<<{{ current_user.username }}.{{ name }}.{{ item.id }}>>')" class="btn btn-sml btn-info">{{ item.name }}</button>
         </li>
     {% endfor %}
 {% endmacro %}
@@ -176,11 +176,11 @@
             {% if item.public_collection.tags is defined %}data-tag="{{ item.public_collection.tags }}"{% endif %}
         {% endif %}>
             {% if name == 'table' %}
-                <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.table_id }}>>')">{{ item.public_table.name }}</button>
+                <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.table_id }}>>')" class="btn btn-sml btn-info">{{ item.public_table.name }}</button>
             {% elif name == 'macro' %}
-                <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.macro_id }}>>')">{{ item.public_macro.name }}</button>
+                <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.macro_id }}>>')" class="btn btn-sml btn-info">{{ item.public_macro.name }}</button>
             {% elif name == 'collection' %}
-                <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.collection_id }}>>')">{{ item.public_collection.name }}</button>
+                <button onclick="addId('<<{{ item.original_author.username }}.{{ name }}.{{ item.collection_id }}>>')" class="btn btn-sml btn-info">{{ item.public_collection.name }}</button>
             {% endif %}
         </li>
     {% endfor %}
