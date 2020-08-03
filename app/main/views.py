@@ -609,7 +609,7 @@ def edit_macro(username, id):
     form.macro_id.render_kw = {'readonly': True}
     form.supporting.data = macro.supporting
     if (macro.tags, macro.tags) in form.macro_tags.choices:
-        form.macro.data = macro.tags
+        form.macro_tags.data = macro.tags
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
@@ -705,7 +705,7 @@ def edit_collection(username, id):
     form.collection_description.data = collection_obj.description
     form.collection_definition.data = collection_obj.definition
     if (collection_obj.tags, collection_obj.tags) in form.collection_tags.choices:
-        form.collection_obj.data = collection_obj.tags
+        form.collection_tags.data = collection_obj.tags
     form.collection_id.data = collection_obj.id
     form.collection_id.render_kw = {'readonly': True}
     form.supporting.data = collection_obj.supporting
