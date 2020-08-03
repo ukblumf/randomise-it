@@ -4,6 +4,14 @@
 {% block title %}{{ SITE_TABLE }} - Discover{% endblock %}
 
 {% block page_content %}
+    <div class="panel panel-default" id="info-panel">
+        <div class="panel-heading">Click on the name of the item and it will list the contents in the preview section.
+            Click select to pull it into your library.
+            <button type="button" class="close pull-right" id="info-panel-close">
+                <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+            </button>
+        </div>
+    </div>
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#free">Free</a></li>
         <li><a data-toggle="tab" href="#paid">Paid</a></li>
@@ -95,7 +103,7 @@
                             });
                         selectedElement.prop('disabled', true);
                     },
-                    error: function(result) {
+                    error: function (result) {
                         alert(JSON.stringify(result));
                     }
                 });
