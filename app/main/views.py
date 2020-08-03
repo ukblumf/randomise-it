@@ -170,7 +170,9 @@ def admin_view():
     announcement_count = db.session.query(PublicAnnouncements).count()
     stats["Announcement_Count"] = announcement_count
 
-    return render_template('administ.html', stats=stats.items())
+    users = User.query.order_by(User.member_since.desc()).limit(10)
+
+    return render_template('administ.html', stats=stats.items(), users=users)
 
 
 # @main.route('/follow/<username>')

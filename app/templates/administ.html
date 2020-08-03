@@ -4,14 +4,24 @@
 {% block title %}{{ SITE_TABLE }} - Statistics{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <h1>Site Stats</h1>
-</div>
-<div class="col-md-4">
-    <ul>
-    {% for key, value in stats %}
-        <li><strong>{{ key }} : {{  value }}</strong></li>
-    {% endfor %}
-    </ul>
-</div>
+    <div class="page-header">
+        <h1>Site Stats</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <ul>
+                {% for key, value in stats %}
+                    <li><strong>{{ key }} : {{ value }}</strong></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <h2>Latest Users</h2>
+        <ul>
+            {% for user in users %}
+                <li>{{ user.username }} : {{ user.email }}</li>
+            {% endfor %}
+        </ul>
+    </div>
 {% endblock %}
