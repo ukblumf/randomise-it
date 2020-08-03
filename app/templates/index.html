@@ -15,8 +15,8 @@
             your story, scenario or idea.
             Or just randomly create a plot that your imagination has to explain.
             {% if not current_user.is_authenticated %}
-            <br><br>Click on the Tables and Macros below to see output in the preview panel
-            {%  endif %}
+                <br><br>Click on the Tables and Macros below to see output in the preview panel
+            {% endif %}
         </div>
     </div>
     {% if current_user.is_authenticated %}
@@ -58,6 +58,9 @@
                 </div>
                 <div class="col-md-4">
                     <div class="panel panel-default" style="margin-top: 40px">
+                        <button type="button" class="close pull-right" id="preview-panel-clear">
+                            <span aria-hidden="true">&times;</span><span class="sr-only">Clear</span>
+                        </button>
                         <div class="panel-body" id="preview-panel">
                             <div><small class="text-muted">Click on Table or Macro, see results here.</small></div>
                         </div>
@@ -229,11 +232,15 @@
             });
 
             if (typeof Cookies.get('index-tag') !== 'undefined') {
-                if (Cookies.get('index-tag') != "" ) {
+                if (Cookies.get('index-tag') != "") {
                     $("#tagFilter").val(Cookies.get('index-tag'));
                     $("#tagFilter").trigger('change');
                 }
             }
+
+            $("button#preview-panel-clear").click(function () {
+                $("#preview-panel").html('<div><small class="text-muted">Click on Table or Macro, see results here.</small></div>');
+            });
 
             $("#mainContent").removeClass("invisible");
         });
