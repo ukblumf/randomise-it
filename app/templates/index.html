@@ -73,13 +73,14 @@
             <div class="row">
                 <div class="col-md-4">
                     <h1>Random Tables</h1>
-                    <div style="height: 500px; overflow-y: scroll;">
+                    <div>
                         <ul class="list-group" id="tableList">
                             {% for item in public_tables %}
                                 <li class="list-group-item"
                                     {% if item.tags is defined %}data-tag="{{ item.tags }}{% endif %}">
                                     <button id="get-random-value"
-                                            value="{{ url_for('.get_random_value', username=item.author.username, id=item.id) }}">
+                                            value="{{ url_for('.get_random_value', username=item.author.username, id=item.id) }}"
+                                            class="btn btn-xs btn-primary">
                                         {{ item.name }}</button>
                                 </li>
                             {% endfor %}
@@ -88,13 +89,14 @@
                 </div>
                 <div class="col-md-4">
                     <h1>Macros</h1>
-                    <div style="height: 500px; overflow-y: scroll;">
+                    <div>
                         <ul class="list-group" id="macroList">
                             {% for item in public_macros %}
                                 <li class="list-group-item"
                                     {% if item.tags is defined %}data-tag="{{ item.tags }}{% endif %}">
                                     <button id="get-macro-value"
-                                            value="{{ url_for('.get_macro', username=item.author.username, id=item.id) }}">{{ item.name }}</button>
+                                            value="{{ url_for('.get_macro', username=item.author.username, id=item.id) }}"
+                                            class="btn btn-xs btn-primary">{{ item.name }}</button>
                                 </li>
                             {% endfor %}
                         </ul>

@@ -3,7 +3,7 @@ import collections
 from flask import render_template, redirect, url_for, abort, flash, request, \
     current_app, make_response, jsonify
 from flask_login import login_required, current_user
-from sqlalchemy import and_, text
+from sqlalchemy import and_, text, func
 from flask_sqlalchemy import get_debug_queries
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, TableForm, StoryForm, MacroForm, \
@@ -54,10 +54,8 @@ def index():
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
     stories = None
     if current_user.is_anonymous:
-        public_tables = PublicRandomTable.query.filter(PublicRandomTable.supporting == False).order_by(
-            PublicRandomTable.timestamp.desc()).limit(100)
-        public_macros = PublicMacros.query.filter(PublicMacros.supporting == False).order_by(
-            PublicMacros.timestamp.desc()).limit(100)
+        public_tables = PublicRandomTable.query.filter(PublicRandomTable.supporting == False).order_by(func.random()).limit(10)
+        public_macros = PublicMacros.query.filter(PublicMacros.supporting == False).order_by(func.random()).limit(10)
     else:
         stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
 
