@@ -32,11 +32,11 @@
                     {% for p in free_products %}
                         <tr id="free.{{ p.id }}">
                             <td>
-                                <button onclick="previewItem('free.{{ p.id }}');">{{ p.title }}</button>
+                                <button onclick="previewItem('free.{{ p.id }}');" class="btn btn-sm btn-info">{{ p.title }}</button>
                             </td>
                             <td>{{ p.description }}</td>
                             <td>
-                                <button onclick='selectItem($(this));' id='{{ p.id }}' data-title='{{ p.title }}'>
+                                <button onclick='selectItem($(this));' id='{{ p.id }}' data-title='{{ p.title }}'  class="btn btn-sm btn-warning">
                                     Select
                                 </button>
                             </td>
