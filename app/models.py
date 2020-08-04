@@ -90,6 +90,7 @@ class User(UserMixin, db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     tables = db.relationship('RandomTable', backref='author', lazy='dynamic')
     macros = db.relationship('Macros', backref='author', lazy='dynamic')
+    public_announcements = db.relationship('PublicAnnouncements', backref='author', lazy='dynamic')
     collections = db.relationship('Collection', backref='author', lazy='dynamic')
     public_tables = db.relationship('PublicRandomTable', backref='author', lazy='dynamic')
     public_macros = db.relationship('PublicMacros', backref='author', lazy='dynamic')
