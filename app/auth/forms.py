@@ -58,7 +58,7 @@ class PasswordResetForm(FlaskForm):
     submit = SubmitField('Reset Password')
 
     def validate_email(self, field):
-        if User.query.filter_by(email=field.data).first() is None:
+        if User.query.filter(func.lower(User.email) == func.lower(field.data)).first() is None:
             raise ValidationError('Unknown email address.')
 
 
@@ -69,5 +69,5 @@ class ChangeEmailForm(FlaskForm):
     submit = SubmitField('Update Email Address')
 
     def validate_email(self, field):
-        if User.query.filter_by(email=field.data).first():
+        if User.query.filter(func.lower(User.email) == func.lower(field.data)).first():
             raise ValidationError('Email already registered.')
