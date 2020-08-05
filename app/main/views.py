@@ -865,7 +865,7 @@ def transfer_public_content(public_id):
         new_content = UserPublicContent(announcement_id=public_id,
                                         author_id=current_user.id)
         db.session.add(new_content)
-
+        tags = set()
         public_collections = PublicCollection.query.filter(PublicCollection.announcement_id == public_id)
         public_macros = PublicMacros.query.filter(PublicMacros.announcement_id == public_id)
         public_tables = PublicRandomTable.query.filter(PublicRandomTable.announcement_id == public_id)
@@ -882,6 +882,8 @@ def transfer_public_content(public_id):
                                                          announcement_id=c.announcement_id)
                 db.session.add(new_collection)
                 collection_count += 1
+                if c.tags.strip():
+                    tags.add(c.tags)
 
         for m in public_macros:
             if db.session.query(PublicLinkedMacros) \
@@ -895,6 +897,8 @@ def transfer_public_content(public_id):
                                                announcement_id=m.announcement_id)
                 db.session.add(new_macro)
                 macro_count += 1
+                if m.tags.strip():
+                    tags.add(m.tags)
 
         for t in public_tables:
             if db.session.query(PublicLinkedTables) \
@@ -908,6 +912,14 @@ def transfer_public_content(public_id):
                                                announcement_id=t.announcement_id)
                 db.session.add(new_table)
                 table_count += 1
+                if t.tags.strip():
+                    tags.add(t.tags)
+
+        for tag in tags:
+            if db.session.query(Tags).filter(Tags.id == tag).filter(Tags.author_id == current_user.id).first() is None:
+                new_tag = Tags(id=tag,
+                               author_id=current_user.id)
+                db.session.add(new_tag)
 
         db.session.commit()
         return make_response(jsonify({'success': True,
