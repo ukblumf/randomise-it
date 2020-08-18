@@ -15,7 +15,8 @@
             your story, scenario or idea.
             Or just randomly create a plot that your imagination has to explain.
             {% if not current_user.is_authenticated %}
-                <br><br>Click on the Tables and Macros below to see output in the preview panel
+                <br><br>Below is a random selection of some of the content on The Randomist.
+                <br><br>Click on the Tables and Macros below to see output in the preview panel. <a id='register' href="{{ url_for('auth.register') }}">Create an account</a> to discover more.
             {% endif %}
         </div>
     </div>
