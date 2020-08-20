@@ -13,10 +13,10 @@
         <div class="panel-body">At The Randomist we want to harness the power of randomness to drive creativity, that
             weird juxtaposition of concepts that spark an idea. That unusual hint that gets you to the next level in
             your story, scenario or idea.
-            Or just randomly create a plot that your imagination has to explain.
+            Or just randomly create a plot that your imagination has to explain.<br><br>
+            This site is in BETA phase and most of the discoverable content has been created from several sources across the internet, no claim is made to the ownership of the content.
             {% if not current_user.is_authenticated %}
-                <br><br>Below is a random selection of some of the content on The Randomist.
-                <br><br>Click on the Tables and Macros below to see output in the preview panel. <a id='register' href="{{ url_for('auth.register') }}">Create an account</a> to discover more.
+                <br><br>Below is a small random selection of content, click on the Tables and Macros below to see output in the preview panel. <a id='register' href="{{ url_for('auth.register') }}">Create an account</a> to discover more.
             {% endif %}
         </div>
     </div>
@@ -138,7 +138,7 @@
         $(document).ready(function () {
             $("button#get-random-value").click(function () {
                 let url = $(this).val()
-                const [ignore, username, id_type, id] = $(this).val().split("/");
+                const [ignore, id_type, username, id] = $(this).val().split("/");
                 if ($(this).data('modifier') && $(this).data('modifier') != 'None') {
                     const modifier = prompt($(this).data('modifier'), "0");
                     if (modifier != null && !isNaN(modifier)) {
@@ -146,21 +146,21 @@
                     }
                 }
                 $.ajax({
-                    url: url, reference_id: id, success: function (result) {
+                    url: url, reference_id: id, username: username, success: function (result) {
                         result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
                         result = result.replace(/</g, '&lt;')
-                        const el = '<div><small class="text-muted">' + this.reference_id + '</small><p>' + result + '</p></div>';
+                        const el = '<div><small class="text-muted" title="created by ' + username + '">' + this.reference_id + '</small><p>' + result + '</p></div>';
                         $("#preview-panel").prepend(el);
                     }
                 });
             });
 
             $("button#get-macro-value").click(function () {
-                const [ignore, username, id_type, id] = $(this).val().split("/");
+                const [ignore, id_type, username, id] = $(this).val().split("/");
                 $.ajax({
-                    url: $(this).val(), reference_id: id, success: function (result) {
+                    url: $(this).val(), reference_id: id, username: username, success: function (result) {
                         result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
-                        const el = '<div><small class="text-muted">' + this.reference_id + '</small><p>' + result + '</p></div>';
+                        const el = '<div><small class="text-muted" title="created by ' + username + '">' + this.reference_id + '</small><p>' + result + '</p></div>';
                         $("#preview-panel").prepend(el);
                     }
                 });
