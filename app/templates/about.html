@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}{{ SITE_TITLE }} - About{% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="container">
+            <div class="intro">
+                <h2 class="text-center">About The Randomist</h2>
+                <p class="text-center">Contact Random_Admin at randomist.io for any queries.</p>
+            </div>
+            <div class="row features">
+                <div class="col-md-4 col-sm-6 item">
+                    <h3 class="name"><i class="glyphicon glyphicon-thumbs-up icon"></i> Easy to Use</h3>
+                    <p class="description">Random tables can be simple lists, weighted, linked to other tables.&nbsp;Bulk
+                        importer makes short work of many tables.</p>
+                </div>
+                <div class="col-md-4 col-sm-6 item">
+                    <h3 class="name"><i class="glyphicon glyphicon-share icon"></i> Easy To Share</h3>
+                    <p class="description">Sharing content is super simple, and by default the contents of your
+                        tables/macros are hidden. Only results are shown.</p>
+                </div>
+                <div class="col-md-4 col-sm-6 item">
+                    <h3 class="name"><i class="glyphicon glyphicon-search icon"></i> Easy To Discover</h3>
+                    <p class="description">Find other users content via the Discover screen. You can easily remove any
+                        content you have discovered by the Manage screen.</p>
+                </div>
+                <div class="col-md-4 col-sm-6 item">
+                    <h3 class="name"><i class="glyphicon glyphicon-link icon"></i> Macros</h3>
+                    <p class="description">Tie all those lovely random tables together in fantastic and deep ways, also
+                        link to other macros.</p>
+                </div>
+                <div class="col-md-4 col-sm-6 item">
+                    <h3 class="name"><i class="glyphicon glyphicon-menu-hamburger icon"></i> Collections</h3>
+                    <p class="description">Creating a collection not only makes it even easier to share but when users
+                        create stories they can pin your collection.</p>
+                </div>
+                <div class="col-md-4 col-sm-6 item">
+                    <h3 class="name"><i class="glyphicon glyphicon-text-color icon"></i> Stories</h3>
+                    <p class="description">Interactively use Random tables, Macros and Collections to build a story. Pin
+                        your favourites for quick access.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

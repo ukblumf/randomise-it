@@ -64,6 +64,11 @@ def index():
                            public_tables=public_tables, stories=stories, tags=tags)
 
 
+@main.route('/about', methods=['GET'])
+def about():
+    return render_template('about.html')
+
+
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
