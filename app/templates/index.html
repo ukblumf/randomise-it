@@ -73,7 +73,7 @@
         <div>
             <div class="row">
                 <div class="col-md-4">
-                    <h1>Random Tables</h1>
+                    <h3>Selection of Random Tables from {{ public_table_count }} available</h3>
                     <div>
                         <ul class="list-group" id="tableList">
                             {% for item in public_tables %}
@@ -89,7 +89,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <h1>Macros</h1>
+                    <h3>Selection of Macros from {{ public_macro_count }} available</h3>
                     <div>
                         <ul class="list-group" id="macroList">
                             {% for item in public_macros %}
@@ -104,7 +104,7 @@
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <h1>Preview</h1>
+                    <h2>Preview</h2>
                     <div class="panel panel-default">
                         <div class="panel-body" id="preview-panel">
                             <div><small class="text-muted">Click on Table or Macro, see results here.</small></div>

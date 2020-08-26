@@ -53,15 +53,22 @@ def after_request(response):
 def index():
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
     stories = None
+    public_table_count = 0
+    public_macro_count = 0
     if current_user.is_anonymous:
         public_tables = PublicRandomTable.query.filter(PublicRandomTable.supporting == False).order_by(func.random()).limit(10)
+        public_table_count = db.session.query(PublicRandomTable).count()
         public_macros = PublicMacros.query.filter(PublicMacros.supporting == False).order_by(func.random()).limit(10)
+        public_macro_count = db.session.query(PublicMacros).count()
     else:
         stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
 
+
+
     return render_template('index.html', tables=tables, macro_list=macros, collections=collection_list,
                            public_collections=public_collections, public_macros=public_macros,
-                           public_tables=public_tables, stories=stories, tags=tags)
+                           public_tables=public_tables, stories=stories, tags=tags,
+                           public_table_count=public_table_count, public_macro_count=public_macro_count)
 
 
 @main.route('/about', methods=['GET'])
