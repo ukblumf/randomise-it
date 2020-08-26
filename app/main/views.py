@@ -1144,15 +1144,25 @@ def refresh_shared_content(id):
 def id_exists(type, id):
     check = "0"
     if type == 'table':
-        check = db.session.query(RandomTable.id).filter_by(id=id).scalar() is not None
+        check = db.session.query(RandomTable) \
+            .filter(RandomTable.id == id) \
+            .filter(RandomTable.author_id == current_user.id) \
+            .first() is not None
     elif type == 'macro':
-        check = db.session.query(Macros.id).filter_by(id=id).scalar() is not None
+        check = db.session.query(Macros) \
+            .filter(Macros.id == id) \
+            .filter(Macros.author_id == current_user.id) \
+            .first() is not None
     elif type == 'collection':
-        check = db.session.query(Collection.id).filter_by(id=id).scalar() is not None
+        check = db.session.query(Collection) \
+            .filter(Collection.id == id) \
+            .filter(Collection.author_id == current_user.id) \
+            .first() is not None
     elif type == 'tag':
-        check = db.session.query(Tags.id).filter_by(id=id).scalar() is not None
-    elif type == 'marketproduct':
-        check = db.session.query(MarketPlace.id).filter_by(id=id).scalar() is not None
+        check = db.session.query(Tags) \
+            .filter(Tags.id == id) \
+            .filter(Tags.author_id == current_user.id) \
+            .first() is not None
 
     return str(int(check == True))
 
