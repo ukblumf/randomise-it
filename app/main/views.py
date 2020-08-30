@@ -1297,12 +1297,12 @@ def share_public():
             for t in tables:
                 table_references[current_user.username + '.table.' + t.id] = find_references(
                     current_user.username + '.table.' + t.id, t.definition,
-                    [current_user.username + '.table.' + t.id + '::0'], 0)
+                    [current_user.username + '.table.' + t.id + '::0'], 0, "")
         if macros.count():
             for m in macros:
                 macro_references[current_user.username + '.macro.' + m.id] = find_references(
                     current_user.username + '.macro.' + m.id, m.definition,
-                    [current_user.username + '.macro.' + m.id + '::0'], 0)
+                    [current_user.username + '.macro.' + m.id + '::0'], 0, "")
     except Exception as inst:
         return render_template('error_page.html', description=inst)
 
@@ -1325,7 +1325,7 @@ def build_collection_references(coll_obj):
             table = get_random_table_record(username, reference_id)
             if table is not None:
                 try:
-                    coll_dict[coll_item] = find_references(coll_item, table.definition, [coll_item + '::0'], 0)
+                    coll_dict[coll_item] = find_references(coll_item, table.definition, [coll_item + '::0'], 0, "")
                 except Exception as inst:
                     raise inst
             else:
@@ -1334,7 +1334,7 @@ def build_collection_references(coll_obj):
             macro = get_macro_record(username, reference_id)
             if macro is not None:
                 try:
-                    coll_dict[coll_item] = find_references(coll_item, macro.definition, [coll_item + '::0'], 0)
+                    coll_dict[coll_item] = find_references(coll_item, macro.definition, [coll_item + '::0'], 0, "")
                 except Exception as inst:
                     raise inst
             else:
@@ -1348,8 +1348,14 @@ def build_collection_references(coll_obj):
     return coll_dict
 
 
-def find_references(obj_id, definition, references, depth):
+def find_references(obj_id, definition, references, depth, circular):
     depth += 1
+    if circular.find(obj_id + "::") >= 0:
+        raise Exception('CircularReference',
+                        obj_id + ' already used in chain.  ' + circular + '. Depth = ' + str(depth))
+
+    circular += obj_id + "::"
+
     open_angle_brackets = definition.find("<<")
     while open_angle_brackets >= 0:
         close_angle_brackets = definition.find(">>", open_angle_brackets)
@@ -1358,24 +1364,19 @@ def find_references(obj_id, definition, references, depth):
             # already processed this id at this level
             open_angle_brackets = definition.find("<<", close_angle_brackets)
             continue
-        # find if reference exists up the chain
-        for d in range(0, depth - 1):
-            if external_id + '::' + str(d) in references:
-                raise Exception('CircularReference',
-                                external_id + ' already used in chain. Found in ' + obj_id + '. Depth = ' + str(depth))
         username, id_type, reference_id = split_id(external_id)
         if id_type == 'table':
             table = get_random_table_record(username, reference_id)
             if table is not None:
                 references.append(external_id + '::' + str(depth))
-                find_references(external_id, table.definition, references, depth)
+                find_references(external_id, table.definition, references, depth, circular)
             else:
                 raise Exception('Table not found', external_id + ' not found referenced from ' + obj_id)
         elif id_type == 'macro':
             macro = get_macro_record(username, reference_id)
             if macro is not None:
                 references.append(external_id + '::' + str(depth))
-                find_references(external_id, macro.definition, references, depth)
+                find_references(external_id, macro.definition, references, depth, circular)
             else:
                 raise Exception('Macro not found', external_id + ' not found  referenced from ' + obj_id)
         open_angle_brackets = definition.find("<<", close_angle_brackets)
