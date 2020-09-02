@@ -1116,7 +1116,6 @@ def refresh_shared_content(id):
         public_macro = PublicMacros.query.get_or_404([reference_id, current_user.id])
         public_macro.name = macro.name
         public_macro.definition = macro.definition
-        public_macro.definition_html = macro.definition
         public_macro.tags = macro.tags
         public_macro.last_modified = macro.last_modified
         public_macro.supporting = macro.supporting
