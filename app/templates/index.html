@@ -16,7 +16,7 @@
             Or just randomly create a plot that your imagination has to explain.<br><br>
             This site is in BETA phase and most of the discoverable content has been created from several sources across the internet, no claim is made to the ownership of the content.
             {% if not current_user.is_authenticated %}
-                <br><br>Below is a small random selection of content, click on the Tables and Macros below to see output in the preview panel. <a id='register' href="{{ url_for('auth.register') }}">Create an account</a> to discover more.
+                <br><br>Below is a small random selection of content, click see output in the preview panel. <a id='register' href="{{ url_for('auth.register') }}">Create an account</a> to discover more.
             {% endif %}
         </div>
     </div>
