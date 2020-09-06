@@ -56,14 +56,14 @@ def index():
     public_table_count = 0
     public_macro_count = 0
     if current_user.is_anonymous:
-        public_tables = PublicRandomTable.query.filter(PublicRandomTable.supporting == False).order_by(func.random()).limit(10)
+        public_tables = PublicRandomTable.query.filter(PublicRandomTable.supporting == False).order_by(
+            PublicRandomTable.last_modified).limit(300)
         public_table_count = db.session.query(PublicRandomTable).count()
-        public_macros = PublicMacros.query.filter(PublicMacros.supporting == False).order_by(func.random()).limit(10)
+        public_macros = PublicMacros.query.filter(PublicMacros.supporting == False).order_by(
+            PublicMacros.last_modified).limit(300)
         public_macro_count = db.session.query(PublicMacros).count()
     else:
         stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
-
-
 
     return render_template('index.html', tables=tables, macro_list=macros, collections=collection_list,
                            public_collections=public_collections, public_macros=public_macros,
@@ -1151,24 +1151,24 @@ def id_exists(type, id):
     check = "0"
     if type == 'table':
         check = db.session.query(RandomTable) \
-            .filter(RandomTable.id == id) \
-            .filter(RandomTable.author_id == current_user.id) \
-            .first() is not None
+                    .filter(RandomTable.id == id) \
+                    .filter(RandomTable.author_id == current_user.id) \
+                    .first() is not None
     elif type == 'macro':
         check = db.session.query(Macros) \
-            .filter(Macros.id == id) \
-            .filter(Macros.author_id == current_user.id) \
-            .first() is not None
+                    .filter(Macros.id == id) \
+                    .filter(Macros.author_id == current_user.id) \
+                    .first() is not None
     elif type == 'collection':
         check = db.session.query(Collection) \
-            .filter(Collection.id == id) \
-            .filter(Collection.author_id == current_user.id) \
-            .first() is not None
+                    .filter(Collection.id == id) \
+                    .filter(Collection.author_id == current_user.id) \
+                    .first() is not None
     elif type == 'tag':
         check = db.session.query(Tags) \
-            .filter(Tags.id == id) \
-            .filter(Tags.author_id == current_user.id) \
-            .first() is not None
+                    .filter(Tags.id == id) \
+                    .filter(Tags.author_id == current_user.id) \
+                    .first() is not None
 
     return str(int(check == True))
 
