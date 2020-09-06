@@ -330,12 +330,16 @@
                     macro_datatable.draw();
                     collection_datatable.draw();
                 });
-                let tag_cookie = Cookies.get('index-tag');
-                if (tag_cookie !== 'undefined') {
-                    if (tag_cookie.trim() != "") {
-                        $("#tagFilter").val(tag_cookie);
-                        $("#tagFilter").trigger('change');
+                try {
+                    let tag_cookie = Cookies.get('index-tag');
+                    if (tag_cookie !== 'undefined') {
+                        if (tag_cookie.trim() != "") {
+                            $("#tagFilter").val(tag_cookie);
+                            $("#tagFilter").trigger('change');
+                        }
                     }
+                } catch(err) {
+                    console.log('Error dealing with cookie ' + err)
                 }
             {% else %}
                 $('#public_tablesDataTable').DataTable({
