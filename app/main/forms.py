@@ -100,7 +100,8 @@ class CollectionForm(FlaskForm):
 
 
 class TagForm(FlaskForm):
-    tag_id = StringField('Tag ID', validators=[Length(0, 50)])
+    tag_id = StringField('Tag ID', validators=[Length(0, 50), Regexp('(?=^[a-z0-9-]*$)', 0,
+                                                                     'Tags must have only lowercase letters, numbers or dashes')])
     submit = SubmitField('Save')
 
 

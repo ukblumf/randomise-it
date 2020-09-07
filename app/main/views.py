@@ -744,12 +744,13 @@ def get_collection(username, id):
 def create_tag():
     form = TagForm()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
-        tag = Tags(id=form.tag_id.data,
-                   author_id=current_user.id)
-
-        db.session.add(tag)
-        flash('Tag Created')
-        return redirect(url_for('.create_tag'))
+        if id_exists('tag', form.tag_id.data) == '1':
+            flash('Tag Already Exists')
+        else:
+            tag = Tags(id=form.tag_id.data,
+                       author_id=current_user.id)
+            db.session.add(tag)
+            flash('Tag Created')
 
     return render_template('create_tag.html', form=form, form_type='tag')
 

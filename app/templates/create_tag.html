@@ -20,16 +20,7 @@
 {{ super() }}
 <script>
 $(document).ready(function(){
-
-  var name_form_field = $("#{{ form_type }}_name");
-  var id_form_field = $("#{{ form_type }}_id");
-
-  name_form_field.blur(function() {
-    if ( !( id_form_field.val() ) ) {
-        var slug_text = name_form_field.val();
-        id_form_field.val(slugify( slug_text ));
-    }
-  });
+  let id_form_field = $("#{{ form_type }}_id");
 
   id_form_field.blur(function() {
     if ( id_form_field.val() ) {
@@ -37,7 +28,7 @@ $(document).ready(function(){
             alert('Tag too long (50 chars max)');
             return;
         }
-        var id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
+        let id_exists_url = "{{ url_for('.id_exists', type=form_type, id='') }}" + id_form_field.val();
 
         $.ajax({url: id_exists_url, success: function(result){
             if (result == '1') {
