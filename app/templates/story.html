@@ -30,7 +30,7 @@
                         <ul class="list-group" id="macroList">
                             {{ macros.list_rows_in_ul_with_pin('macro', macro_list, form.pins.data, current_user) }}
                             {% for m in public_macros %}
-                                <li class="list-group-item">
+                                <li class="list-group-item" {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
                                     {% set icon_pin = 's' %}
                                     {% if pins %}
                                         {% if m.original_author.username + '.macro.' + m.macro_id in pins %}
@@ -51,7 +51,7 @@
                             {{ macros.list_rows_in_ul_with_pin('table', tables, form.pins.data, current_user) }}
                             {% for t in public_tables %}
                                 <li class="list-group-item"
-                                    {% if t.public_table.tags is defined %}data-tag="{{ t.public_table.tags }}{% endif %}">
+                                    {% if t.public_table.tags is defined %}data-tag="{{ t.public_table.tags }}"{% endif %}">
                                     {% set icon_pin = 's' %}
                                     {% if pins %}
                                         {% if t.original_author.username + '.table.' + t.table_id in pins %}
@@ -72,7 +72,7 @@
                             {{ macros.list_rows_in_ul_with_pin('collection', collections, form.pins.data, current_user) }}
                             {% for c in public_collections %}
                                 <li class="list-group-item"
-                                    {% if c.public_collection.tags is defined %}data-tag="{{ c.public_collection.tags }}{% endif %}">
+                                    {% if c.public_collection.tags is defined %}data-tag="{{ c.public_collection.tags }}"{% endif %}">
                                     {% set icon_pin = 's' %}
                                     {% if pins %}
                                         {% if c.original_author.username + '.collection.' + t.table_id in pins %}

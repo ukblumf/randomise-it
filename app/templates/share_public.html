@@ -7,13 +7,7 @@
 {% block page_content %}
     <div class="container-fluid">
         <div class="row">
-            <label for="tagFilter">Tag:</label>
-            <select id="tagFilter">
-                <option label="" selected></option>
-                {% for tag in tags %}
-                    <option label="{{ tag.id }}">{{ tag.id }}</option>
-                {% endfor %}
-            </select>
+            {{ macros.tag_filter(tags) }}
             <label for="sharedFilter">Show Content:</label>
             <select id="sharedFilter">
                 <option value="all" selected>All Content</option>

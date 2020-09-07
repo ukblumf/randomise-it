@@ -58,9 +58,12 @@ def index():
     if current_user.is_anonymous:
         public_tables = PublicRandomTable.query.filter(PublicRandomTable.supporting == False).order_by(
             PublicRandomTable.last_modified).limit(300)
+        tag_set = {pt.tags for pt in public_tables if pt.tags is not None}
         public_table_count = db.session.query(PublicRandomTable).count()
         public_macros = PublicMacros.query.filter(PublicMacros.supporting == False).order_by(
             PublicMacros.last_modified).limit(300)
+        [tag_set.add(pm.tags) for pm in public_macros if pm.tags is not None]
+        tags = sorted(tag_set)
         public_macro_count = db.session.query(PublicMacros).count()
     else:
         stories = Post.query.filter(Post.author_id == current_user.id).order_by(Post.timestamp.desc())
@@ -1426,7 +1429,7 @@ def collection_query(remove_supporting=False):
 
 
 def tag_query():
-    return Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.id.asc())
+    return [t.id for t in Tags.query.filter(Tags.author_id == current_user.id).order_by(Tags.id.asc())]
 
 
 def required_data(remove_supporting=False):
@@ -1437,6 +1440,7 @@ def required_data(remove_supporting=False):
     macros = macro_query(remove_supporting=remove_supporting)
     collection_list = collection_query(remove_supporting=remove_supporting)
     tags = tag_query()
+    tags.sort()
     # public_tables = None
     # public_macros = None
     # public_collections = None

@@ -23,13 +23,7 @@
     {% if current_user.is_authenticated %}
         <div class="container-fluid invisible" id="mainContent">
             <div class="row">
-                <label for="tagFilter">Tag:</label>
-                <select id="tagFilter">
-                    <option label="" selected></option>
-                    {% for tag in tags %}
-                        <option label="{{ tag.id }}">{{ tag.id }}</option>
-                    {% endfor %}
-                </select>
+                {{ macros.tag_filter(tags) }}
             </div>
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#tablesMacros">Tables and Macros</a></li>
@@ -37,6 +31,7 @@
                 <li><a data-toggle="tab" href="#scratchpad">Scratchpad</a></li>
             </ul>
             <div class="tab-content" id="mainContent">
+                <br>
                 <div id="tablesMacros" class="tab-pane fade in active">
                     <div class="row">
                         <div class="col-md-4">
@@ -88,12 +83,12 @@
                         <div style="height: 260px; overflow-y: scroll;">
                             <ul class="list-group" id="macroList">
                                 {% for m in macro_list %}
-                                    <li class="list-group-item">
+                                    <li class="list-group-item" {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ m.author.username }}.macro.{{ m.id }}')">{{ m.name }}</button>
                                     </li>
                                 {% endfor %}
                                 {% for m in public_macros %}
-                                    <li class="list-group-item">
+                                    <li class="list-group-item" {% if m.public_macro.tags is defined %}data-tag="{{ m.public_macro.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ m.original_author.username }}.macro.{{ m.macro_id }}')">{{ m.public_macro.name }}</button>
                                     </li>
                                 {% endfor %}
@@ -105,12 +100,12 @@
                         <div style="height: 260px; overflow-y: scroll;">
                             <ul class="list-group" id="tableList">
                                 {% for t in tables %}
-                                    <li class="list-group-item">
+                                    <li class="list-group-item" {% if t.tags is defined %}data-tag="{{ t.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ t.author.username }}.table.{{ t.id }}')">{{ t.name }}</button>
                                     </li>
                                 {% endfor %}
                                 {% for t in public_tables %}
-                                    <li class="list-group-item">
+                                    <li class="list-group-item" {% if t.public_table.tags is defined %}data-tag="{{ t.public_table.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ t.original_author.username }}.table.{{ t.table_id }}')">{{ t.public_table.name }}</button>
                                     </li>
                                 {% endfor %}
@@ -122,6 +117,9 @@
         </div>
     {% else %}
         <div class="container-fluid invisible" id="mainContent">
+            <div class="row">
+                {{ macros.tag_filter(tags) }}
+            </div>
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#tablesMacros">Tables and Macros</a></li>
                 <li><a data-toggle="tab" href="#scratchpad">Scratchpad</a></li>
@@ -141,6 +139,7 @@
                                             class="text-dark">({{ item.row_count }})</small>
                                     </button>
                                 </td>
+                                <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
                             </tr>
                         {% endfor %}
                         {{ macros.list_rows_in_table_footer() }}
@@ -155,6 +154,8 @@
                                         {{ item.name }}
                                     </button>
                                 </td>
+                                <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
+
                             </tr>
                         {% endfor %}
                         {{ macros.list_rows_in_table_footer() }}
@@ -178,7 +179,7 @@
                         <div style="height: 260px; overflow-y: scroll;">
                             <ul class="list-group" id="macroList">
                                 {% for m in public_macros %}
-                                    <li class="list-group-item">
+                                    <li class="list-group-item" {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ m.author.username }}.macro.{{ m.id }}')">{{ m.name }}</button>
                                     </li>
                                 {% endfor %}
@@ -190,7 +191,7 @@
                         <div style="height: 260px; overflow-y: scroll;">
                             <ul class="list-group" id="tableList">
                                 {% for t in public_tables %}
-                                    <li class="list-group-item">
+                                    <li class="list-group-item" {% if t.tags is defined %}data-tag="{{ t.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ t.author.username }}.table.{{ t.id }}')">{{ t.name }}</button>
                                     </li>
                                 {% endfor %}
@@ -330,19 +331,8 @@
                     macro_datatable.draw();
                     collection_datatable.draw();
                 });
-                try {
-                    let tag_cookie = Cookies.get('index-tag');
-                    if (tag_cookie !== 'undefined') {
-                        if (tag_cookie.trim() != "") {
-                            $("#tagFilter").val(tag_cookie);
-                            $("#tagFilter").trigger('change');
-                        }
-                    }
-                } catch(err) {
-                    console.log('Error dealing with cookie ' + err)
-                }
             {% else %}
-                $('#public_tablesDataTable').DataTable({
+                let table_datatable = $('#public_tablesDataTable').DataTable({
                     scrollY: "600px",
                     scrollCollapse: true,
                     pageLength: 20,
@@ -356,7 +346,7 @@
                         pagination.toggle(this.api().page.info().pages > 1);
                     }
                 });
-                $('#public_macrosDataTable').DataTable({
+                let macro_datatable = $('#public_macrosDataTable').DataTable({
                     scrollY: "600px",
                     scrollCollapse: true,
                     pageLength: 20,
@@ -370,7 +360,24 @@
                         pagination.toggle(this.api().page.info().pages > 1);
                     }
                 });
+                $("#tagFilter").change(function () {
+                    Cookies.set("index-tag", $(this).children("option:selected").val());
+                    table_datatable.draw();
+                    macro_datatable.draw();
+                });
             {% endif %}
+
+            try {
+                let tag_cookie = Cookies.get('index-tag');
+                if (tag_cookie !== 'undefined') {
+                    if (tag_cookie.trim() != "") {
+                        $("#tagFilter").val(tag_cookie);
+                        $("#tagFilter").trigger('change');
+                    }
+                }
+            } catch (err) {
+                console.log('Error dealing with cookie ' + err)
+            }
 
             $("button#preview-panel-clear").click(function () {
                 $("#preview-panel").html('<div><small class="text-muted">Click on Table or Macro, see results here.</small></div>');
@@ -382,6 +389,14 @@
                 });
             }
 
+            $("#tagFilter").change(function () {
+                let tag = $(this).children("option:selected").val();
+                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
+                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
+                {% if current_user.is_authenticated %}
+                    filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag);
+                {% endif %}
+            });
             $("#tableFilter").on("keyup", function () {
                 filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
             });
