@@ -58,11 +58,11 @@ def index():
     if current_user.is_anonymous:
         public_tables = PublicRandomTable.query.filter(PublicRandomTable.supporting == False).order_by(
             PublicRandomTable.last_modified).limit(300)
-        tag_set = {pt.tags for pt in public_tables if pt.tags is not None}
+        tag_set = {pt.tags for pt in public_tables if pt.tags is not None and pt.tags != ""}
         public_table_count = db.session.query(PublicRandomTable).count()
         public_macros = PublicMacros.query.filter(PublicMacros.supporting == False).order_by(
             PublicMacros.last_modified).limit(300)
-        [tag_set.add(pm.tags) for pm in public_macros if pm.tags is not None]
+        [tag_set.add(pm.tags) for pm in public_macros if pm.tags is not None and pm.tags != ""]
         tags = sorted(tag_set)
         public_macro_count = db.session.query(PublicMacros).count()
     else:
