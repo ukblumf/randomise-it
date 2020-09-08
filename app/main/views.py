@@ -1,24 +1,25 @@
 import collections
+import re
 
+import bleach
 from flask import render_template, redirect, url_for, abort, flash, request, \
     current_app, make_response, jsonify
-from flask_login import login_required, current_user
-from sqlalchemy import and_, text, func
+from flask_login import login_required
 from flask_sqlalchemy import get_debug_queries
+from markdown import markdown
+from sqlalchemy import text
+
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, TableForm, StoryForm, MacroForm, \
     CollectionForm, TagForm, MarketForm, BulkTableImportForm, Share
-from .. import db
-from ..models import Permission, Role, User, Post, RandomTable, Macros, ProductPermission, Collection, Tags, \
+from ..decorators import admin_required
+from ..get_random_value import get_row_from_random_table_definition, process_text_extended
+from ..models import Permission, Role, Post, ProductPermission, Tags, \
     MarketPlace, MarketCategory
 from ..public_models import *
-from ..decorators import admin_required, permission_required
-from ..validate import check_table_definition_validity, validate_text, validate_collection
 from ..randomise_utils import *
-from ..get_random_value import get_row_from_random_table_definition, process_text_extended
-from markdown import markdown
-import bleach
-import re
+from ..validate import check_table_definition_validity, validate_text, validate_collection
+from profanity_filter import ProfanityFilter
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
@@ -750,10 +751,14 @@ def create_tag():
         if id_exists('tag', form.tag_id.data) == '1':
             flash('Tag Already Exists')
         else:
-            tag = Tags(id=form.tag_id.data,
-                       author_id=current_user.id)
-            db.session.add(tag)
-            flash('Tag Created')
+            pf = ProfanityFilter()
+            if pf.is_profane(form.tag_id.data):
+                flash('Sorry tag cannot be used')
+            else:
+                tag = Tags(id=form.tag_id.data,
+                           author_id=current_user.id)
+                db.session.add(tag)
+                flash('Tag Created')
 
     return render_template('create_tag.html', form=form, form_type='tag')
 
