@@ -198,10 +198,10 @@
                         <tbody id="tagList" style="height: 200px">
                         {% for item in tags %}
                             <tr>
-                                <td>{{ item.id }}</td>
+                                <td>{{ item }}</td>
                                 <td>
-                                    <button onclick="deleteTag($(this));" id="{{ item.id }}"
-                                            data-title="{{ item.id }}" class="btn btn-danger">DELETE
+                                    <button onclick="deleteTag($(this));" id="{{ item }}"
+                                            data-title="{{ item }}" class="btn btn-danger">DELETE
                                     </button>
                                 </td>
                             </tr>
