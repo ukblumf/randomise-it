@@ -19,7 +19,6 @@ from ..models import Permission, Role, Post, ProductPermission, Tags, \
 from ..public_models import *
 from ..randomise_utils import *
 from ..validate import check_table_definition_validity, validate_text, validate_collection
-from profanity_filter import ProfanityFilter
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
@@ -751,14 +750,10 @@ def create_tag():
         if id_exists('tag', form.tag_id.data) == '1':
             flash('Tag Already Exists')
         else:
-            pf = ProfanityFilter()
-            if pf.is_profane(form.tag_id.data):
-                flash('Sorry tag cannot be used')
-            else:
-                tag = Tags(id=form.tag_id.data,
-                           author_id=current_user.id)
-                db.session.add(tag)
-                flash('Tag Created')
+            tag = Tags(id=form.tag_id.data,
+                       author_id=current_user.id)
+            db.session.add(tag)
+            flash('Tag Created')
 
     return render_template('create_tag.html', form=form, form_type='tag')
 
