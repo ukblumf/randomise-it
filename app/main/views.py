@@ -43,9 +43,13 @@ def before_request():
     if not current_user.is_anonymous:
         if current_user.login_ban:
             if current_user.login_ban_until is None:
-                return render_template('error_page.html', description='You are BANNED from using the Randomist because ' + current_user.login_ban_description)
+                ban_description = current_user.login_ban_description
+                logout_user()
+                return render_template('error_page.html', description='You are BANNED from using the Randomist because ' + ban_description)
             if datetime.datetime.now() < current_user.login_ban_until:
-                return render_template('error_page.html', description='You are BANNED from using the Randomist until ' + current_user.login_ban_until.strftime("%c") + ' because ' + current_user.login_ban_description)
+                ban_description = current_user.login_ban_description
+                ban_until = current_user.login_ban_until.strftime("%c")
+                return render_template('error_page.html', description='You are BANNED from using the Randomist until ' + ban_until + ' because ' + ban_description)
 
 
 @main.after_app_request
