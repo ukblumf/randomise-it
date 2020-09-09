@@ -4,7 +4,7 @@ import re
 import bleach
 from flask import render_template, redirect, url_for, abort, flash, request, \
     current_app, make_response, jsonify
-from flask_login import login_required
+from flask_login import login_required, logout_user
 from flask_sqlalchemy import get_debug_queries
 from markdown import markdown
 from sqlalchemy import text
@@ -19,6 +19,7 @@ from ..models import Permission, Role, Post, ProductPermission, Tags, \
 from ..public_models import *
 from ..randomise_utils import *
 from ..validate import check_table_definition_validity, validate_text, validate_collection
+import datetime
 
 ALLOWED_TAGS = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
                 'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
@@ -35,6 +36,16 @@ def slugify(slug_text):
     slug_text = u'-'.join(slug_text.split())
     slug_text = re.sub('--+', '-', slug_text)
     return slug_text
+
+
+@main.before_app_request
+def before_request():
+    if not current_user.is_anonymous:
+        if current_user.login_ban:
+            if current_user.login_ban_until is None:
+                return render_template('error_page.html', description='You are BANNED from using the Randomist because ' + current_user.login_ban_description)
+            if datetime.datetime.now() < current_user.login_ban_until:
+                return render_template('error_page.html', description='You are BANNED from using the Randomist until ' + current_user.login_ban_until.strftime("%c") + ' because ' + current_user.login_ban_description)
 
 
 @main.after_app_request
@@ -1180,6 +1191,12 @@ def id_exists(type, id):
 @main.route('/share-public', methods=['GET', 'POST'])
 @login_required
 def share_public():
+    if current_user.share_ban:
+        if current_user.share_ban_until is None:
+            return render_template('error_page.html', description='You are banned from sharing because ' + current_user.share_ban_description)
+        if datetime.datetime.now() < current_user.share_ban_until:
+            return render_template('error_page.html', description='You are banned from sharing until ' + current_user.share_ban_until.strftime("%c") + ' because ' + current_user.share_ban_description)
+
     form = Share()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():
         with db.session.no_autoflush:
