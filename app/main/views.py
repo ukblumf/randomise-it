@@ -49,6 +49,7 @@ def before_request():
             if datetime.datetime.now() < current_user.login_ban_until:
                 ban_description = current_user.login_ban_description
                 ban_until = current_user.login_ban_until.strftime("%c")
+                logout_user()
                 return render_template('error_page.html', description='You are BANNED from using the Randomist until ' + ban_until + ' because ' + ban_description)
 
 
