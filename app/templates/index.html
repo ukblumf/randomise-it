@@ -83,12 +83,14 @@
                         <div style="height: 260px; overflow-y: scroll;">
                             <ul class="list-group" id="macroList">
                                 {% for m in macro_list %}
-                                    <li class="list-group-item" {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
+                                    <li class="list-group-item"
+                                        {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ m.author.username }}.macro.{{ m.id }}')">{{ m.name }}</button>
                                     </li>
                                 {% endfor %}
                                 {% for m in public_macros %}
-                                    <li class="list-group-item" {% if m.public_macro.tags is defined %}data-tag="{{ m.public_macro.tags }}"{% endif %}>
+                                    <li class="list-group-item"
+                                        {% if m.public_macro.tags is defined %}data-tag="{{ m.public_macro.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ m.original_author.username }}.macro.{{ m.macro_id }}')">{{ m.public_macro.name }}</button>
                                     </li>
                                 {% endfor %}
@@ -100,12 +102,14 @@
                         <div style="height: 260px; overflow-y: scroll;">
                             <ul class="list-group" id="tableList">
                                 {% for t in tables %}
-                                    <li class="list-group-item" {% if t.tags is defined %}data-tag="{{ t.tags }}"{% endif %}>
+                                    <li class="list-group-item"
+                                        {% if t.tags is defined %}data-tag="{{ t.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ t.author.username }}.table.{{ t.id }}')">{{ t.name }}</button>
                                     </li>
                                 {% endfor %}
                                 {% for t in public_tables %}
-                                    <li class="list-group-item" {% if t.public_table.tags is defined %}data-tag="{{ t.public_table.tags }}"{% endif %}>
+                                    <li class="list-group-item"
+                                        {% if t.public_table.tags is defined %}data-tag="{{ t.public_table.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ t.original_author.username }}.table.{{ t.table_id }}')">{{ t.public_table.name }}</button>
                                     </li>
                                 {% endfor %}
@@ -163,6 +167,9 @@
                     <div class="col-md-4">
                         <h2>Preview</h2>
                         <div class="panel panel-default">
+                            <button type="button" class="close pull-right" id="preview-panel-clear">
+                                <span aria-hidden="true">&times;</span><span class="sr-only">Clear</span>
+                            </button>
                             <div class="panel-body" id="preview-panel">
                                 <div><small class="text-muted">Click on Table or Macro, see results here.</small></div>
                             </div>
@@ -179,7 +186,8 @@
                         <div style="height: 260px; overflow-y: scroll;">
                             <ul class="list-group" id="macroList">
                                 {% for m in public_macros %}
-                                    <li class="list-group-item" {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
+                                    <li class="list-group-item"
+                                        {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ m.author.username }}.macro.{{ m.id }}')">{{ m.name }}</button>
                                     </li>
                                 {% endfor %}
@@ -191,7 +199,8 @@
                         <div style="height: 260px; overflow-y: scroll;">
                             <ul class="list-group" id="tableList">
                                 {% for t in public_tables %}
-                                    <li class="list-group-item" {% if t.tags is defined %}data-tag="{{ t.tags }}"{% endif %}>
+                                    <li class="list-group-item"
+                                        {% if t.tags is defined %}data-tag="{{ t.tags }}"{% endif %}>
                                         <button onclick="addItem('{{ t.author.username }}.table.{{ t.id }}')">{{ t.name }}</button>
                                     </li>
                                 {% endfor %}
