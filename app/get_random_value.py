@@ -11,19 +11,47 @@ def process_text_extended(text):
         return False
 
     def extract_enclosed_text(close_char):
+        nonlocal i
+        nonlocal text
+        nonlocal opening_commands
         closing_position = text.find(close_char + close_char, i)
         if closing_position >= 0:
-            return text[i + 2:closing_position], closing_position
+            if close_char == ']':
+                opening_commands -= 1
+                find_embedded_command = text[i:closing_position].find('[[', 0)
+                if find_embedded_command >= 0:
+                    opening_commands += text[i:closing_position].count('[[')
+                    find_embedded_command += i
+                    text = text[:find_embedded_command+2] + text[find_embedded_command+2:closing_position].replace(':', '§') + text[closing_position:]
+                    tmp_i = i
+                    i = closing_position+2
+                    _, closing_position = extract_enclosed_text(']')
+                    i = tmp_i
+                else:
+                    tmp_i = i
+                    while opening_commands > 0:
+                        text = text[:tmp_i] + text[tmp_i:closing_position].replace(':', '§') + text[closing_position:]
+                        opening_commands -= 1
+                        if opening_commands > 0:
+                            tmp_i = closing_position + 2
+                            closing_position = text.find(']]', tmp_i)
+                        else:
+                            closing_position += 2
+
+                return text[i:closing_position], closing_position
+            else:
+                return text[i:closing_position], closing_position
         return "", -1
 
     i = 0
     loop_control = {}
     new_text = ''
-
+    opening_commands = 0
     while True:
         increment = True
         #  check for dice, enclosed by (( ))
         if char_check('('):
+            i += 2
             enclosed_text, cursor_position = extract_enclosed_text(')')
             if enclosed_text:
                 generated_text = dice_generator(enclosed_text).rstrip(' ').rstrip(',')
@@ -33,6 +61,7 @@ def process_text_extended(text):
                     increment = False
         #  Check for external reference (table or macro), enclosed by << >>
         elif char_check('<'):
+            i += 2
             enclosed_reference, cursor_position = extract_enclosed_text('>')
             if enclosed_reference:
                 generated_text = extract_reference_link(enclosed_reference).rstrip(' ').rstrip(',')
@@ -42,6 +71,8 @@ def process_text_extended(text):
 
         #  Check for programming directive, enclosed by [[ ]]
         elif char_check('['):
+            opening_commands = 1
+            i += 2
             command, cursor_position = extract_enclosed_text(']')
             command_list = iter(command.split(':'))
             directive = next(command_list)
@@ -65,13 +96,21 @@ def process_text_extended(text):
                         i = cursor_position + 2
                         increment = False
             elif directive == 'IF':
-                chance, true_condition = params
+                chance = 0
+                true_condition = ""
+                false_condition = ""
+                if len(params) == 2:
+                    chance, true_condition = params
+                else:
+                    chance, true_condition, false_condition = params
                 if random.randint(1, 100) <= int(chance.strip('%')):
-                    new_text += process_text_extended(true_condition)
+                    new_text += process_text_extended(true_condition.replace('§', ':'))
+                elif false_condition is not None:
+                    new_text += process_text_extended(false_condition.replace('§', ':'))
                 i = cursor_position + 2
                 increment = False
             elif directive == 'CHOICE':
-                new_text += process_text_extended(params[random.randint(0, len(params)-1)])
+                new_text += process_text_extended(params[random.randint(0, len(params)-1)].replace('§', ':'))
                 i = cursor_position + 2
                 increment = False
 
