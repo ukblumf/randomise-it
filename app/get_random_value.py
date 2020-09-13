@@ -5,7 +5,7 @@ import re
 
 def process_text_extended(text):
     def char_check(char):
-        if i < len(text)-7:
+        if i < len(text)-6:
             if text[i] == char and text[i+1] == char:
                 return True
         return False
