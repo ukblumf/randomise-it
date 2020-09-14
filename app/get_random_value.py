@@ -2,6 +2,8 @@ from .randomise_utils import get_random_table_record, get_macro_record
 import random
 import re
 
+var_control = {}
+
 
 def process_text_extended(text):
     def char_check(char):
@@ -14,6 +16,7 @@ def process_text_extended(text):
         nonlocal i
         nonlocal text
         nonlocal opening_commands
+        global var_control
         closing_position = text.find(close_char + close_char, i)
         if closing_position >= 0:
             if close_char == ']':
@@ -111,6 +114,17 @@ def process_text_extended(text):
                 increment = False
             elif directive == 'CHOICE':
                 new_text += process_text_extended(params[random.randint(0, len(params)-1)].replace('§', ':'))
+                i = cursor_position + 2
+                increment = False
+            elif directive == 'VAR':
+                if len(params) == 2:
+                    #  setting variable
+                    var_control[params[0]] = process_text_extended(params[1].replace('§', ':'))
+                else:
+                    if params[0] in var_control:
+                        new_text += var_control[params[0]]
+                    else:
+                        new_text += "missing variable " + params[0]
                 i = cursor_position + 2
                 increment = False
 
