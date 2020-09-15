@@ -11,11 +11,11 @@ from sqlalchemy import text
 
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, TableForm, StoryForm, MacroForm, \
-    CollectionForm, TagForm, MarketForm, BulkTableImportForm, Share
+    CollectionForm, TagForm, MarketForm, BulkTableImportForm, Share, ViewTableForm, ViewMacroForm
 from ..decorators import admin_required
 from ..get_random_value import get_row_from_random_table_definition, process_text_extended
 from ..models import Permission, Role, Post, ProductPermission, Tags, \
-    MarketPlace, MarketCategory
+    MarketPlace, MarketCategory, User
 from ..public_models import *
 from ..randomise_utils import *
 from ..validate import check_table_definition_validity, validate_text, validate_collection
@@ -45,12 +45,14 @@ def before_request():
             if current_user.login_ban_until is None:
                 ban_description = current_user.login_ban_description
                 logout_user()
-                return render_template('error_page.html', description='You are BANNED from using the Randomist because ' + ban_description)
+                return render_template('error_page.html',
+                                       description='You are BANNED from using the Randomist because ' + ban_description)
             if datetime.datetime.now() < current_user.login_ban_until:
                 ban_description = current_user.login_ban_description
                 ban_until = current_user.login_ban_until.strftime("%c")
                 logout_user()
-                return render_template('error_page.html', description='You are BANNED from using the Randomist until ' + ban_until + ' because ' + ban_description)
+                return render_template('error_page.html',
+                                       description='You are BANNED from using the Randomist until ' + ban_until + ' because ' + ban_description)
 
 
 @main.after_app_request
@@ -336,7 +338,8 @@ def create_table():
                             tags=form.table_tags.data,
                             author_id=current_user.id,
                             modifier_name=form.modifier_name.data,
-                            supporting=form.supporting.data)
+                            supporting=form.supporting.data,
+                            visible_contents=form.visible_contents.data)
 
         max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = check_table_definition_validity(
             table)
@@ -379,6 +382,7 @@ def edit_table(username, id):
         table.tags = form.table_tags.data
         table.modifier_name = form.modifier_name.data
         table.supporting = form.supporting.data
+        table.visible_contents = form.visible_contents.data
 
         max_rng, min_rng, validate_table_definition, table_type, error_message, row_count = \
             check_table_definition_validity(table)
@@ -402,6 +406,7 @@ def edit_table(username, id):
     form.table_id.render_kw = {'readonly': True}
     form.modifier_name.data = table.modifier_name
     form.supporting.data = table.supporting
+    form.visible_contents.data = table.visible_contents
 
     collection_list, macros, tables, tags, public_collections, public_macros, public_tables = required_data()
 
@@ -590,7 +595,8 @@ def create_macro():
                        definition=form.macro_body.data,
                        tags=form.macro_tags.data,
                        author_id=current_user.id,
-                       supporting=form.supporting.data)
+                       supporting=form.supporting.data,
+                       visible_contents=form.visible_contents.data)
 
         validate_macro_definition, error_message = validate_text(macro.definition, macro.id)
         if validate_macro_definition:
@@ -625,6 +631,7 @@ def edit_macro(username, id):
         if form.macro_tags.data != '':
             macro.tags = form.macro_tags.data
         macro.supporting = form.supporting.data
+        macro.visible_contents = form.visible_contents.data
 
         validate_macro_definition, error_message = validate_text(macro.definition, macro.id)
         if validate_macro_definition:
@@ -639,6 +646,7 @@ def edit_macro(username, id):
     form.macro_id.data = macro.id
     form.macro_id.render_kw = {'readonly': True}
     form.supporting.data = macro.supporting
+    form.visible_contents.data = macro.visible_contents
     if (macro.tags, macro.tags) in form.macro_tags.choices:
         form.macro_tags.data = macro.tags
 
@@ -1123,6 +1131,7 @@ def refresh_shared_content(id):
         public_table.modifier_name = table.modifier_name
         public_table.last_modified = table.last_modified
         public_table.supporting = table.supporting
+        public_table.visible_contents = table.visible_contents
         db.session.add(public_table)
         db.session.commit()
 
@@ -1139,6 +1148,7 @@ def refresh_shared_content(id):
         public_macro.tags = macro.tags
         public_macro.last_modified = macro.last_modified
         public_macro.supporting = macro.supporting
+        public_macro.visible_contents = macro.visible_contents
         db.session.add(public_macro)
         db.session.commit()
 
@@ -1193,14 +1203,55 @@ def id_exists(type, id):
     return str(int(check == True))
 
 
+@main.route('/view-table/<string:username>/<string:id>', methods=['GET'])
+@login_required
+def view_table(username, id):
+    table_owner = User.query.filter_by(username=username).first()
+    if table_owner is None:
+        abort(404)
+    table = PublicRandomTable.query.get_or_404([id, table_owner.id])
+    if table.visible_contents:
+        form = ViewTableForm()
+        form.name.data = table.name
+        form.id.data = table.id
+        form.description.data = table.description
+        form.definition.data = table.definition
+        form.tag.data = table.tags
+        form.modifier_name.data = table.modifier_name
+        return render_template('view.html', form=form)
+    else:
+        return render_template('error_page.html', description='The contents of this table are not viewable. Nice try.')
+
+
+@main.route('/view-macro/<string:username>/<string:id>', methods=['GET'])
+@login_required
+def view_macro(username, id):
+    macro_owner = User.query.filter_by(username=username).first()
+    if macro_owner is None:
+        abort(404)
+    macro = PublicMacros.query.get_or_404([id, macro_owner.id])
+    if macro.visible_contents:
+        form = ViewMacroForm()
+        form.name.data = macro.name
+        form.id.data = macro.id
+        form.definition.data = macro.definition
+        form.tag.data = macro.tags
+        return render_template('view.html', form=form)
+    else:
+        return render_template('error_page.html', description='The contents of this macro are not viewable. Nice try.')
+
+
 @main.route('/share-public', methods=['GET', 'POST'])
 @login_required
 def share_public():
     if current_user.share_ban:
         if current_user.share_ban_until is None:
-            return render_template('error_page.html', description='You are banned from sharing because ' + current_user.share_ban_description)
+            return render_template('error_page.html',
+                                   description='You are banned from sharing because ' + current_user.share_ban_description)
         if datetime.datetime.now() < current_user.share_ban_until:
-            return render_template('error_page.html', description='You are banned from sharing until ' + current_user.share_ban_until.strftime("%c") + ' because ' + current_user.share_ban_description)
+            return render_template('error_page.html',
+                                   description='You are banned from sharing until ' + current_user.share_ban_until.strftime(
+                                       "%c") + ' because ' + current_user.share_ban_description)
 
     form = Share()
     if current_user.can(Permission.WRITE_ARTICLES) and form.validate_on_submit():

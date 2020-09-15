@@ -37,13 +37,13 @@
                         <div class="col-md-4">
                             {{ macros.list_rows_in_table_header('table', current_user) }}
                             {{ macros.list_rows_in_table('table', tables, current_user) }}
-                            {{ macros.list_public_rows_in_table('table', public_tables) }}
+                            {{ macros.list_public_rows_in_table('table', public_tables, current_user) }}
                             {{ macros.list_rows_in_table_footer() }}
                         </div>
                         <div class="col-md-4">
                             {{ macros.list_rows_in_table_header('macro', current_user) }}
                             {{ macros.list_rows_in_table('macro', macro_list, current_user) }}
-                            {{ macros.list_public_rows_in_table('macro', public_macros) }}
+                            {{ macros.list_public_rows_in_table('macro', public_macros, current_user) }}
                             {{ macros.list_rows_in_table_footer() }}
                         </div>
                         <div class="col-md-4">

@@ -2,7 +2,8 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
-{% block title %}{% if form.data.table_name %}{{ form.data.table_name }}{% else %} - {{ SITE_TITLE }} - Create Random Tables{% endif %}{% endblock %}
+{% block title %}{% if form.data.table_name %}{{ form.data.table_name }}{% else %} - {{ SITE_TITLE }} - Create Random
+    Tables{% endif %}{% endblock %}
 
 {% block page_content %}
     {% if current_user.can(Permission.WRITE_ARTICLES) %}
@@ -149,6 +150,23 @@
                 }
             });
 
+            $("#supporting").click(function () {
+                if ($(this).prop("checked")) {
+                    $("#visible_contents").prop("checked", 0);
+                    $("#visible_contents").hide()
+                    $("#visible_contents").parent().hide()
+
+                } else {
+                    $("#visible_contents").show()
+                    $("#visible_contents").parent().show()
+                }
+            });
+
+            if ($("#supporting").prop("checked")) {
+                $("#visible_contents").prop("checked", 0);
+                $("#visible_contents").hide()
+                $("#visible_contents").parent().hide()
+            }
 
         });
     </script>

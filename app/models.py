@@ -434,6 +434,7 @@ class RandomTable(db.Model):
                               default=datetime.utcnow,
                               onupdate=datetime.utcnow)
     supporting = db.Column(db.Boolean, default=False)
+    visible_contents = db.Column(db.Boolean, default=False)
 
     @staticmethod
     def on_changed_table(target, value, oldvalue, initiator):
@@ -502,6 +503,7 @@ class Macros(db.Model):
                               default=datetime.utcnow,
                               onupdate=datetime.utcnow)
     supporting = db.Column(db.Boolean, default=False)
+    visible_contents = db.Column(db.Boolean, default=False)
 
     @staticmethod
     def on_changed_table(target, value, oldvalue, initiator):

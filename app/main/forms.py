@@ -67,8 +67,21 @@ class TableForm(FlaskForm):
     table_tags = SelectField('Tags')
     modifier_name = StringField('Modifier Name', validators=[Length(0, 255)],
                                 description="Leave blank if no modifiers required, otherwise enter text to display")
-    supporting = BooleanField('Supporting table?')
+    supporting = BooleanField('Supporting table? (If checked, table will not be visible when shared)')
+    visible_contents = BooleanField(
+        'Visible Contents? (If checked, users will be able to view contents of table when shared.)')
     submit = SubmitField('Save')
+
+
+class ViewTableForm(FlaskForm):
+    name = StringField('Table name', render_kw={'readonly': True})
+    id = StringField('Identifier', render_kw={'readonly': True})
+    description = TextAreaField('Description', render_kw={'readonly': True})
+    definition = TextAreaField('Random Table Definition', render_kw={'readonly': True, "rows": 20, "cols": 70})
+    tag = StringField('Tag', render_kw={'readonly': True})
+    modifier_name = StringField('Modifier Name',
+                                description="Leave blank if no modifiers required, otherwise enter text to display",
+                                render_kw={'readonly': True})
 
 
 class StoryForm(FlaskForm):
@@ -84,8 +97,17 @@ class MacroForm(FlaskForm):
     macro_id = StringField('Identifier', validators=[Length(0, 255)])
     macro_body = TextAreaField("Macro Definition", validators=[DataRequired()], render_kw={"rows": 15, "cols": 60})
     macro_tags = SelectField('Tags')
-    supporting = BooleanField('Supporting Macro?')
+    supporting = BooleanField('Supporting Macro? (If checked, macro will not be visible when shared)')
+    visible_contents = BooleanField(
+        'Visible Contents? (If checked, users will be able to view contents of macro when shared.)')
     submit = SubmitField('Save')
+
+
+class ViewMacroForm(FlaskForm):
+    name = StringField('Macro name', render_kw={'readonly': True})
+    id = StringField('Identifier', render_kw={'readonly': True})
+    definition = TextAreaField('Random Table Definition', render_kw={'readonly': True, "rows": 20, "cols": 70})
+    tag = StringField('Tag', render_kw={'readonly': True})
 
 
 class CollectionForm(FlaskForm):

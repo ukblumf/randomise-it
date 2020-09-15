@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}{{ form.data.name }} - View Contents{% endblock %}
+
+{% block page_content %}
+    <h1>View Contents</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                {{ wtf.quick_form(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -21,6 +21,7 @@ class PublicRandomTable(db.Model):
     modifier_name = db.Column(db.Text)
     last_modified = db.Column(db.DateTime)
     supporting = db.Column(db.Boolean, default=False)
+    visible_contents = db.Column(db.Boolean, default=False)
 
 
 class PublicMacros(db.Model):
@@ -36,6 +37,7 @@ class PublicMacros(db.Model):
     announcement_id = db.Column(db.Integer, db.ForeignKey('public_announcements.id'))
     last_modified = db.Column(db.DateTime)
     supporting = db.Column(db.Boolean, default=False)
+    visible_contents = db.Column(db.Boolean, default=False)
 
 
 class PublicCollection(db.Model):
