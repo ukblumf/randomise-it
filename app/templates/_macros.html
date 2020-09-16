@@ -46,10 +46,12 @@
         {% if current_user.is_authenticated %}
             {% if name != 'story' %}
                 <th>Tag</th>
+                <th>Date</th>
                 <th>Action</th>
             {% endif %}
         {% else %}
             <th>Tag</th>
+            <th>Date</th>
         {% endif %}
     </tr>
     </thead>
@@ -75,6 +77,7 @@
                     {% endif %}
                 </td>
                 <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
+                <td>{{ item.timestamp.strftime('%Y-%m-%d') }}</td>
                 {% if current_user.is_authenticated %}
                     <td>
                         <a href="{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}"
@@ -118,8 +121,10 @@
             </td>
             {% if name == 'table' %}
                 <td>{% if item.public_table.tags is defined %}{{ item.public_table.tags }}{% endif %}</td>
+                <td>{{ item.public_table.timestamp.strftime('%Y-%m-%d') }}</td>
             {% elif name == 'macro' %}
                 <td>{% if item.public_macro.tags is defined %}{{ item.public_macro.tags }}{% endif %}</td>
+                <td>{{ item.public_macro.timestamp.strftime('%Y-%m-%d') }}</td>
             {% else %}
                 <td></td>
             {% endif %}
