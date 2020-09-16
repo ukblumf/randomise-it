@@ -221,7 +221,7 @@
     <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.28.0/moment-with-locales.min.js"></script>
-    <script src="https://cdn.datatables.net/plug-ins/1.10.21/dataRender/datetime.js"></script>
+    <script src="{{ url_for('static', filename='datetime.js') }}"></script>
 
     <script>
         if (typeof Cookies.get('info-panel-close') !== 'undefined') {
@@ -310,7 +310,7 @@
                     },
                     columnDefs: [{
                         targets: 2,
-                        render: $.fn.dataTable.render.moment('Do MMM YYYY')
+                        render: $.fn.dataTable.render.fromNow()
                     }]
                 });
                 let macro_datatable = $('#macroDataTable').DataTable({
@@ -328,7 +328,7 @@
                     },
                     columnDefs: [{
                         targets: 2,
-                        render: $.fn.dataTable.render.moment('Do MMM YYYY')
+                        render: $.fn.dataTable.render.fromNow()
                     }]
                 });
                 let collection_datatable = $('#collectionDataTable').DataTable({
@@ -367,7 +367,7 @@
                     },
                     columnDefs: [{
                         targets: 2,
-                        render: $.fn.dataTable.render.moment('Do MMM YYYY')
+                        render: $.fn.dataTable.render.fromNow()
                     }]
                 });
                 let macro_datatable = $('#public_macrosDataTable').DataTable({
@@ -385,7 +385,7 @@
                     },
                     columnDefs: [{
                         targets: 2,
-                        render: $.fn.dataTable.render.moment('Do MMM YYYY')
+                        render: $.fn.dataTable.render.fromNow()
                     }]
                 });
                 $("#tagFilter").change(function () {
