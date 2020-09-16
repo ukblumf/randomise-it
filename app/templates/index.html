@@ -144,7 +144,7 @@
                                     </button>
                                 </td>
                                 <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
-                                <td>{{ item.timestamp.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ item.last_modified.strftime('%Y-%m-%d') }}</td>
                             </tr>
                         {% endfor %}
                         {{ macros.list_rows_in_table_footer() }}
@@ -160,7 +160,7 @@
                                     </button>
                                 </td>
                                 <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
-                                <td>{{ item.timestamp.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ item.last_modified.strftime('%Y-%m-%d') }}</td>
                             </tr>
                         {% endfor %}
                         {{ macros.list_rows_in_table_footer() }}
