@@ -26,24 +26,21 @@
                 {{ macros.tag_filter(tags) }}
             </div>
             <ul class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#tablesMacros">Tables and Macros</a></li>
-                <li><a data-toggle="tab" href="#collectionsStories">Stories and Collections</a></li>
+                <li class="active"><a data-toggle="tab" href="#tablesMacros">Content</a></li>
+                <li><a data-toggle="tab" href="#stories">Stories</a></li>
                 <li><a data-toggle="tab" href="#scratchpad">Scratchpad</a></li>
             </ul>
             <div class="tab-content" id="mainContent">
                 <br>
                 <div id="tablesMacros" class="tab-pane fade in active">
                     <div class="row">
-                        <div class="col-md-4">
-                            {{ macros.list_rows_in_table_header('table', current_user) }}
+                        <div class="col-md-8">
+                            {{ macros.list_rows_in_table_header('content', current_user) }}
                             {{ macros.list_rows_in_table('table', tables, current_user) }}
                             {{ macros.list_public_rows_in_table('table', public_tables, current_user) }}
-                            {{ macros.list_rows_in_table_footer() }}
-                        </div>
-                        <div class="col-md-4">
-                            {{ macros.list_rows_in_table_header('macro', current_user) }}
                             {{ macros.list_rows_in_table('macro', macro_list, current_user) }}
                             {{ macros.list_public_rows_in_table('macro', public_macros, current_user) }}
+                            {{ macros.list_rows_in_table('collection', collections, current_user) }}
                             {{ macros.list_rows_in_table_footer() }}
                         </div>
                         <div class="col-md-4">
@@ -60,57 +57,49 @@
                         </div>
                     </div>
                 </div>
-                <div id="collectionsStories" class="tab-pane fade in">
-                    <div class="col-md-4">
+                <div id="stories" class="tab-pane fade in">
+                    <div class="col-md-8">
                         {{ macros.list_rows_in_table_header('story', current_user) }}
                         {{ macros.list_rows_in_table('story', stories, current_user) }}
-                        {{ macros.list_rows_in_table_footer() }}
-                    </div>
-                    <div class="col-md-4">
-                        {{ macros.list_rows_in_table_header('collection', current_user) }}
-                        {{ macros.list_rows_in_table('collection', collections, current_user) }}
                         {{ macros.list_rows_in_table_footer() }}
                     </div>
                 </div>
                 <div id="scratchpad" class="tab-pane fade">
                     <div class="col-md-8">
-                        <textarea rows="30" style="width: 100%; max-width: 100%;" id="scratchpad_text">
+                        <textarea rows="32" style="width: 100%; max-width: 100%;" id="scratchpad_text">
                         </textarea>
                     </div>
                     <div class="col-md-4">
-                        <h4>Macros</h4>
-                        <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
-                        <div style="height: 260px; overflow-y: scroll;">
-                            <ul class="list-group" id="macroList">
+                        <input class="form-control" id="contentFilter" type="text"
+                               placeholder="Search macros and tables...">
+                        <div style="height: 600px; overflow-y: scroll;">
+                            <ul class="list-group" id="contentList">
                                 {% for m in macro_list %}
                                     <li class="list-group-item"
                                         {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
-                                        <button onclick="addItem('{{ m.author.username }}.macro.{{ m.id }}')">{{ m.name }}</button>
+                                        <button onclick="addItem('{{ m.author.username }}.macro.{{ m.id }}')"
+                                                class="btn btn-success btn-sm">{{ m.name }}</button>
                                     </li>
                                 {% endfor %}
                                 {% for m in public_macros %}
                                     <li class="list-group-item"
                                         {% if m.public_macro.tags is defined %}data-tag="{{ m.public_macro.tags }}"{% endif %}>
-                                        <button onclick="addItem('{{ m.original_author.username }}.macro.{{ m.macro_id }}')">{{ m.public_macro.name }}</button>
+                                        <button onclick="addItem('{{ m.original_author.username }}.macro.{{ m.macro_id }}')"
+                                                class="btn btn-success btn-sm">{{ m.public_macro.name }}</button>
                                     </li>
                                 {% endfor %}
-                            </ul>
-                        </div>
-                        <br>
-                        <h4>Tables</h4>
-                        <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
-                        <div style="height: 260px; overflow-y: scroll;">
-                            <ul class="list-group" id="tableList">
                                 {% for t in tables %}
                                     <li class="list-group-item"
                                         {% if t.tags is defined %}data-tag="{{ t.tags }}"{% endif %}>
-                                        <button onclick="addItem('{{ t.author.username }}.table.{{ t.id }}')">{{ t.name }}</button>
+                                        <button onclick="addItem('{{ t.author.username }}.table.{{ t.id }}')"
+                                                class="btn btn-primary btn-sm">{{ t.name }}</button>
                                     </li>
                                 {% endfor %}
                                 {% for t in public_tables %}
                                     <li class="list-group-item"
                                         {% if t.public_table.tags is defined %}data-tag="{{ t.public_table.tags }}"{% endif %}>
-                                        <button onclick="addItem('{{ t.original_author.username }}.table.{{ t.table_id }}')">{{ t.public_table.name }}</button>
+                                        <button onclick="addItem('{{ t.original_author.username }}.table.{{ t.table_id }}')"
+                                                class="btn btn-primary btn-sm">{{ t.public_table.name }}</button>
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -126,86 +115,54 @@
             </div>
             <ul class="nav nav-tabs">
                 <li class="active"><a data-toggle="tab" href="#tablesMacros">Tables and Macros</a></li>
-                <li><a data-toggle="tab" href="#scratchpad">Scratchpad</a></li>
             </ul>
             <div class="tab-content" id="mainContent">
                 <br>
                 <div id="tablesMacros" class="tab-pane fade in active">
-                    <div class="col-md-4">
-                        {{ macros.list_rows_in_table_header('public_tables', current_user) }}
-                        {% for item in public_tables %}
-                            <tr>
-                                <td>
-                                    <button id="get-random-value" class="btn btn-primary btn-sm"
-                                            value="{{ url_for('.get_random_value', username=item.author.username, id=item.id) }}"
-                                            data-modifier="{{ item.modifier_name }}">
-                                        {{ item.name }} <small
-                                            class="text-dark">({{ item.row_count }})</small>
-                                    </button>
-                                </td>
-                                <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
-                                <td>{{ item.last_modified.strftime('%Y-%m-%d') }}</td>
-                            </tr>
-                        {% endfor %}
-                        {{ macros.list_rows_in_table_footer() }}
-                    </div>
-                    <div class="col-md-4">
-                        {{ macros.list_rows_in_table_header('public_macros', current_user) }}
-                        {% for item in public_macros %}
-                            <tr>
-                                <td>
-                                    <button id="get-macro-value" class="btn btn-primary btn-sm"
-                                            value="{{ url_for('.get_macro', username=item.author.username, id=item.id) }}">
-                                        {{ item.name }}
-                                    </button>
-                                </td>
-                                <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
-                                <td>{{ item.last_modified.strftime('%Y-%m-%d') }}</td>
-                            </tr>
-                        {% endfor %}
-                        {{ macros.list_rows_in_table_footer() }}
-                    </div>
-                    <div class="col-md-4">
-                        <h2>Preview</h2>
-                        <div class="panel panel-default">
-                            <button type="button" class="close pull-right" id="preview-panel-clear">
-                                <span aria-hidden="true">&times;</span><span class="sr-only">Clear</span>
-                            </button>
-                            <div class="panel-body" id="preview-panel">
-                                <div><small class="text-muted">Click on Table or Macro, see results here.</small></div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ macros.list_rows_in_table_header('content', current_user) }}
+                            {% for item in public_tables %}
+                                <tr>
+                                    <td>
+                                        <button id="get-random-value" class="btn btn-primary btn-sm"
+                                                value="{{ url_for('.get_random_value', username=item.author.username, id=item.id) }}"
+                                                data-modifier="{{ item.modifier_name }}">
+                                            {{ item.name }} <small
+                                                class="text-dark">({{ item.row_count }})</small>
+                                        </button>
+                                    </td>
+                                    <td>table</td>
+                                    <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
+                                    <td>{{ item.last_modified.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                            {% endfor %}
+                            {% for item in public_macros %}
+                                <tr>
+                                    <td>
+                                        <button id="get-macro-value" class="btn btn-success btn-sm"
+                                                value="{{ url_for('.get_macro', username=item.author.username, id=item.id) }}">
+                                            {{ item.name }}
+                                        </button>
+                                    </td>
+                                    <td>macro</td>
+                                    <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
+                                    <td>{{ item.last_modified.strftime('%Y-%m-%d') }}</td>
+                                </tr>
+                            {% endfor %}
+                            {{ macros.list_rows_in_table_footer() }}
+                        </div>
+                        <div class="col-md-4">
+                            <br/><br/>
+                            <div class="panel panel-default">
+                                <button type="button" class="close pull-right" id="preview-panel-clear">
+                                    <span aria-hidden="true">&times;</span><span class="sr-only">Clear</span>
+                                </button>
+                                <div class="panel-body" id="preview-panel">
+                                    <div><small class="text-muted">Click on Table or Macro, see results here.</small>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="scratchpad" class="tab-pane fade">
-                    <div class="col-md-8">
-                        <textarea rows="30" style="width: 100%; max-width: 100%;" id="scratchpad_text"></textarea>
-                    </div>
-                    <div class="col-md-4">
-                        <h4>Macros</h4>
-                        <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
-                        <div style="height: 260px; overflow-y: scroll;">
-                            <ul class="list-group" id="macroList">
-                                {% for m in public_macros %}
-                                    <li class="list-group-item"
-                                        {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
-                                        <button onclick="addItem('{{ m.author.username }}.macro.{{ m.id }}')">{{ m.name }}</button>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                        <br>
-                        <h4>Tables</h4>
-                        <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
-                        <div style="height: 260px; overflow-y: scroll;">
-                            <ul class="list-group" id="tableList">
-                                {% for t in public_tables %}
-                                    <li class="list-group-item"
-                                        {% if t.tags is defined %}data-tag="{{ t.tags }}"{% endif %}>
-                                        <button onclick="addItem('{{ t.author.username }}.table.{{ t.id }}')">{{ t.name }}</button>
-                                    </li>
-                                {% endfor %}
-                            </ul>
                         </div>
                     </div>
                 </div>
@@ -230,7 +187,7 @@
         $.fn.dataTable.ext.search.push(
             function (settings, data, dataIndex) {
                 const tag = $("#tagFilter").children("option:selected").val();
-                const tag_field = data[1];
+                const tag_field = data[2];
                 if (tag == tag_field || tag == "" || typeof tag === undefined) {
                     return true;
                 }
@@ -295,105 +252,25 @@
                         pagination.toggle(this.api().page.info().pages > 1);
                     }
                 });
-                let table_datatable = $('#tableDataTable').DataTable({
-                    scrollY: "600px",
-                    scrollCollapse: true,
-                    pageLength: 25,
-                    lengthChange: false,
-                    dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                    language: {
-                        "emptyTable": "no tables. Go to <a href='/discover'>Discover</a> or <a href='/create-table'>Create</a> your own"
-                    },
-                    drawCallback: function (settings) {
-                        var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
-                        pagination.toggle(this.api().page.info().pages > 1);
-                    },
-                    columnDefs: [{
-                        targets: 2,
-                        render: $.fn.dataTable.render.fromNow()
-                    }]
-                });
-                let macro_datatable = $('#macroDataTable').DataTable({
-                    scrollY: "600px",
-                    scrollCollapse: true,
-                    pageLength: 25,
-                    lengthChange: false,
-                    dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                    language: {
-                        "emptyTable": "no macros. Go to <a href='/discover'>Discover</a> or <a href='/create-macro'>Create</a> your own"
-                    },
-                    drawCallback: function (settings) {
-                        var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
-                        pagination.toggle(this.api().page.info().pages > 1);
-                    },
-                    columnDefs: [{
-                        targets: 2,
-                        render: $.fn.dataTable.render.fromNow()
-                    }]
-                });
-                let collection_datatable = $('#collectionDataTable').DataTable({
-                    scrollY: "600px",
-                    scrollCollapse: true,
-                    pageLength: 25,
-                    lengthChange: false,
-                    dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                    language: {
-                        "emptyTable": "no collections"
-                    },
-                    drawCallback: function (settings) {
-                        var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
-                        pagination.toggle(this.api().page.info().pages > 1);
-                    }
-                });
-                $("#tagFilter").change(function () {
-                    Cookies.set("index-tag", $(this).children("option:selected").val());
-                    table_datatable.draw();
-                    macro_datatable.draw();
-                    collection_datatable.draw();
-                });
-            {% else %}
-                let table_datatable = $('#public_tablesDataTable').DataTable({
-                    scrollY: "600px",
-                    scrollCollapse: true,
-                    pageLength: 20,
-                    lengthChange: false,
-                    dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                    language: {
-                        "emptyTable": "no tables"
-                    },
-                    drawCallback: function (settings) {
-                        var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
-                        pagination.toggle(this.api().page.info().pages > 1);
-                    },
-                    columnDefs: [{
-                        targets: 2,
-                        render: $.fn.dataTable.render.fromNow()
-                    }]
-                });
-                let macro_datatable = $('#public_macrosDataTable').DataTable({
-                    scrollY: "600px",
-                    scrollCollapse: true,
-                    pageLength: 20,
-                    lengthChange: false,
-                    dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
-                    language: {
-                        "emptyTable": "no macros"
-                    },
-                    drawCallback: function (settings) {
-                        var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
-                        pagination.toggle(this.api().page.info().pages > 1);
-                    },
-                    columnDefs: [{
-                        targets: 2,
-                        render: $.fn.dataTable.render.fromNow()
-                    }]
-                });
-                $("#tagFilter").change(function () {
-                    Cookies.set("index-tag", $(this).children("option:selected").val());
-                    table_datatable.draw();
-                    macro_datatable.draw();
-                });
             {% endif %}
+            let content_datatable = $('#contentDataTable').DataTable({
+                scrollY: "60vh",
+                scrollCollapse: true,
+                pageLength: 15,
+                lengthChange: false,
+                dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
+                language: {
+                    "emptyTable": "no tables. Go to <a href='/discover'>Discover</a> or <a href='/create-table'>Create</a> your own"
+                },
+                drawCallback: function (settings) {
+                    var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
+                    pagination.toggle(this.api().page.info().pages > 1);
+                },
+                columnDefs: [{
+                    targets: 3,
+                    render: $.fn.dataTable.render.fromNow()
+                }]
+            });
 
             try {
                 let tag_cookie = Cookies.get('index-tag');
@@ -410,28 +287,27 @@
             $("button#preview-panel-clear").click(function () {
                 $("#preview-panel").html('<div><small class="text-muted">Click on Table or Macro, see results here.</small></div>');
             });
+            {% if current_user.is_authenticated %}
+                function filterList(list, filter, tag) {
+                    $("#" + list + " li").filter(function () {
+                        $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
+                    });
+                }
 
-            function filterList(list, filter, tag) {
-                $("#" + list + " li").filter(function () {
-                    $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
+                $("#contentFilter").on("keyup", function () {
+                    filterList('contentList', $("#contentFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
                 });
-            }
+            {% endif %}
 
             $("#tagFilter").change(function () {
-                let tag = $(this).children("option:selected").val();
-                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
-                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
-                {% if current_user.is_authenticated %}
-                    filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag);
-                {% endif %}
-            });
-            $("#tableFilter").on("keyup", function () {
-                filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-            });
-            $("#macroFilter").on("keyup", function () {
-                filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-            });
-
+                    let tag = $(this).children("option:selected").val();
+                    Cookies.set("index-tag", tag);
+                    content_datatable.draw();
+                    {% if current_user.is_authenticated %}
+                        filterList('contentList', $("#contentFilter").val().toLowerCase(), tag);
+                    {% endif %}
+                }
+            );
 
             $("#mainContent").removeClass("invisible");
         });
@@ -478,7 +354,5 @@
             $('#scratchpad_text').prop('selectionStart', cursor_pos + result.length + 1);
             $('#scratchpad_text').prop('selectionEnd', cursor_pos + result.length + 1);
         }
-
-
     </script>
 {% endblock %}

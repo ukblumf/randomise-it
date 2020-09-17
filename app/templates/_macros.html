@@ -7,6 +7,7 @@
 
 
 
+
                     {% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">
                 &laquo;
             </a>
@@ -33,6 +34,7 @@
 
 
 
+
                     {% if pagination.has_next %}{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">&raquo;</a>
         </li>
     </ul>
@@ -45,17 +47,19 @@
         <th>{{ name[0]|upper }}{{ name[1:] }}</th>
         {% if current_user.is_authenticated %}
             {% if name != 'story' %}
+                <th>Type</th>
                 <th>Tag</th>
                 <th>Date</th>
                 <th>Action</th>
             {% endif %}
         {% else %}
+            <th>Type</th>
             <th>Tag</th>
             <th>Date</th>
         {% endif %}
     </tr>
     </thead>
-    <tbody id="{{ name }}List" style="height: 200px">
+    <tbody id="{{ name }}List">
 {% endmacro %}
 
 {% macro list_rows_in_table(name, items, current_user) %}
@@ -67,21 +71,23 @@
                             value="{{ url_for('.get_random_value', username=current_user.username, id=item.id) }}"
                             data-modifier="{{ item.modifier_name }}">
                 {% elif name == 'macro' %}
-                    <button id="get-macro-value" class="btn btn-primary btn-sm"
+                    <button id="get-macro-value" class="btn btn-success btn-sm"
                             value="{{ url_for('.get_macro', username=current_user.username, id=item.id) }}">
                 {% endif %}
                     {{ item.name }}{% if item.row_count is defined %}
-                        <small class="text-dark">({{ item.row_count }})</small> {% endif %}
+                        <small class="text-dark">({{ item.row_count }})</small>
+                    {% endif %}
                     {% if name in ['table', 'macro'] %}
                         </button>
                     {% endif %}
                 </td>
+                <td>{{ name }}</td>
                 <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
                 <td>{{ item.last_modified.strftime('%Y-%m-%d') }}</td>
                 {% if current_user.is_authenticated %}
                     <td>
                         <a href="{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}"
-                           class="btn btn-warning btn-small" role="button">
+                           class="btn btn-small btn-warning" role="button">
                             Edit
                         </a>
                     </td>
@@ -89,7 +95,7 @@
             {% else %}
                 <td>
                     <a href="{{ url_for('.edit_' + name, username=current_user.username, id=item.id) }}"
-                       class="btn btn-warning btn-small" role="button">{{ item.title }}</a>
+                       class="btn btn-small btn-warning" role="button">{{ item.title }}</a>
                 </td>
             {% endif %}
         </tr>
@@ -119,6 +125,7 @@
                     </button>
                 {% endif %}
             </td>
+            <td>{{ name }}</td>
             {% if name == 'table' %}
                 <td>{% if item.public_table.tags is defined %}{{ item.public_table.tags }}{% endif %}</td>
                 <td>{{ item.public_table.last_modified.strftime('%Y-%m-%d') }}</td>
@@ -183,10 +190,10 @@
                         class="btn btn-sml btn-info">{{ item.name }}</button>
             {% elif name == 'macro' %}
                 <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', '')"
-                        class="btn btn-sml btn-info">{{ item.name }}</button>
+                        class="btn btn-sml btn-success">{{ item.name }}</button>
             {% elif name == 'table' %}
                 <button onclick="addItem('{{ current_user.username }}.{{ name }}.{{ item.id }}', '{{ item.modifier_name }}')"
-                        class="btn btn-sml btn-info">{{ item.name }}</button>
+                        class="btn btn-sml btn-primary">{{ item.name }}</button>
             {% endif %}
         </li>
     {% endfor %}

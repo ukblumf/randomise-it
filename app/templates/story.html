@@ -2,14 +2,14 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
 
-{% block title %}{% if form.data.title %}{{ form.data.title }}{% else %} - {{ SITE_TITLE }} - Create Story{% endif %}{% endblock %}
+{% block title %}{% if form.data.title %}{{ form.data.title }}{% else %} - {{ SITE_TITLE }} - Create Story
+{% endif %}{% endblock %}
 
 {% block page_content %}
     <h4 id="comments">Create your Story - Powered by Randomness and Imagination</h4>
     {% if current_user.can(Permission.WRITE_ARTICLES) %}
         <div class="container-fluid">
             <div class="row" id="pinned_items">
-
             </div>
             <div class="row">
                 <div class="col-md-8">
@@ -24,13 +24,13 @@
                             STORY
                         </button>
                     {% endif %}
-                    <h4>Macros</h4>
-                    <input class="form-control" id="macroFilter" type="text" placeholder="Search..">
-                    <div style="height: 200px; overflow-y: scroll;">
-                        <ul class="list-group" id="macroList">
+                    <input class="form-control" id="contentFilter" type="text" placeholder="Search for tables, macros and collections...">
+                    <div style="height: 600px; overflow-y: scroll;">
+                        <ul class="list-group" id="contentList">
                             {{ macros.list_rows_in_ul_with_pin('macro', macro_list, form.pins.data, current_user) }}
                             {% for m in public_macros %}
-                                <li class="list-group-item" {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
+                                <li class="list-group-item"
+                                    {% if m.tags is defined %}data-tag="{{ m.tags }}"{% endif %}>
                                     {% set icon_pin = 's' %}
                                     {% if pins %}
                                         {% if m.original_author.username + '.macro.' + m.macro_id in pins %}
@@ -39,49 +39,39 @@
                                     {% endif %}
                                     <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
                                           onclick="pinItem('{{ m.original_author.username }}.macro.{{ m.macro_id }}', this)"></span>
-                                    <button onclick="addItem('{{ m.original_author.username }}.macro.{{ m.macro_id }}')">{{ m.public_macro.name }}</button>
+                                    <button onclick="addItem('{{ m.original_author.username }}.macro.{{ m.macro_id }}')" class="btn btn-sml btn-success">{{ m.public_macro.name }}</button>
                                 </li>
                             {% endfor %}
-                        </ul>
-                    </div>
-                    <h4>Random Tables</h4>
-                    <input class="form-control" id="tableFilter" type="text" placeholder="Search..">
-                    <div style="height: 200px; overflow-y: scroll;">
-                        <ul class="list-group" id="tableList">
                             {{ macros.list_rows_in_ul_with_pin('table', tables, form.pins.data, current_user) }}
                             {% for t in public_tables %}
                                 <li class="list-group-item"
-                                    {% if t.public_table.tags is defined %}data-tag="{{ t.public_table.tags }}"{% endif %}">
-                                    {% set icon_pin = 's' %}
-                                    {% if pins %}
-                                        {% if t.original_author.username + '.table.' + t.table_id in pins %}
-                                            {% set icon_pin = 'w' %}
-                                        {% endif %}
+                                    {% if t.public_table.tags is defined %}data-tag="{{ t.public_table.tags }}"
+                                    {% endif %}">
+                                {% set icon_pin = 's' %}
+                                {% if pins %}
+                                    {% if t.original_author.username + '.table.' + t.table_id in pins %}
+                                        {% set icon_pin = 'w' %}
                                     {% endif %}
-                                    <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
-                                          onclick="pinItem('{{ t.original_author.username }}.table.{{ t.table_id }}', this)"></span>
-                                    <button onclick="addItem('{{ t.original_author.username }}.table.{{ t.table_id }}')">{{ t.public_table.name }}</button>
+                                {% endif %}
+                                <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
+                                      onclick="pinItem('{{ t.original_author.username }}.table.{{ t.table_id }}', this)"></span>
+                                <button onclick="addItem('{{ t.original_author.username }}.table.{{ t.table_id }}')" class="btn btn-sml btn-primary">{{ t.public_table.name }}</button>
                                 </li>
                             {% endfor %}
-                        </ul>
-                    </div>
-                    <h4>Collections</h4>
-                    <input class="form-control" id="collectionFilter" type="text" placeholder="Search..">
-                    <div style="height: 200px; overflow-y: scroll;">
-                        <ul class="list-group" id="collectionList">
                             {{ macros.list_rows_in_ul_with_pin('collection', collections, form.pins.data, current_user) }}
                             {% for c in public_collections %}
                                 <li class="list-group-item"
-                                    {% if c.public_collection.tags is defined %}data-tag="{{ c.public_collection.tags }}"{% endif %}">
-                                    {% set icon_pin = 's' %}
-                                    {% if pins %}
-                                        {% if c.original_author.username + '.collection.' + t.table_id in pins %}
-                                            {% set icon_pin = 'w' %}
-                                        {% endif %}
+                                    {% if c.public_collection.tags is defined %}data-tag="{{ c.public_collection.tags }}"
+                                    {% endif %}">
+                                {% set icon_pin = 's' %}
+                                {% if pins %}
+                                    {% if c.original_author.username + '.collection.' + t.table_id in pins %}
+                                        {% set icon_pin = 'w' %}
                                     {% endif %}
-                                    <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
-                                          onclick="pinItem('{{ c.original_author.username }}.collection.{{ c.collection_id }}', this)"></span>
-                                    <button onclick="pinItem('{{ c.original_author.username }}.collection.{{ c.collection_id }}')">{{ c.public_collection.name }}</button>
+                                {% endif %}
+                                <span class="ui-icon ui-icon-pin-{{ icon_pin }}"
+                                      onclick="pinItem('{{ c.original_author.username }}.collection.{{ c.collection_id }}', this)"></span>
+                                <button onclick="pinItem('{{ c.original_author.username }}.collection.{{ c.collection_id }}')" class="btn btn-sml btn-info">{{ c.public_collection.name }}</button>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -97,10 +87,7 @@
 
 {% block scripts %}
     {{ super() }}
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-            integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-            crossorigin="anonymous">
-    </script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
         table_modifiers = {};
         {% for t in tables %}{% if t.modifier_name %}table_modifiers['{{ current_user.username }}.table.{{ t.id }}'] = '{{ t.modifier_name }}';
@@ -152,9 +139,16 @@
                         const menu = $(`<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu"/>`).appendTo(dropdown);
                         createPinnedCollection(username, id, menu);
                     } else if (value) {
-                        pinned_items.append(`<div class='col-md-2'>
+                        if (id_type == 'macro') {
+                            pinned_items.append(`<div class='col-md-2'>
+                                            <button onclick="addItem('${value}')" id="${value}" oncontextmenu='pinItem("${value}", ""); return false;' class="btn btn-xs btn-success">${id_type}.${id}</button><br/><br/>
+                                         </div>`);
+                        } else {
+                            pinned_items.append(`<div class='col-md-2'>
                                             <button onclick="addItem('${value}')" id="${value}" oncontextmenu='pinItem("${value}", ""); return false;' class="btn btn-xs btn-primary">${id_type}.${id}</button><br/><br/>
                                          </div>`);
+
+                        }
                     }
                 });
             }
@@ -301,27 +295,17 @@
 
         $(document).ready(function () {
             $("#confirm").hide();
-
             function filterList(list, filter, tag) {
                 $("#" + list + " li").filter(function () {
                     $(this).toggle(($(this).text().toLowerCase().indexOf(filter) > -1 || filter == '') && (tag == "" || $(this).data('tag') == tag));
                 });
             }
-
             $("#tagFilter").change(function () {
                 let tag = $(this).children("option:selected").val();
-                filterList('tableList', $("#tableFilter").val().toLowerCase(), tag);
-                filterList('macroList', $("#macroFilter").val().toLowerCase(), tag);
-                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), tag);
+                filterList('contentList', $("#contentFilter").val().toLowerCase(), tag);
             });
-            $("#tableFilter").on("keyup", function () {
-                filterList('tableList', $("#tableFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-            });
-            $("#macroFilter").on("keyup", function () {
-                filterList('macroList', $("#macroFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
-            });
-            $("#collectionFilter").on("keyup", function () {
-                filterList('collectionList', $("#collectionFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
+            $("#contentFilter").on("keyup", function () {
+                filterList('contentList', $("#contentFilter").val().toLowerCase(), $("#tagFilter").children("option:selected").val());
             });
             refreshPinnedItems();
         });
