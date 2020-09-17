@@ -97,13 +97,9 @@ def about():
     return render_template('about.html')
 
 
-@main.route('/user/<username>')
-def user(username):
-    user = User.query.filter_by(username=username).first_or_404()
-    # page = request.args.get('page', 1, type=int)
-    # pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
-    #     page, per_page=current_app.config['RANDOMIST_POSTS_PER_PAGE'],
-    #     error_out=False)
+@main.route('/user', methods=['GET'])
+@login_required
+def user():
     story_count = Post.query.filter(Post.author_id == current_user.id).count()
     table_count = RandomTable.query.filter(RandomTable.author_id == current_user.id).count()
     macro_count = Macros.query.filter(Macros.author_id == current_user.id).count()
@@ -141,7 +137,7 @@ def user(username):
 
     tags = tag_query()
 
-    return render_template('user.html', user=user, stats=stats,
+    return render_template('user.html', stats=stats,
                            shared_content=shared_content, shared_content_owned=shared_content_owned,
                            updated_tables=updated_tables, updated_macros=updated_macros,
                            updated_collections=updated_collections, tags=tags)
@@ -874,6 +870,7 @@ def edit_market_product(id):
 
 
 @main.route('/discover', methods=['GET'])
+@login_required
 def discover():
     users_selected_products = db.session.query(UserPublicContent.announcement_id).filter(
         UserPublicContent.author_id == current_user.id)
