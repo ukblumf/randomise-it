@@ -1201,41 +1201,27 @@ def id_exists(type, id):
 
 
 @main.route('/view-table/<string:username>/<string:id>', methods=['GET'])
-@login_required
 def view_table(username, id):
     table_owner = User.query.filter_by(username=username).first()
     if table_owner is None:
         abort(404)
     table = PublicRandomTable.query.get_or_404([id, table_owner.id])
     if table.visible_contents:
-        form = ViewTableForm()
-        form.name.data = table.name
-        form.id.data = table.id
-        form.description.data = table.description
-        form.definition.data = table.definition
-        form.tag.data = table.tags
-        form.modifier_name.data = table.modifier_name
-        return render_template('view.html', form=form)
+        return table.definition
     else:
-        return render_template('error_page.html', description='The contents of this table are not viewable. Nice try.')
+        return 'The contents of this table are not viewable. Nice try.'
 
 
 @main.route('/view-macro/<string:username>/<string:id>', methods=['GET'])
-@login_required
 def view_macro(username, id):
     macro_owner = User.query.filter_by(username=username).first()
     if macro_owner is None:
         abort(404)
     macro = PublicMacros.query.get_or_404([id, macro_owner.id])
     if macro.visible_contents:
-        form = ViewMacroForm()
-        form.name.data = macro.name
-        form.id.data = macro.id
-        form.definition.data = macro.definition
-        form.tag.data = macro.tags
-        return render_template('view.html', form=form)
+        return macro.definition
     else:
-        return render_template('error_page.html', description='The contents of this macro are not viewable. Nice try.')
+        return 'The contents of this macro are not viewable. Nice try.'
 
 
 @main.route('/share-public', methods=['GET', 'POST'])

@@ -49,8 +49,10 @@
                                     <span aria-hidden="true">&times;</span><span class="sr-only">Clear</span>
                                 </button>
                                 <div class="panel-body" id="preview-panel">
-                                    <div><small class="text-muted">PREVIEW area. Click on Table or Macro to see results
-                                        here.</small>
+                                    <div><small class="text-muted">Click on item in content list to see a random result
+                                        here.<br><br>
+                                        Every result is added to this preview panel.<br><br>
+                                        Click on the 'x' to clear preview panel.</small>
                                     </div>
                                 </div>
                             </div>
@@ -135,6 +137,14 @@
                                     <td>table</td>
                                     <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
                                     <td>{{ item.last_modified.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        {% if item.visible_contents %}
+                                            <button id="view-definition"
+                                                    value="{{ url_for('.view_table', username=item.author.username, id=item.id) }}"
+                                                    class="btn btn-info btn-small">View
+                                            </button>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                             {% for item in public_macros %}
@@ -148,6 +158,14 @@
                                     <td>macro</td>
                                     <td>{% if item.tags is defined %}{{ item.tags }}{% endif %}</td>
                                     <td>{{ item.last_modified.strftime('%Y-%m-%d') }}</td>
+                                    <td>
+                                        {% if item.visible_contents %}
+                                            <button id="view-definition"
+                                                    value="{{ url_for('.view_macro', username=item.author.username, id=item.id) }}"
+                                                    class="btn btn-info btn-small">View
+                                            </button>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                             {{ macros.list_rows_in_table_footer() }}
@@ -159,7 +177,10 @@
                                     <span aria-hidden="true">&times;</span><span class="sr-only">Clear</span>
                                 </button>
                                 <div class="panel-body" id="preview-panel">
-                                    <div><small class="text-muted">Click on Table or Macro, see results here.</small>
+                                    <div><small class="text-muted">Click on item in content list to see a random result
+                                        here.<br><br>
+                                        Every result is added to this preview panel.<br><br>
+                                        Click on the 'x' to clear preview panel.</small>
                                     </div>
                                 </div>
                             </div>
@@ -216,7 +237,7 @@
                     url: url, reference_id: id, username: username, success: function (result) {
                         result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
                         result = result.replace(/</g, '&lt;')
-                        const el = '<div><small class="text-muted" title="created by ' + username + '">' + this.reference_id + '</small><p>' + result + '</p></div>';
+                        const el = '<div><small class="text-muted" title="created by ' + username + '">' + this.reference_id + '</small><p>' + result + '</p></div><hr class="style-eight"/>';
                         $("#preview-panel").prepend(el);
                     }
                 });
@@ -227,7 +248,19 @@
                 $.ajax({
                     url: $(this).val(), reference_id: id, username: username, success: function (result) {
                         result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
-                        const el = '<div><small class="text-muted" title="created by ' + username + '">' + this.reference_id + '</small><p>' + result + '</p></div>';
+                        const el = '<div><small class="text-muted" title="created by ' + username + '">' + this.reference_id + '</small><p>' + result + '</p></div><hr class="style-eight"/>';
+                        $("#preview-panel").prepend(el);
+                    }
+                });
+            });
+
+            $("button#view-definition").click(function () {
+                const [ignore, id_type, username, id] = $(this).val().split("/");
+                $.ajax({
+                    url: $(this).val(), reference_id: id, username: username, success: function (result) {
+                        result = result.replace(/</g, '&lt;');
+                        result = result.replace(/(?:\r\n|\r|\n)/g, '<br>');
+                        const el = '<div><small class="text-muted" title="created by ' + username + '">Definition for ' + this.reference_id + '</small><p>' + result + '</p></div><hr class="style-eight"/>';
                         $("#preview-panel").prepend(el);
                     }
                 });
@@ -260,7 +293,7 @@
                 lengthChange: false,
                 dom: "<'row'<'col-sm-3'f><'col-sm-9'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-5'i><'col-sm-7'p>>",
                 language: {
-                    "emptyTable": "no tables. Go to <a href='/discover'>Discover</a> or <a href='/create-table'>Create</a> your own"
+                    "emptyTable": "no content yet. Go to <a href='/discover'>Discover</a> or <a href='/create-table'>Create</a> your own"
                 },
                 drawCallback: function (settings) {
                     var pagination = $(this).closest('.dataTables_wrapper').find('.dataTables_paginate');
@@ -285,7 +318,11 @@
             }
 
             $("button#preview-panel-clear").click(function () {
-                $("#preview-panel").html('<div><small class="text-muted">Click on Table or Macro, see results here.</small></div>');
+                $("#preview-panel").html('<div><small class="text-muted">Click on item in content list to see a random result\n' +
+                    'here.<br><br>\n' +
+                    'Every result is added to this preview panel.<br><br>\n' +
+                    'Click on the \'x\' to clear preview panel.</small>\n' +
+                    '</div>');
             });
             {% if current_user.is_authenticated %}
                 function filterList(list, filter, tag) {
