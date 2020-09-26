@@ -318,11 +318,7 @@
             }
 
             $("button#preview-panel-clear").click(function () {
-                $("#preview-panel").html('<div><small class="text-muted">Click on item in content list to see a random result\n' +
-                    'here.<br><br>\n' +
-                    'Every result is added to this preview panel.<br><br>\n' +
-                    'Click on the \'x\' to clear preview panel.</small>\n' +
-                    '</div>');
+                $("#preview-panel").html('<div></div>');
             });
             {% if current_user.is_authenticated %}
                 function filterList(list, filter, tag) {
