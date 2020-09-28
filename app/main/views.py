@@ -202,122 +202,6 @@ def admin_view():
     return render_template('administ.html', stats=stats.items(), users=users)
 
 
-# @main.route('/follow/<username>')
-# @login_required
-# @permission_required(Permission.FOLLOW)
-# def follow(username):
-#     user = User.query.filter_by(username=username).first()
-#     if user is None:
-#         flash('Invalid user.')
-#         return redirect(url_for('.index'))
-#     if current_user.is_following(user):
-#         flash('You are already following this user.')
-#         return redirect(url_for('.user', username=username))
-#     current_user.follow(user)
-#     flash('You are now following %s.' % username)
-#     return redirect(url_for('.user', username=username))
-
-
-# @main.route('/unfollow/<username>')
-# @login_required
-# @permission_required(Permission.FOLLOW)
-# def unfollow(username):
-#     user = User.query.filter_by(username=username).first()
-#     if user is None:
-#         flash('Invalid user.')
-#         return redirect(url_for('.index'))
-#     if not current_user.is_following(user):
-#         flash('You are not following this user.')
-#         return redirect(url_for('.user', username=username))
-#     current_user.unfollow(user)
-#     flash('You are not following %s anymore.' % username)
-#     return redirect(url_for('.user', username=username))
-
-
-# @main.route('/followers/<username>')
-# def followers(username):
-#     user = User.query.filter_by(username=username).first()
-#     if user is None:
-#         flash('Invalid user.')
-#         return redirect(url_for('.index'))
-#     page = request.args.get('page', 1, type=int)
-#     pagination = user.followers.paginate(
-#         page, per_page=current_app.config['RANDOMIST_FOLLOWERS_PER_PAGE'],
-#         error_out=False)
-#     follows = [{'user': item.follower, 'timestamp': item.timestamp}
-#                for item in pagination.items]
-#     return render_template('followers.html', user=user, title="Followers of",
-#                            endpoint='.followers', pagination=pagination,
-#                            follows=follows)
-
-
-# @main.route('/followed-by/<username>')
-# def followed_by(username):
-#     user = User.query.filter_by(username=username).first()
-#     if user is None:
-#         flash('Invalid user.')
-#         return redirect(url_for('.index'))
-#     page = request.args.get('page', 1, type=int)
-#     pagination = user.followed.paginate(
-#         page, per_page=current_app.config['RANDOMIST_FOLLOWERS_PER_PAGE'],
-#         error_out=False)
-#     follows = [{'user': item.followed, 'timestamp': item.timestamp}
-#                for item in pagination.items]
-#     return render_template('followers.html', user=user, title="Followed by",
-#                            endpoint='.followed_by', pagination=pagination,
-#                            follows=follows)
-
-
-# @main.route('/all')
-# @login_required
-# def show_all():
-#     resp = make_response(redirect(url_for('.index')))
-#     resp.set_cookie('show_followed', '', max_age=30 * 24 * 60 * 60)
-#     return resp
-
-
-# @main.route('/followed')
-# @login_required
-# def show_followed():
-#     resp = make_response(redirect(url_for('.index')))
-#     resp.set_cookie('show_followed', '1', max_age=30 * 24 * 60 * 60)
-#     return resp
-
-
-# @main.route('/moderate')
-# @login_required
-# @permission_required(Permission.MODERATE_COMMENTS)
-# def moderate():
-#     page = request.args.get('page', 1, type=int)
-#     pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(
-#         page, per_page=current_app.config['RANDOMIST_COMMENTS_PER_PAGE'],
-#         error_out=False)
-#     comments = pagination.items
-#     return render_template('moderate.html', comments=comments,
-#                            pagination=pagination, page=page)
-
-
-# @main.route('/moderate/enable/<int:id>')
-# @login_required
-# @permission_required(Permission.MODERATE_COMMENTS)
-# def moderate_enable(id):
-#     comment = Comment.query.get_or_404(id)
-#     comment.disabled = False
-#     db.session.add(comment)
-#     return redirect(url_for('.moderate',
-#                             page=request.args.get('page', 1, type=int)))
-
-
-# @main.route('/moderate/disable/<int:id>')
-# @login_required
-# @permission_required(Permission.MODERATE_COMMENTS)
-# def moderate_disable(id):
-#     comment = Comment.query.get_or_404(id)
-#     comment.disabled = True
-#     db.session.add(comment)
-#     return redirect(url_for('.moderate',
-#                             page=request.args.get('page', 1, type=int)))
-
 @main.route('/create-table', methods=['GET', 'POST'])
 @login_required
 def create_table():
@@ -1497,10 +1381,7 @@ def required_data(remove_supporting=False):
     collection_list = collection_query(remove_supporting=remove_supporting)
     tags = tag_query()
     tags.sort()
-    # public_tables = None
-    # public_macros = None
-    # public_collections = None
-    # if remove_supporting:
+
     public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id).filter(
         PublicLinkedTables.public_table.has(PublicRandomTable.supporting == False))
     public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id).filter(
@@ -1508,9 +1389,5 @@ def required_data(remove_supporting=False):
     public_collections = PublicLinkedCollections.query.filter(
         PublicLinkedCollections.author_id == current_user.id).filter(
         PublicLinkedCollections.public_collection.has(PublicCollection.supporting == False))
-    # else:
-    #    public_tables = PublicLinkedTables.query.filter(PublicLinkedTables.author_id == current_user.id)
-    #    public_macros = PublicLinkedMacros.query.filter(PublicLinkedMacros.author_id == current_user.id)
-    #   public_collections = PublicLinkedCollections.query.filter(PublicLinkedCollections.author_id == current_user.id)
 
     return collection_list, macros, tables, tags, public_collections, public_macros, public_tables
